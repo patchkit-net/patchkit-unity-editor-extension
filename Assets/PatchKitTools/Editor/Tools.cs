@@ -23,7 +23,8 @@ namespace PatchKit.Tools.Integration
                 "--apikey", apiKey,
                 "--label", label,
                 "--changelog", changelog.Replace("\n", "\\n"),
-                "--files", buildDir
+                "--files", buildDir,
+                "--host", Config.instance().connectionSettings.MainServer.Host
                 }, 
                 true);
         }

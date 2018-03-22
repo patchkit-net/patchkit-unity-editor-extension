@@ -14,13 +14,7 @@ namespace PatchKit.Tools.Integration
         {
             _apiKey = apiKey;
             _api = new Api.MainApiConnection(
-                new Api.ApiConnectionSettings{
-                    MainServer = new Api.ApiConnectionServer{
-                        Host = "staging.patchkit.waw.pl",
-                        UseHttps = false,
-                        Port = 80
-                    }
-                }
+                Config.instance().connectionSettings
             );
         }
 
