@@ -8,7 +8,7 @@ using System.IO;
 namespace PatchKit.Tools.Integration
 {
     public class BuildAndPublish : EditorWindow
-    {        
+    {
         private ApiKey _apiKey;
         private ToolsWrapper _tools = new ToolsWrapper();
 
@@ -21,6 +21,8 @@ namespace PatchKit.Tools.Integration
         private Api.Models.Main.App? _selectedApp = null;
 
         private bool _hasAppBeenBuilt = false;
+
+        private bool _hasAppBeenPublished = false;
 
         [MenuItem("File/Build and Publish")]
         public static void ShowWindow()
@@ -52,15 +54,42 @@ namespace PatchKit.Tools.Integration
 
         private bool LoadCachedSelectedApp()
         {
+            var filepath = CachedAppFilename();
+
+            if (!File.Exists(filepath))
+            {
+                return false;
+            }
+
+            var cachedAppSecret = File.ReadAllText(filepath);
+
+            if (string.IsNullOrEmpty(cachedAppSecret))
+            {
+                return false;
+            }
+
+            var api = new ApiUtils(_apiKey);
+
+            var appInfo = api.GetAppInfo(cachedAppSecret);
+
+            _selectedApp = appInfo;
+
             return true;
         }
 
-        private void CacheSelectedApp()
+        private bool CacheSelectedApp()
         {
             var filepath = CachedAppFilename();
 
-            
+            UnityEngine.Debug.Log("Caching selected app to " + filepath);
 
+            if (_selectedApp.HasValue)
+            {
+                File.WriteAllText(filepath, _selectedApp.Value.Secret);
+                return true;
+            }
+
+            return false;
         }
 
         private void OpenSubmitKeyDialog()
@@ -161,6 +190,9 @@ namespace PatchKit.Tools.Integration
         private void SelectApp(Api.Models.Main.App app)
         {
             _selectedApp = app;
+
+            CacheSelectedApp();
+
             _currentGuiScreen = BuildGUI;
         }
 
@@ -168,7 +200,9 @@ namespace PatchKit.Tools.Integration
         {
             _currentGuiScreen = PublishGUI;
 
-            ToolsWrapper.MakeVersionHeadless(_apiKey.Key, appSecret, label, changelog, buildDir);
+            ToolsWrapper.MakeVersionHeadless(_apiKey.Key, appSecret, label, changelog, buildDir, () => {
+                _hasAppBeenPublished = true;
+            });
         }
 
         private void SelectAppGUI()
@@ -195,8 +229,11 @@ namespace PatchKit.Tools.Integration
 
         void OnGUI()
         {
-            CacheSelectedApp();
-            return;
+            if (_hasAppBeenBuilt && _hasAppBeenPublished)
+            {
+                this.Close();
+                return;
+            }
 
             if (_currentGuiScreen == null)
             {

@@ -29,11 +29,12 @@ namespace PatchKit.Tools.Integration
                 true);
         }
 
-        public static void MakeVersionHeadless(string apiKey, string appSecret, string label, string changelog, string buildDir)
+        public static void MakeVersionHeadless(string apiKey, string appSecret, string label, string changelog, string buildDir, Action onFinish)
         {
             var thread = new Thread(
                 () => {
                     MakeVersion(apiKey, appSecret, label, changelog, buildDir);
+                    onFinish();
                 }
             );
 
