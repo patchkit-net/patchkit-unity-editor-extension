@@ -10,6 +10,14 @@ namespace PatchKit.Tools.Integration.Views
     {
         private readonly AppData _data;
 
+        public AppData Data
+        {
+            get
+            {
+                return _data;
+            }
+        }
+
         public App(AppData data)
         {
             _data = data;
@@ -21,6 +29,7 @@ namespace PatchKit.Tools.Integration.Views
         {
             var displayName = _data.Name;
             GUILayout.Label(displayName, EditorStyles.boldLabel);
+            DisplayValueIfPresent("Platform: ", _data.Platform);
 
             if (_isCollapsed)
             {
@@ -35,6 +44,7 @@ namespace PatchKit.Tools.Integration.Views
                 {
                     _isCollapsed = true;
                 }
+
                 DisplayValueIfPresent("Display name:", _data.DisplayName);
                 DisplayValueIfPresent("Author:", _data.Author);
 

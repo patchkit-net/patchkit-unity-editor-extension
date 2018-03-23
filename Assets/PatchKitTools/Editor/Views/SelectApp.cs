@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +11,8 @@ namespace PatchKit.Tools.Integration.Views
     public class SelectApp : IView
     {
         private readonly ApiUtils _api;
+
+        private List<Views.App> _appViews;
 
         public SelectApp(ApiUtils api)
         {
@@ -25,23 +29,25 @@ namespace PatchKit.Tools.Integration.Views
                 return;
             }
 
-            var apps = _api.GetAppsCached(); 
-
-            if (apps == null)
+            if (_appViews == null)
             {
-                return;
-            }
+                var apps = _api.GetAppsCached(); 
 
-            apps.ForEach(app => {
-                GUILayout.Label("Name: " + app.Name);
-                if (!string.IsNullOrEmpty(app.DisplayName))
+                if (apps == null)
                 {
-                    GUILayout.Label("Disp. name: " + app.DisplayName);
+                    return;
                 }
 
+                _appViews = apps
+                    .Select(app => new Views.App(app))
+                    .ToList();
+            }
+
+            _appViews.ForEach(app => {
+                app.Show();
                 if (GUILayout.Button("Select"))
                 {
-                    OnAppSelected(app);
+                    OnAppSelected(app.Data);
                 }
             });
 

@@ -13,6 +13,7 @@ namespace PatchKit.Tools.Integration
         private ApiKey _apiKey;
         private ApiUtils _api = null;
         private App? _selectedApp = null;
+        private AppCache _appCache;
 
         private bool _reimportLock = false;
 
@@ -28,6 +29,8 @@ namespace PatchKit.Tools.Integration
         {
             LockReload();
 
+            _appCache = new AppCache(Config.instance().localCachePath);
+
             _apiKey = ApiKey.LoadCached();
 
             if (_apiKey == null)
@@ -41,7 +44,7 @@ namespace PatchKit.Tools.Integration
             else
             {
                 _api = new ApiUtils(_apiKey);
-                _selectedApp = AppCache.LoadCachedApp(_api);
+                _selectedApp = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
 
                 if (!_selectedApp.HasValue)
                 {
@@ -71,7 +74,7 @@ namespace PatchKit.Tools.Integration
 
             _api = new ApiUtils(_apiKey);
 
-            _selectedApp = AppCache.LoadCachedApp(_api);
+            _selectedApp = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
 
             if (_selectedApp.HasValue)
             {
@@ -95,7 +98,7 @@ namespace PatchKit.Tools.Integration
         private void OnAppSelected(Api.Models.Main.App app)
         {
             _selectedApp = app;
-            AppCache.CacheApp(app);
+            _appCache.UpdateEntry(EditorUserBuildSettings.activeBuildTarget, app);
 
             var build = new Views.BuildApp();
 

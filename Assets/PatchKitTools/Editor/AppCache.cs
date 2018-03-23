@@ -1,48 +1,115 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using Newtonsoft.Json;
 
 using App = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration
 {
-    public static class AppCache
+    public class AppCache
     {
-        public static string CachedAppFilename()
+        private Dictionary<BuildTarget, App> _apps;
+
+        private readonly string _cacheFilePath;
+
+        public AppCache(string cacheFilePath)
+        {
+            _cacheFilePath = cacheFilePath;
+            _apps = Load(CacheFilePath());
+
+            if (_apps == null)
+            {
+                _apps = new Dictionary<BuildTarget, App>();
+            }
+        }
+
+        public static Dictionary<BuildTarget, App> Load(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                return null;
+            }
+
+            var jsonData = File.ReadAllText(filePath);
+            var apps = JsonConvert.DeserializeObject<Dictionary<BuildTarget, App>>(jsonData);
+
+            if (apps == null)
+            {
+                return null;
+            }
+
+            return apps;
+        }
+
+        public void Save()
+        {
+            var jsonData = JsonConvert.SerializeObject(_apps);
+            File.WriteAllText(CacheFilePath(), jsonData);
+        }
+
+        public string CacheFilePath()
         {
             var dataPath = Application.dataPath;
-            const string dataFilename = ".selected_app";
+            string appCacheFilename = _cacheFilePath;
 
-            var selectedAppFilename = Path.Combine(dataPath, dataFilename);
+            var appCacheFilePath = Path.Combine(dataPath, appCacheFilename);
 
-            return selectedAppFilename;
+            return appCacheFilePath;
         }
 
-        public static App? LoadCachedApp(ApiUtils api)
+        public void UpdateEntry(BuildTarget target, App app)
         {
-            var filepath = CachedAppFilename();
+            _apps.Add(target, app);
+            
+            Save();
+        }
 
-            if (!File.Exists(filepath))
+        public void RemoveEntry(App app)
+        {
+            _apps = _apps
+                .Where(entry => entry.Value.Secret != app.Secret)
+                .ToDictionary(entry => entry.Key, entry => entry.Value);
+
+            Save();
+        }
+
+        public void RemoveEntry(BuildTarget target, App app)
+        {
+            _apps = _apps
+                .Where(entry => entry.Key != target && entry.Value.Secret != app.Secret)
+                .ToDictionary(entry => entry.Key, entry => entry.Value);
+
+            Save();
+        }
+
+        public void RemoveEntry(BuildTarget target)
+        {
+            _apps.Remove(target);
+            Save();
+        }
+
+        public App? AppByPlatform(BuildTarget target)
+        {
+            if (!_apps.ContainsKey(target))
             {
                 return null;
             }
 
-            var cachedAppSecret = File.ReadAllText(filepath);
-
-            if (string.IsNullOrEmpty(cachedAppSecret))
-            {
-                return null;
-            }
-
-            var appInfo = api.GetAppInfo(cachedAppSecret);
-
-            return appInfo;
+            return _apps[target];
         }
 
-        public static void CacheApp(App app)
+        public Dictionary<BuildTarget, App> AppsByPlatform()
         {
-            var filepath = CachedAppFilename();
-            File.WriteAllText(filepath, app.Secret);
+            return _apps;
+        }
+
+        public List<App> Apps()
+        {
+            return _apps.Values.ToList();
         }
     }
 }

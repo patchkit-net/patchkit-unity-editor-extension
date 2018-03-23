@@ -40,5 +40,7 @@ namespace PatchKit.Tools.Integration
         #endregion
 
         public Api.ApiConnectionSettings connectionSettings;
+
+        public string localCachePath = ".appcache";
     }
 }

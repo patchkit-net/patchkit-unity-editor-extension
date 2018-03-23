@@ -13,10 +13,8 @@ namespace PatchKit.Tools.Integration
 
         private ApiUtils _api;
 
-        private List<Views.App> _appViews;
-
-        private App? _cachedApp = null;
-        private Views.App _cachedAppView;
+        private AppCache _appCache;
+        private Dictionary<BuildTarget, Views.App> _cachedAppsView;
 
         [MenuItem("Window/PatchKit/Applications")]
         public static void ShowWindow()
@@ -31,17 +29,16 @@ namespace PatchKit.Tools.Integration
                 _apiKey = ApiKey.LoadCached();
             }
 
-            _api = new ApiUtils(_apiKey);
-
-            _appViews = _api.GetApps()
-                .Select(appData => new Views.App(appData))
-                .ToList();
-
-            _cachedApp = AppCache.LoadCachedApp(_api);
-            if (_cachedApp.HasValue)
+            if (_api == null)
             {
-                _cachedAppView = new Views.App(_cachedApp.Value);
+                _api = new ApiUtils(_apiKey);
             }
+
+            _appCache = new AppCache(Config.instance().localCachePath);
+
+            _cachedAppsView = _appCache.AppsByPlatform()
+                .Select(entry => new KeyValuePair<BuildTarget, Views.App>(entry.Key, new Views.App(entry.Value)))
+                .ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
         private void Awake()
@@ -61,19 +58,22 @@ namespace PatchKit.Tools.Integration
                 Init();
             }
 
-            if (_appViews != null)
-            {
-                GUILayout.Label("Apps:", EditorStyles.boldLabel);
-                foreach (var appView in _appViews)
-                {
-                    appView.Show();
-                }
-            }
-
-            if (_cachedApp.HasValue)
+            if (_cachedAppsView != null && _cachedAppsView.Count > 0)
             {
                 GUILayout.Label("Currently cached app:", EditorStyles.boldLabel);
-                _cachedAppView.Show();
+
+                foreach (var entry in _cachedAppsView)
+                {
+                    GUILayout.Label("For " + entry.Key.ToString());
+                    entry.Value.Show();
+                    if (GUILayout.Button("Reset"))
+                    {
+                        _appCache.RemoveEntry(entry.Key, entry.Value.Data);
+                        Init();
+                    }
+
+                    GUILayout.Space(50);
+                }
             }
         }
     }
