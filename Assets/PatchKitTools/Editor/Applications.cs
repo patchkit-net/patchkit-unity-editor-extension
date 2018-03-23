@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+using App = PatchKit.Api.Models.Main.App;
+
 namespace PatchKit.Tools.Integration
 {
     public class Applications : EditorWindow
@@ -12,6 +14,9 @@ namespace PatchKit.Tools.Integration
         private ApiUtils _api;
 
         private List<Views.App> _appViews;
+
+        private App? _cachedApp = null;
+        private Views.App _cachedAppView;
 
         [MenuItem("Window/PatchKit/Applications")]
         public static void ShowWindow()
@@ -31,6 +36,12 @@ namespace PatchKit.Tools.Integration
             _appViews = _api.GetApps()
                 .Select(appData => new Views.App(appData))
                 .ToList();
+
+            _cachedApp = AppCache.LoadCachedApp(_api);
+            if (_cachedApp.HasValue)
+            {
+                _cachedAppView = new Views.App(_cachedApp.Value);
+            }
         }
 
         private void Awake()
@@ -57,6 +68,12 @@ namespace PatchKit.Tools.Integration
                 {
                     appView.Show();
                 }
+            }
+
+            if (_cachedApp.HasValue)
+            {
+                GUILayout.Label("Currently cached app:", EditorStyles.boldLabel);
+                _cachedAppView.Show();
             }
         }
     }

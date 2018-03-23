@@ -50,10 +50,5 @@ namespace PatchKit.Tools.Integration.Views
                 GUILayout.Label(label + " " + value);
             }
         }
-
-        public bool ShouldClose()
-        {
-            return false;
-        }
     }
 }
