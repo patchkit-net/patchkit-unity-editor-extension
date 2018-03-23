@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace PatchKit.Tools.Integration
 {
@@ -69,7 +70,7 @@ namespace PatchKit.Tools.Integration
 
         public bool IsValid()
         {
-            return !Key.Contains(".");
+            return !string.IsNullOrEmpty(Key) && Key.All(char.IsLetterOrDigit);
         }
 
         public static string ApiKeyFilePath()
