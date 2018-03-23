@@ -18,25 +18,34 @@ namespace PatchKit.Tools.Integration
             );
         }
 
-        private bool _lst = true;
-
         public List<App> GetApps()
         {
-            if (_lst)
+            try
             {
-                try
-                {
-                    return _api.ListsUserApplications(_apiKey.Key).ToList();
-                }
-                catch(Exception e)
-                {
-                    UnityEngine.Debug.LogError(e);
-                    _lst = false;
-                    return null;
-                }
+                return _api.ListsUserApplications(_apiKey.Key).ToList();
+            }
+            catch(Exception e)
+            {
+                UnityEngine.Debug.LogError(e);
+                return null;
+            }
+        }
+
+        private List<App> _apps = null;
+
+        public List<App> GetAppsCached(bool forceReload = false)
+        {
+            if (forceReload || _apps == null)
+            {
+                _apps = GetApps();
             }
 
-            return null;
+            return _apps;
+        }
+
+        public App GetAppInfo(string secret)
+        {
+            return _api.GetApplicationInfo(secret);
         }
     }
 }
