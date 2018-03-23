@@ -22,7 +22,7 @@ namespace PatchKit.Tools.Integration
                 "--secret", appSecret,
                 "--apikey", apiKey,
                 "--label", label,
-                "--changelog", changelog.Replace("\n", "\\n"),
+                "--changelog", string.IsNullOrEmpty(changelog) ? "\"\"" : changelog.Replace("\n", "\\n"),
                 "--files", buildDir,
                 "--host", Config.instance().connectionSettings.MainServer.Host
                 }, 
@@ -44,7 +44,7 @@ namespace PatchKit.Tools.Integration
         public static void Execute(string tool, string[] toolArguments, bool openConsole = false)
         {
             var path = Path.GetFullPath(Path.Combine("Assets/PatchKitTools/Tools", "win32/patchkit-tools.bat"));
-            var processArguments = "/C " + path + " " + tool;
+            var processArguments = "/K " + path + " " + tool;
 
             if (toolArguments != null)
             {

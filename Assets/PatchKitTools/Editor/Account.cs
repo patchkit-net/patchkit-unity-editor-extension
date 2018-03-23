@@ -10,10 +10,17 @@ namespace PatchKit.Tools.Integration
         [MenuItem("Window/PatchKit/Account")]
         public static void ShowWindow()
         {
-            EditorWindow.GetWindow(typeof(Account), false, "Account");
+            EditorWindow.GetWindow(typeof(Account), false, "Account");            
         }
 
-        void OnGUI()
+        private Views.IView _currentView = null;
+
+        private void Awake()
+        {
+            Init();
+        }
+
+        private void Init()
         {
             if (_apiKey == null)
             {
@@ -21,26 +28,53 @@ namespace PatchKit.Tools.Integration
 
                 if (_apiKey == null)
                 {
-                    GUILayout.Label("Please resolve the API key.", EditorStyles.boldLabel);
-                    UpdateKey();
-                    return;
+                    var submitKey = new Views.SubmitKey();
+                    _currentView = submitKey;
+
+                    submitKey.OnKeyResolve += (key) => {
+                        _apiKey = key;
+                        ApiKey.Cache(key);
+
+                        _currentView = null;
+                    };
+                }
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (_currentView != null)
+            {
+                _currentView.Show();
+            }
+            else
+            {
+                if (_apiKey != null)
+                {
+                    AccountGUI();
+                }
+                else
+                {
+                    Init();
                 }
             }
 
+            Repaint();
+        }
+
+        private void AccountGUI()
+        {
             GUILayout.Label("Account", EditorStyles.boldLabel);
 
             GUILayout.Label("Api key:");
             EditorGUILayout.SelectableLabel(_apiKey.Key, EditorStyles.helpBox);
-            
-            if (GUILayout.Button("Update key"))
-            {
-                UpdateKey();
-            }
 
             if (GUILayout.Button("RESET"))
             {
                 ApiKey.ClearCached();
                 _apiKey = null;
+
+                Init();
             }
 
             GUILayout.Space(10);
@@ -54,15 +88,6 @@ namespace PatchKit.Tools.Integration
             {
                 Application.OpenURL("http://docs.patchkit.net/");
             }
-        }
-
-        private void UpdateKey()
-        {
-            SubmitKeyMenu.OpenWindow(key => {
-                ApiKey.Cache(key);
-                _apiKey = key;
-                this.Focus();
-            });
         }
     }
 }

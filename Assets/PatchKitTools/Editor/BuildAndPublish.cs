@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using PatchKit.Api;
+using PatchKit.Api.Models.Main;
 using PatchKit.Network;
 using System.Linq;
 using System.IO;
@@ -10,244 +11,159 @@ namespace PatchKit.Tools.Integration
     public class BuildAndPublish : EditorWindow
     {
         private ApiKey _apiKey;
-        private ToolsWrapper _tools = new ToolsWrapper();
+        private ApiUtils _api = null;
+        private App? _selectedApp = null;
 
-        private System.Action _currentGuiScreen;
+        private bool _reimportLock = false;
 
-        private SubmitKeyMenu _submitKey;
-        private SubmitLabelAndChangelog _submitVersionDetails;
-
-        private Api.Models.Main.App[] _appList = null;
-        private Api.Models.Main.App? _selectedApp = null;
-
-        private bool _hasAppBeenBuilt = false;
-
-        private bool _hasAppBeenPublished = false;
+        private Views.IView _currentView;
 
         [MenuItem("File/Build and Publish")]
         public static void ShowWindow()
         {
-            var target = EditorWindow.GetWindow(typeof(BuildAndPublish), false, "Build & Publish") as BuildAndPublish;
-
-            target.Initialize();
+            EditorWindow.GetWindow(typeof(BuildAndPublish), false, "Build & Publish");
         }
 
-        private void Initialize()
+        private void Awake()
         {
+            LockReload();
+
             _apiKey = ApiKey.LoadCached();
 
             if (_apiKey == null)
             {
-                OpenSubmitKeyDialog();
+                var submitKey = new Views.SubmitKey();
+
+                submitKey.OnKeyResolve += OnKeyResolved;
+
+                _currentView = submitKey;
             }
-        }
-
-        private string CachedAppFilename()
-        {
-            var dataPath = Application.dataPath;
-            const string dataFilename = ".selected_app";
-
-            var selectedAppFilename = Path.Combine(dataPath, dataFilename);
-
-            return selectedAppFilename;
-        }
-
-        private bool LoadCachedSelectedApp()
-        {
-            var filepath = CachedAppFilename();
-
-            if (!File.Exists(filepath))
+            else
             {
-                return false;
+                _api = new ApiUtils(_apiKey);
+                _selectedApp = AppCache.LoadCachedApp(_api);
+
+                if (!_selectedApp.HasValue)
+                {
+                    var selectApp = new Views.SelectApp(_api);
+
+                    selectApp.OnAppSelected += OnAppSelected;
+
+                    _currentView = selectApp;
+                }
+                else
+                {
+                    var build = new Views.BuildApp();
+
+                    build.OnSuccess += OnBuildSuccess;
+                    build.OnFailure += OnBuildFailed;
+
+                    _currentView = build;
+                }
             }
-
-            var cachedAppSecret = File.ReadAllText(filepath);
-
-            if (string.IsNullOrEmpty(cachedAppSecret))
-            {
-                return false;
-            }
-
-            var api = new ApiUtils(_apiKey);
-
-            var appInfo = api.GetAppInfo(cachedAppSecret);
-
-            _selectedApp = appInfo;
-
-            return true;
-        }
-
-        private bool CacheSelectedApp()
-        {
-            var filepath = CachedAppFilename();
-
-            UnityEngine.Debug.Log("Caching selected app to " + filepath);
-
-            if (_selectedApp.HasValue)
-            {
-                File.WriteAllText(filepath, _selectedApp.Value.Secret);
-                return true;
-            }
-
-            return false;
-        }
-
-        private void OpenSubmitKeyDialog()
-        {
-            _submitKey = EditorWindow.GetWindow(typeof(SubmitKeyMenu)) as SubmitKeyMenu;
-            _submitKey.OnKeyResolve += OnKeyResolved;
-        }
-
-        private void OpenSubmitVersionDetailsDialog()
-        {
-            _submitVersionDetails = EditorWindow.GetWindow(typeof(SubmitLabelAndChangelog)) as SubmitLabelAndChangelog;
-            _submitVersionDetails.OnResolve += OnVersionDetailsResolved;
         }
 
         private void OnKeyResolved(ApiKey key)
         {
             _apiKey = key;
 
-            _submitKey.OnKeyResolve -= OnKeyResolved;
-
-            _currentGuiScreen = null;
-
             ApiKey.Cache(_apiKey);
 
-            this.Focus();
-        }
+            _api = new ApiUtils(_apiKey);
 
-        private void OnVersionDetailsResolved(string label, string changelog)
-        {
-            this.Focus();
-            PublishApp(_selectedApp.Value.Secret, label, changelog, ResolveBuildPath());
-        }
+            _selectedApp = AppCache.LoadCachedApp(_api);
 
-        private void ResolveKeyGui()
-        {
-            GUILayout.Label("Please resolve the API key.");
-            if (_submitKey == null)
+            if (_selectedApp.HasValue)
             {
-                if (GUILayout.Button("Open dialog"))
-                {
-                    OpenSubmitKeyDialog();
-                }
-            }
-        }
+                var build = new Views.BuildApp();
 
-        private void BuildGUI()
-        {
-            if (_hasAppBeenBuilt)
-            {
-                if (_submitVersionDetails == null)
-                {
-                    OpenSubmitVersionDetailsDialog();
-                }
+                build.OnSuccess += OnBuildSuccess;
+                build.OnFailure += OnBuildFailed;
+
+                _currentView = build;
             }
             else
             {
-                BuildApp();
+                var selectApp = new Views.SelectApp(_api);
+
+                selectApp.OnAppSelected += OnAppSelected;
+
+                _currentView = selectApp;
             }
         }
 
-        private void PublishGUI()
+        private void OnAppSelected(Api.Models.Main.App app)
         {
-            GUILayout.Label("Publishing...");
+            _selectedApp = app;
+            AppCache.CacheApp(app);
 
-            EditorGUILayout.HelpBox("Do not close the console window!", MessageType.Warning);
+            var build = new Views.BuildApp();
+
+            build.OnSuccess += OnBuildSuccess;
+            build.OnFailure += OnBuildFailed;
+
+            _currentView = build;
         }
 
-        private void BuildApp()
-        {
-            GUILayout.Label("Building...");
-            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
-
-            string errorMessage = null;
-            
-            // errorMessage = BuildPipeline.BuildPlayer(
-            //     EditorBuildSettings.scenes.Select(s => s.path).ToArray(), 
-            //     EditorUserBuildSettings.GetBuildLocation(buildTarget), 
-            //     buildTarget,
-            //     BuildOptions.None);
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                // An error occured
-                GUILayout.Label("ERROR: " + errorMessage);
-                return;
-            }
-
-            _hasAppBeenBuilt = true;
-
-            OpenSubmitVersionDetailsDialog();
-        }
-
-        private string ResolveBuildPath()
+        private string ResolveBuildDir()
         {
             return Path.GetDirectoryName(EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.activeBuildTarget));
         }
 
-        private void SelectApp(Api.Models.Main.App app)
+        private void OnBuildSuccess()
         {
-            _selectedApp = app;
+            var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir());
 
-            CacheSelectedApp();
-
-            _currentGuiScreen = BuildGUI;
+            _currentView = publishApp;
         }
 
-        private void PublishApp(string appSecret, string label, string changelog, string buildDir)
+        private void OnBuildFailed(string errorMessage)
         {
-            _currentGuiScreen = PublishGUI;
-
-            ToolsWrapper.MakeVersionHeadless(_apiKey.Key, appSecret, label, changelog, buildDir, () => {
-                _hasAppBeenPublished = true;
-            });
+            // _currentView = null;
         }
 
-        private void SelectAppGUI()
+        private void OnGUI()
         {
-            GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
-
-            ApiUtils apiUtils = new ApiUtils(_apiKey);
-
-            UnityEngine.Debug.Log("Getting app list for api key: " + _apiKey.Key);
-            var apps = apiUtils.GetApps(); 
-
-            apps.ForEach(app => {
-                GUILayout.Label("Name: " + app.Name);
-                GUILayout.Label("Disp. name: " + app.DisplayName);
-                if (GUILayout.Button("Select"))
-                {
-                    SelectApp(app);
-                }
-            });
-
-            GUILayout.Label("New app: ", EditorStyles.boldLabel);
-            GUILayout.Button("Add");
-        }
-
-        void OnGUI()
-        {
-            if (_hasAppBeenBuilt && _hasAppBeenPublished)
+            if (_currentView != null)
             {
-                this.Close();
-                return;
+                _currentView.Show();
+            }
+            else
+            {
+                Close();
             }
 
-            if (_currentGuiScreen == null)
-            {
-                if (_apiKey == null)
-                {
-                    _currentGuiScreen = ResolveKeyGui;
-                }
-                else if (!_selectedApp.HasValue)
-                {
-                    _currentGuiScreen = SelectAppGUI;
-                }
-            }
+            PreventReloadIfLocked();
 
-            if (_currentGuiScreen != null) _currentGuiScreen();
+            Repaint();
+        }
+
+        private void OnDestroy()
+        {
+            if (_reimportLock)
+            {
+                UnlockReload();
+            }
+        }
+
+        private void LockReload()
+        {
+            EditorApplication.LockReloadAssemblies();
+            _reimportLock = true;
+        }
+
+        private void UnlockReload()
+        {
+            EditorApplication.UnlockReloadAssemblies();
+            _reimportLock = false;
+        }
+
+        private void PreventReloadIfLocked()
+        {
+            if (EditorApplication.isCompiling && _reimportLock)
+            {
+                EditorApplication.LockReloadAssemblies();
+            }
         }
     }
 }

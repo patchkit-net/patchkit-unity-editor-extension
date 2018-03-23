@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,27 +9,53 @@ namespace PatchKit.Tools.Integration
     {
         private ApiKey _apiKey;
 
+        private ApiUtils _api;
+
+        private List<Views.App> _appViews;
+
         [MenuItem("Window/PatchKit/Applications")]
         public static void ShowWindow()
         {
             EditorWindow.GetWindow(typeof(Applications), false, "Applications");
         }
 
-        void OnGUI()
+        private void Init()
         {
             if (_apiKey == null)
             {
                 _apiKey = ApiKey.LoadCached();
+            }
 
-                if (_apiKey == null)
+            _api = new ApiUtils(_apiKey);
+
+            _appViews = _api.GetApps()
+                .Select(appData => new Views.App(appData))
+                .ToList();
+        }
+
+        private void Awake()
+        {
+            Init();
+        }
+
+        private void OnGUI()
+        {
+            if (_apiKey == null)
+            {
+                EditorGUILayout.HelpBox("Please resolve the API key.", MessageType.Error);
+            }
+
+            if (GUILayout.Button("Reload"))
+            {
+                Init();
+            }
+
+            if (_appViews != null)
+            {
+                GUILayout.Label("Apps:", EditorStyles.boldLabel);
+                foreach (var appView in _appViews)
                 {
-                    GUILayout.Label("Please resolve the API key.", EditorStyles.boldLabel);
-                    SubmitKeyMenu.OpenWindow(key => {
-                        ApiKey.Cache(key);
-                        _apiKey = key;
-                        this.Focus();
-                    });
-                    return;
+                    appView.Show();
                 }
             }
         }
