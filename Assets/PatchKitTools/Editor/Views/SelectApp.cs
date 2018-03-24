@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using PatchKit.Network;
 
 using AppData = PatchKit.Api.Models.Main.App;
 
@@ -13,6 +14,8 @@ namespace PatchKit.Tools.Integration.Views
         private readonly ApiUtils _api;
 
         private List<Views.App> _appViews;
+
+        private string newAppName = "NewApp";
 
         public SelectApp(ApiUtils api)
         {
@@ -52,7 +55,21 @@ namespace PatchKit.Tools.Integration.Views
             });
 
             GUILayout.Label("New app: ", EditorStyles.boldLabel);
-            GUILayout.Button("Add");
+
+            newAppName = EditorGUILayout.TextField("Name: ", newAppName);
+
+            if (string.IsNullOrEmpty(newAppName))
+            {
+                EditorGUILayout.HelpBox("Application name cannot be empty.", MessageType.Error);
+            }
+            else
+            {
+                if (GUILayout.Button("Add"))
+                {
+                    var newApp = _api.CreateNewApp(newAppName, "windows_x86_64");
+                    OnAppSelected(newApp);
+                }
+            }
         }
 
         public event Action<AppData> OnAppSelected;

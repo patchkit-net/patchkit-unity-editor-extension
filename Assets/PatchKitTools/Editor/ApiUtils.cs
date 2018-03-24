@@ -18,6 +18,22 @@ namespace PatchKit.Tools.Integration
             );
         }
 
+        public string Key
+        {
+            get 
+            {
+                return _apiKey.Key;
+            }
+        }
+
+        public Api.MainApiConnection Api
+        {
+            get
+            {
+                return _api;
+            }
+        }
+
         public List<App> GetApps()
         {
             try
@@ -46,6 +62,11 @@ namespace PatchKit.Tools.Integration
         public App GetAppInfo(string secret)
         {
             return _api.GetApplicationInfo(secret);
+        }
+
+        public App CreateNewApp(string name, string platform)
+        {
+            return _api.PostUserApplication(Key, name, platform);
         }
     }
 }
