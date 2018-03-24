@@ -37,7 +37,7 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (GUILayout.Button("Ok"))
                 {
-                    ToolsWrapper.MakeVersionHeadless(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, OnPublish);
+                    Tools.MakeVersionHeadless(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, OnPublish);
                 }
             }
             else

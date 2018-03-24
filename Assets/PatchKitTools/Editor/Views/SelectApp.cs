@@ -66,7 +66,7 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (GUILayout.Button("Add"))
                 {
-                    var newApp = _api.CreateNewApp(newAppName, "windows_x86_64");
+                    var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
                     OnAppSelected(newApp);
                 }
             }
