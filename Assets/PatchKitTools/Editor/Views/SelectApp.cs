@@ -22,9 +22,14 @@ namespace PatchKit.Tools.Integration.Views
             _api = api;
         }
 
+        private Vector2 _scrollViewVector = Vector2.zero;
+
         public void Show()
         {
             GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
+
+            bool shouldFilterByPlatform = Config.instance().filterAppsByPlatform;
+            var buildTargetName = EditorUserBuildSettings.activeBuildTarget.ToPatchKitString();
 
             if (_api == null)
             {
@@ -42,9 +47,12 @@ namespace PatchKit.Tools.Integration.Views
                 }
 
                 _appViews = apps
+                    .Where(app => shouldFilterByPlatform ? (app.Platform == buildTargetName) : true)
                     .Select(app => new Views.App(app))
                     .ToList();
             }
+
+            _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector, GUILayout.Height(Config.instance().appsScrollViewHeight));
 
             _appViews.ForEach(app => {
                 app.Show();
@@ -54,7 +62,11 @@ namespace PatchKit.Tools.Integration.Views
                 }
             });
 
-            GUILayout.Label("New app: ", EditorStyles.boldLabel);
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.Separator();
+
+            EditorGUILayout.LabelField("New app: ", EditorStyles.boldLabel);
 
             newAppName = EditorGUILayout.TextField("Name: ", newAppName);
 

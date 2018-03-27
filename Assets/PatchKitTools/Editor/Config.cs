@@ -42,5 +42,11 @@ namespace PatchKit.Tools.Integration
         public Api.ApiConnectionSettings connectionSettings;
 
         public string localCachePath = ".appcache";
+
+        public float appsScrollViewHeight = 300;
+
+        public bool filterAppsByPlatform = true;
+
+        public bool closeConsoleWindowAutomatically = false;
     }
 }
