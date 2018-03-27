@@ -74,7 +74,10 @@ namespace PatchKit.Tools.Integration
         public static void Execute(string tool, string[] toolArguments, bool openConsole = false)
         {
             var path = Path.GetFullPath(Path.Combine("Assets/PatchKitTools/Tools", "win32/patchkit-tools.bat"));
-            var processArguments = "/K " + path + " " + tool;
+
+            string prefix = Config.instance().closeConsoleWindowAutomatically ? "/C" : "/K";
+
+            var processArguments = prefix + path + " " + tool;
 
             if (toolArguments != null)
             {
