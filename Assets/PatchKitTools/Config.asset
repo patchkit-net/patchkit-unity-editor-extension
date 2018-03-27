@@ -20,4 +20,7 @@ MonoBehaviour:
   localCachePath: PatchKitTools/.appcache
   appsScrollViewHeight: 300
   filterAppsByPlatform: 1
+  prettyJsonInAppCache: 0
   closeConsoleWindowAutomatically: 1
+  forceOverrideDraftVersion: 1
+  autoPublishAfterUpload: 1

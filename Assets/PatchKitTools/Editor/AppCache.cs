@@ -47,7 +47,8 @@ namespace PatchKit.Tools.Integration
 
         public void Save()
         {
-            var jsonData = JsonConvert.SerializeObject(_apps);
+            var formatting = Config.instance().prettyJsonInAppCache ? Formatting.Indented : Formatting.None;
+            var jsonData = JsonConvert.SerializeObject(_apps, formatting);
             File.WriteAllText(CacheFilePath(), jsonData);
         }
 

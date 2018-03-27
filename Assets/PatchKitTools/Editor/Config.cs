@@ -47,6 +47,12 @@ namespace PatchKit.Tools.Integration
 
         public bool filterAppsByPlatform = true;
 
+        public bool prettyJsonInAppCache = false;
+
+
+        [Header("Tools options")]
         public bool closeConsoleWindowAutomatically = false;
+        public bool forceOverrideDraftVersion = true;
+        public bool autoPublishAfterUpload = false;
     }
 }

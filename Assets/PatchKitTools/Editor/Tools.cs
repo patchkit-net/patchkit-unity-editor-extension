@@ -19,15 +19,28 @@ namespace PatchKit.Tools.Integration
 
         public static void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir)
         {
-            Execute("make-version", new string[] {
+            var arguments = new List<string> {
                 "--secret", appSecret,
                 "--apikey", apiKey,
                 "--label", label,
                 "--changelog", string.IsNullOrEmpty(changelog) ? "\"\"" : changelog.Replace("\n", "\\n"),
                 "--files", buildDir,
                 "--host", Config.instance().connectionSettings.MainServer.Host
-                }, 
-                true);
+            };
+
+            if (Config.instance().forceOverrideDraftVersion)
+            {
+                arguments.Add("-x");
+                arguments.Add("true");
+            }
+
+            if (Config.instance().autoPublishAfterUpload)
+            {
+                arguments.Add("-p");
+                arguments.Add("true");
+            }
+
+            Execute("make-version", arguments.ToArray(), true);
         }
 
         public static string ToPatchKitString(this BuildTarget target)
