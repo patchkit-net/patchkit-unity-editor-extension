@@ -48,20 +48,11 @@ namespace PatchKit.Tools.Integration
 
                 if (!_selectedApp.HasValue)
                 {
-                    var selectApp = new Views.SelectApp(_api);
-
-                    selectApp.OnAppSelected += OnAppSelected;
-
-                    _currentView = selectApp;
+                    BeginSelectAppView();
                 }
                 else
                 {
-                    var build = new Views.BuildApp();
-
-                    build.OnSuccess += OnBuildSuccess;
-                    build.OnFailure += OnBuildFailed;
-
-                    _currentView = build;
+                    BeginBuildView();
                 }
             }
         }
@@ -78,20 +69,11 @@ namespace PatchKit.Tools.Integration
 
             if (_selectedApp.HasValue)
             {
-                var build = new Views.BuildApp();
-
-                build.OnSuccess += OnBuildSuccess;
-                build.OnFailure += OnBuildFailed;
-
-                _currentView = build;
+                BeginBuildView();
             }
             else
             {
-                var selectApp = new Views.SelectApp(_api);
-
-                selectApp.OnAppSelected += OnAppSelected;
-
-                _currentView = selectApp;
+                BeginSelectAppView();
             }
         }
 
@@ -100,12 +82,26 @@ namespace PatchKit.Tools.Integration
             _selectedApp = app;
             _appCache.UpdateEntry(EditorUserBuildSettings.activeBuildTarget, app);
 
+            BeginBuildView();
+        }
+
+        private void BeginBuildView()
+        {
             var build = new Views.BuildApp();
 
             build.OnSuccess += OnBuildSuccess;
             build.OnFailure += OnBuildFailed;
 
             _currentView = build;
+        }
+
+        private void BeginSelectAppView()
+        {
+            var selectApp = new Views.SelectApp(_api);
+
+            selectApp.OnAppSelected += OnAppSelected;
+
+            _currentView = selectApp;
         }
 
         private string ResolveBuildDir()
@@ -117,12 +113,19 @@ namespace PatchKit.Tools.Integration
         {
             var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir());
 
+            publishApp.OnPublishStart += OnPublishStart;
+
             _currentView = publishApp;
         }
 
         private void OnBuildFailed(string errorMessage)
         {
-            // _currentView = null;
+            _currentView = new Views.Message("Build failed", MessageType.Error);
+        }
+
+        private void OnPublishStart()
+        {
+            _currentView = new Views.Message("Publishing is in progress, it is now safe to close this window.", MessageType.Info);
         }
 
         private void OnGUI()

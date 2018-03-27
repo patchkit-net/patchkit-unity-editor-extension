@@ -77,7 +77,7 @@ namespace PatchKit.Tools.Integration
                 Init();
             }
 
-            GUILayout.Space(10);
+            EditorGUILayout.Separator();
 
             if (GUILayout.Button("Contact"))
             {

@@ -46,14 +46,14 @@ namespace PatchKit.Tools.Integration
             Init();
         }
 
+        private void OnFocus()
+        {
+            Init();
+        }
+
         private void OnGUI()
         {
             if (_apiKey == null)
-            {
-                EditorGUILayout.HelpBox("Please resolve the API key.", MessageType.Error);
-            }
-
-            if (GUILayout.Button("Reload"))
             {
                 Init();
             }
@@ -72,8 +72,12 @@ namespace PatchKit.Tools.Integration
                         Init();
                     }
 
-                    GUILayout.Space(50);
+                    EditorGUILayout.Separator();
                 }
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("No cached apps.", MessageType.Info);
             }
         }
     }

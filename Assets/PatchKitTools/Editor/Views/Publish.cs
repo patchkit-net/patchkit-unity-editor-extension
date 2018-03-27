@@ -31,12 +31,14 @@ namespace PatchKit.Tools.Integration.Views
             _label = GUILayout.TextField(_label);
 
             GUILayout.Label("Changelog: ");
-            _changelog = GUILayout.TextField(_changelog);
+            _changelog = GUILayout.TextArea(_changelog);
 
             if (CanBuild())
             {
                 if (GUILayout.Button("Ok"))
                 {
+                    if (OnPublishStart != null) OnPublishStart();
+
                     Tools.MakeVersionHeadless(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, OnPublish);
                 }
             }
@@ -52,5 +54,6 @@ namespace PatchKit.Tools.Integration.Views
         }
 
         public event Action OnPublish;
+        public event Action OnPublishStart;
     }
 }
