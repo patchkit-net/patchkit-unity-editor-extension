@@ -26,6 +26,25 @@ namespace PatchKit.Tools.Integration.Views
 
         public void Show()
         {
+            EditorGUILayout.LabelField("New app: ", EditorStyles.boldLabel);
+
+            newAppName = EditorGUILayout.TextField("Name: ", newAppName);
+
+            if (string.IsNullOrEmpty(newAppName))
+            {
+                EditorGUILayout.HelpBox("Application name cannot be empty.", MessageType.Error);
+            }
+            else
+            {
+                if (GUILayout.Button("Add"))
+                {
+                    var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
+                    if (OnAppSelected != null) OnAppSelected(newApp);
+                }
+            }
+            
+            EditorGUILayout.Separator();
+            
             GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
 
             bool shouldFilterByPlatform = Config.instance().filterAppsByPlatform;
@@ -47,41 +66,22 @@ namespace PatchKit.Tools.Integration.Views
                 }
 
                 _appViews = apps
-                    .Where(app => shouldFilterByPlatform ? (app.Platform == buildTargetName) : true)
+                    .Where(app => !shouldFilterByPlatform || (app.Platform == buildTargetName))
                     .Select(app => new Views.App(app))
                     .ToList();
             }
 
-            _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector, GUILayout.Height(Config.instance().appsScrollViewHeight));
+            _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
 
             _appViews.ForEach(app => {
                 app.Show();
                 if (GUILayout.Button("Select"))
                 {
-                    OnAppSelected(app.Data);
+                    if (OnAppSelected != null) OnAppSelected(app.Data);
                 }
             });
 
             EditorGUILayout.EndScrollView();
-
-            EditorGUILayout.Separator();
-
-            EditorGUILayout.LabelField("New app: ", EditorStyles.boldLabel);
-
-            newAppName = EditorGUILayout.TextField("Name: ", newAppName);
-
-            if (string.IsNullOrEmpty(newAppName))
-            {
-                EditorGUILayout.HelpBox("Application name cannot be empty.", MessageType.Error);
-            }
-            else
-            {
-                if (GUILayout.Button("Add"))
-                {
-                    var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
-                    OnAppSelected(newApp);
-                }
-            }
         }
 
         public event Action<AppData> OnAppSelected;

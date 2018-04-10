@@ -54,7 +54,7 @@ namespace PatchKit.Tools.Integration
                 {
                     BeginBuildView();
                 }
-            }
+            }            
         }
 
         private void OnKeyResolved(ApiKey key)
@@ -120,7 +120,8 @@ namespace PatchKit.Tools.Integration
 
         private void OnBuildFailed(string errorMessage)
         {
-            _currentView = new Views.Message("Build failed", MessageType.Error);
+            UnityEngine.Debug.LogError(errorMessage);
+            _currentView = new Views.Message("Build failed, " + errorMessage, MessageType.Error);
         }
 
         private void OnPublishStart()

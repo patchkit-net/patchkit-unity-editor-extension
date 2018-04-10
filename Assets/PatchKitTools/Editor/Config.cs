@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 
@@ -7,7 +8,8 @@ namespace PatchKit.Tools.Integration
     {
         #region SingletonImpl
         private const string Path = "Assets/PatchKitTools/Config.asset";
-        public static Config CreateMyAsset()
+
+        private static Config CreateMyAsset()
         {
             Config asset = ScriptableObject.CreateInstance<Config>();
 
@@ -42,8 +44,6 @@ namespace PatchKit.Tools.Integration
         public Api.ApiConnectionSettings connectionSettings;
 
         public string localCachePath = ".appcache";
-
-        public float appsScrollViewHeight = 300;
 
         public bool filterAppsByPlatform = true;
 
