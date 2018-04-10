@@ -14,7 +14,7 @@ namespace PatchKit.Tools.Integration
         {
             _apiKey = apiKey;
             _api = new Api.MainApiConnection(
-                Config.instance().connectionSettings
+                Config.Instance().ConnectionSettings
             );
         }
 

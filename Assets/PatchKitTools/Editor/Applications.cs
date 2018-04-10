@@ -34,7 +34,7 @@ namespace PatchKit.Tools.Integration
                 _api = new ApiUtils(_apiKey);
             }
 
-            _appCache = new AppCache(Config.instance().localCachePath);
+            _appCache = new AppCache(Config.Instance().LocalCachePath);
 
             _cachedAppsView = _appCache.AppsByPlatform()
                 .Select(entry => new KeyValuePair<BuildTarget, Views.App>(entry.Key, new Views.App(entry.Value)))

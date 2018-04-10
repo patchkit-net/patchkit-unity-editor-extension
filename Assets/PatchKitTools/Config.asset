@@ -11,16 +11,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b372914c5139948a2de54ffc2f96b3, type: 3}
   m_Name: Config
   m_EditorClassIdentifier: 
-  connectionSettings:
+  ConnectionSettings:
     MainServer:
       Host: staging.patchkit.waw.pl
       Port: 80
       UseHttps: 0
     CacheServers: []
-  localCachePath: PatchKitTools/.appcache
-  appsScrollViewHeight: 300
-  filterAppsByPlatform: 1
-  prettyJsonInAppCache: 0
-  closeConsoleWindowAutomatically: 1
-  forceOverrideDraftVersion: 1
-  autoPublishAfterUpload: 1
+  LocalCachePath: PatchKitTools/.appcache
+  FilterAppsByPlatform: 1
+  PrettyJsonInAppCache: 0
+  CloseConsoleWindowAutomatically: 0
+  ForceOverrideDraftVersion: 1
+  AutoPublishAfterUpload: 0
+  ToolsLocations:
+    WindowsTools: PatchKitTools/Resources/patchkit-tools-win32.zip
+    OsxTools: PatchKitTools/Resources/patchkit-tools-osx.zip
+    LinuxX86Tools: PatchKitTools/Resources/patchkit-tools-linux-x86_64.zip
+    LinuxX8664Tools: PatchKitTools/Resources/patchkit-tools-linux-x86_64.zip
+  ToolsExtractLocation: 

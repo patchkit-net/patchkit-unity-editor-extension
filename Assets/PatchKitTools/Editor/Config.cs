@@ -21,7 +21,7 @@ namespace PatchKit.Tools.Integration
 
         private static Config _instance = null;
 
-        public static Config instance()
+        public static Config Instance()
         {
             if (_instance != null)
             {
@@ -41,18 +41,31 @@ namespace PatchKit.Tools.Integration
         }
         #endregion
 
-        public Api.ApiConnectionSettings connectionSettings;
+        [Serializable]
+        public struct ToolsConfig
+        {
+            public string WindowsTools;
+            public string OsxTools;
+            public string LinuxX86Tools;
+            public string LinuxX8664Tools;
+        }
+        
+        public Api.ApiConnectionSettings ConnectionSettings;
 
-        public string localCachePath = ".appcache";
+        public string LocalCachePath = ".appcache";
 
-        public bool filterAppsByPlatform = true;
+        public bool FilterAppsByPlatform = true;
 
-        public bool prettyJsonInAppCache = false;
+        public bool PrettyJsonInAppCache = false;
 
 
         [Header("Tools options")]
-        public bool closeConsoleWindowAutomatically = false;
-        public bool forceOverrideDraftVersion = true;
-        public bool autoPublishAfterUpload = false;
+        public bool CloseConsoleWindowAutomatically = false;
+        public bool ForceOverrideDraftVersion = true;
+        public bool AutoPublishAfterUpload = false;
+
+        public ToolsConfig ToolsLocations;
+
+        public string ToolsExtractLocation;
     }
 }

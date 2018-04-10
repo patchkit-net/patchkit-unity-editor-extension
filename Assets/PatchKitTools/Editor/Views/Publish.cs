@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,13 +40,34 @@ namespace PatchKit.Tools.Integration.Views
                 {
                     if (OnPublishStart != null) OnPublishStart();
 
-                    Tools.MakeVersionHeadless(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, OnPublish);
+                    MakeVersionHeadless();
                 }
             }
             else
             {
                 EditorGUILayout.HelpBox("Version label must not be empty.", MessageType.Error);
             }
+        }
+
+        private void MakeVersionHeadless()
+        {
+            var platform = Application.platform;
+            string toolsSource = Utils.PlatformToToolsSource(platform);
+            string toolsTarget = Utils.ToolsExtractLocation();
+            
+//            var thread = new Thread(
+//                () => {
+            using (var tools = new Tools(toolsSource, toolsTarget, platform))
+            {
+                Debug.Log("Making version...");
+                tools.MakeVersion(_apiKey.Key, _appSecret, _label, _changelog, _buildDir);
+
+                if (OnPublish != null) OnPublish();
+            }
+//                }
+//            );
+
+//            thread.Start();
         }
 
         private bool CanBuild()

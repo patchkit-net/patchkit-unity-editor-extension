@@ -28,8 +28,8 @@ namespace PatchKit.Tools.Integration
         private void Awake()
         {
             LockReload();
-
-            _appCache = new AppCache(Config.instance().localCachePath);
+            
+            _appCache = new AppCache(Config.Instance().LocalCachePath);
 
             _apiKey = ApiKey.LoadCached();
 
