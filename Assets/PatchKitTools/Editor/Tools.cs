@@ -79,7 +79,8 @@ namespace PatchKit.Tools.Integration
             
                 Utils.AddExecutablePermissions(_toolsLocation, true);
 
-                string processArguments = path + " " + tool;
+                string programPath = "gnome-terminal";
+                string processArguments = "-x bash -c '" + path + " " + tool;
 
                 if (toolArguments != null)
                 {
@@ -97,14 +98,16 @@ namespace PatchKit.Tools.Integration
                     }
                 }
 
-                UnityEngine.Debug.Log(string.Format("Launching {0} with arguments {1}", path, processArguments));
+                processArguments += "'";
+
+                UnityEngine.Debug.Log(string.Format("Launching {0} with arguments {1}", programPath, processArguments));
                 
                 var processInfo = new ProcessStartInfo
                 {
-                    FileName = "bash",
+                    FileName = programPath,
                     Arguments = processArguments,
                     CreateNoWindow = !openConsole,
-                    UseShellExecute = openConsole,
+                    UseShellExecute = false,
                     RedirectStandardOutput = !openConsole,
                     RedirectStandardError = !openConsole
                 };
