@@ -1,14 +1,9 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Linq;
-using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-
-using App = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration
 {
@@ -58,101 +53,43 @@ namespace PatchKit.Tools.Integration
                 arguments.Add("true");
             }
 
-            Execute("make-version", arguments.ToArray(), true);
+            Execute("make-version", arguments.ToArray());
         }
 
-        public void Execute(string tool, string[] toolArguments, bool openConsole = false)
+        public void Execute(string tool, string[] toolArguments)
         {
-            if (_platform == RuntimePlatform.WindowsEditor)
+            switch (_platform)
             {
-                ExecuteWindows(tool, toolArguments, openConsole);
-            }
-            else
-            {
-                UnityEngine.Debug.Log("Executing non windows...");
-                var path = Path.GetFullPath(Path.Combine(_toolsLocation, "patchkit-tools"));
+                case RuntimePlatform.WindowsEditor:
+                    UnityEngine.Debug.Log("Executing for windows...");
+                    ExecuteWindows(tool, toolArguments);
+                    break;
                 
-                if (!File.Exists(path))
-                {
-                    throw new ArgumentException("Executable does not exist");
-                }
-            
-                Utils.AddExecutablePermissions(_toolsLocation, true);
-
-                string programPath = "gnome-terminal";
-                string processArguments = "-x bash -c '" + path + " " + tool;
-
-                if (toolArguments != null)
-                {
-                    processArguments += " ";
-                    foreach (string arg in toolArguments)
-                    {
-                        if (arg.Contains(' '))
-                        {
-                            processArguments += "\"" + arg + "\" ";
-                        }
-                        else
-                        {
-                            processArguments += arg + " ";
-                        }
-                    }
-                }
-
-                processArguments += "'";
-
-                UnityEngine.Debug.Log(string.Format("Launching {0} with arguments {1}", programPath, processArguments));
+                case RuntimePlatform.LinuxEditor:
+                    UnityEngine.Debug.Log("Executing for linux...");
+                    ExecuteLinux(tool, toolArguments);
+                    break;
                 
-                var processInfo = new ProcessStartInfo
-                {
-                    FileName = programPath,
-                    Arguments = processArguments,
-                    CreateNoWindow = !openConsole,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = !openConsole,
-                    RedirectStandardError = !openConsole
-                };
-
-                using (var process = Process.Start(processInfo))
-                {
-                    if (process == null)
-                    {
-                        UnityEngine.Debug.LogError("Process is null");
-                        return;
-                    }
-                    
-                    process.WaitForExit();
-
-                    if (process.ExitCode != 0)
-                    {
-                        try
-                        {
-                            var err = process.StandardError.ReadToEnd();
-                            UnityEngine.Debug.LogError("Error: " + err);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        throw new Exception(string.Format("Non zero ({0}) return code.", process.ExitCode));
-                    }
-
-                    if (!openConsole)
-                    {
-                        var output = process.StandardOutput.ReadToEnd();
-                        UnityEngine.Debug.Log("Output: " + output);
-                    }
-                }
+                case RuntimePlatform.OSXEditor:
+                    throw new NotImplementedException();
+                
+                default:
+                    throw new ArgumentException("Unsupported platform");
             }
         }
 
-        private void ExecuteWindows(string tool, string[] toolArguments, bool openConsole = false)
+        private void ExecuteLinux(string tool, string[] toolArguments)
         {
-            var path = Path.GetFullPath(Path.Combine(_toolsLocation, "patchkit-tools.bat"));
+            var path = Path.GetFullPath(Path.Combine(_toolsLocation, "patchkit-tools"));
+                
+            if (!File.Exists(path))
+            {
+                throw new ArgumentException("Executable does not exist");
+            }
+        
+            Utils.AddExecutablePermissions(_toolsLocation, true);
 
-            string prefix = Config.Instance().CloseConsoleWindowAutomatically ? "/C" : "/K";
-
-            var processArguments = prefix + path + " " + tool;
+            string processArguments = "bash -c '" + path + " " + tool;
 
             if (toolArguments != null)
             {
@@ -170,25 +107,36 @@ namespace PatchKit.Tools.Integration
                 }
             }
 
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = processArguments,
-                CreateNoWindow = !openConsole,
-                UseShellExecute = false,
-                RedirectStandardOutput = !openConsole
-            };
+            processArguments += "'";
+            
+            var console = new TerminalWrapper(_platform);
+            console.Launch(processArguments);
+        }
 
-            using (var process = Process.Start(processInfo))
-            {
-                process.WaitForExit();
+        private void ExecuteWindows(string tool, string[] toolArguments, bool openConsole = false)
+        {
+            var path = Path.GetFullPath(Path.Combine(_toolsLocation, "patchkit-tools.bat"));
 
-                if (!openConsole)
+            var processArguments = path + " " + tool;
+
+            if (toolArguments != null)
+            {
+                processArguments += " ";
+                foreach (string arg in toolArguments)
                 {
-                    var output = process.StandardOutput.ReadToEnd();
-                    UnityEngine.Debug.Log("Output: " + output);
+                    if (arg.Contains(' '))
+                    {
+                        processArguments += "\"" + arg + "\" ";
+                    }
+                    else
+                    {
+                        processArguments += arg + " ";
+                    }
                 }
             }
+            
+            var console = new TerminalWrapper(_platform);
+            console.Launch(processArguments);
         }
 
         private void Clear()

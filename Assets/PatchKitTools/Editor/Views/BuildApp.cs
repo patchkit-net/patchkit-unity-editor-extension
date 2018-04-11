@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -16,6 +17,15 @@ namespace PatchKit.Tools.Integration.Views
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             var scenes = EditorBuildSettings.scenes.Select(s => s.path).ToArray();
             var buildLocation = EditorUserBuildSettings.GetBuildLocation(buildTarget);
+
+            if (string.IsNullOrEmpty(buildLocation))
+            {
+                EditorGUILayout.HelpBox("Build location is empty.", MessageType.Warning);
+                return;
+            }
+
+            bool buildDirectoryExists = Directory.Exists(Path.GetDirectoryName(buildLocation));
+            bool buildExists = File.Exists(buildLocation);
 
             GUILayout.Label("The project will be built with the following settings.", EditorStyles.boldLabel);
 
@@ -46,6 +56,11 @@ namespace PatchKit.Tools.Integration.Views
                 {
                     if (OnSuccess != null) OnSuccess();
                 }
+            }
+
+            if (buildDirectoryExists && buildExists && GUILayout.Button("Skip"))
+            {
+                if (OnSuccess != null) OnSuccess();
             }
         }
 

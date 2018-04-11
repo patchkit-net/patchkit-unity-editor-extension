@@ -59,7 +59,7 @@ namespace PatchKit.Tools.Integration.Views
 //                () => {
             using (var tools = new Tools(toolsSource, toolsTarget, platform))
             {
-                Debug.Log("Making version...");
+                UnityEngine.Debug.Log("Making version...");
                 tools.MakeVersion(_apiKey.Key, _appSecret, _label, _changelog, _buildDir);
 
                 if (OnPublish != null) OnPublish();

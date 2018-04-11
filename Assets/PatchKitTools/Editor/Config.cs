@@ -65,7 +65,7 @@ namespace PatchKit.Tools.Integration
         public bool AutoPublishAfterUpload = false;
 
         public ToolsConfig ToolsLocations;
-
+        
         public string ToolsExtractLocation;
     }
 }

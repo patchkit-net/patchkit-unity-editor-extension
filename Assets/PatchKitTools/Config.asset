@@ -26,6 +26,6 @@ MonoBehaviour:
   ToolsLocations:
     WindowsTools: PatchKitTools/Resources/patchkit-tools-win32.zip
     OsxTools: PatchKitTools/Resources/patchkit-tools-osx.zip
-    LinuxX86Tools: PatchKitTools/Resources/patchkit-tools-linux-x86_64.zip
+    LinuxX86Tools: PatchKitTools/Resources/patchkit-tools-linux-x86.zip
     LinuxX8664Tools: PatchKitTools/Resources/patchkit-tools-linux-x86_64.zip
   ToolsExtractLocation: 
