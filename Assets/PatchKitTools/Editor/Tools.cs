@@ -87,8 +87,6 @@ namespace PatchKit.Tools.Integration
                 throw new ArgumentException("Executable does not exist");
             }
         
-            Utils.AddExecutablePermissions(_toolsLocation, true);
-
             string processArguments = "bash -c '" + path + " " + tool;
 
             if (toolArguments != null)
