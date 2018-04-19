@@ -1,23 +1,38 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Linq;
-using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-
-using App = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration
 {
-    public static class Tools
+    public class Tools : IDisposable
     {
-        private const string PATCHKIT_TOOLS_MAIN = "Tools";
-        private const string PATCHKIT_WIN32_SCRIPT = "win32/patchkit-tools.bat";
+        private readonly string _toolsLocation;
+        private readonly RuntimePlatform _platform;
+        
+        public Tools(RuntimePlatform platform)
+            : this(Utils.PlatformToToolsSource(platform), Utils.ToolsExtractLocation(), platform)
+        {
+        }
 
-        public static void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir)
+        public Tools(string sourceZip, string targetLocation, RuntimePlatform platform)
+        {
+            _toolsLocation = targetLocation;
+            _platform = platform;
+
+            if (Directory.Exists(_toolsLocation))
+            {
+                Clear();
+            }
+            
+            Utils.ExtractTools(sourceZip, _toolsLocation);
+
+            Utils.AddExecutablePermissions(_toolsLocation, true);
+        }
+        
+        public void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir)
         {
             var arguments = new List<string> {
                 "--secret", appSecret,
@@ -25,72 +40,56 @@ namespace PatchKit.Tools.Integration
                 "--label", label,
                 "--changelog", string.IsNullOrEmpty(changelog) ? "\"\"" : changelog.Replace("\n", "\\n"),
                 "--files", buildDir,
-                "--host", Config.instance().connectionSettings.MainServer.Host
+                "--host", Config.Instance().ConnectionSettings.MainServer.Host
             };
 
-            if (Config.instance().forceOverrideDraftVersion)
+            if (Config.Instance().ForceOverrideDraftVersion)
             {
                 arguments.Add("-x");
                 arguments.Add("true");
             }
 
-            if (Config.instance().autoPublishAfterUpload)
+            if (Config.Instance().AutoPublishAfterUpload)
             {
                 arguments.Add("-p");
                 arguments.Add("true");
             }
 
-            Execute("make-version", arguments.ToArray(), true);
+            Execute("make-version", arguments.ToArray());
         }
 
-        public static string ToPatchKitString(this BuildTarget target)
+        public void Execute(string tool, string[] toolArguments)
         {
-            switch (target)
+            switch (_platform)
             {
-                case BuildTarget.StandaloneWindows:
-                    return "windows_x86";
-
-                case BuildTarget.StandaloneWindows64:
-                    return "windows_x86_64";
-
-                case BuildTarget.StandaloneLinux:
-                    return "linux_x86";
-
-                case BuildTarget.StandaloneLinux64:
-                case BuildTarget.StandaloneLinuxUniversal:
-                    return "linux_x86_64";
-
-                case BuildTarget.StandaloneOSXIntel:
-                    return "mac_x86";
-
-                case BuildTarget.StandaloneOSXIntel64:
-                case BuildTarget.StandaloneOSXUniversal:
-                    return "mac_x86_64";
-
+                case RuntimePlatform.WindowsEditor:
+                    UnityEngine.Debug.Log("Executing for windows...");
+                    ExecuteWindows(tool, toolArguments);
+                    break;
+                
+                case RuntimePlatform.LinuxEditor:
+                    UnityEngine.Debug.Log("Executing for linux...");
+                    ExecuteLinux(tool, toolArguments);
+                    break;
+                
+                case RuntimePlatform.OSXEditor:
+                    throw new NotImplementedException();
+                
                 default:
-                    throw new ArgumentException("Unsupported build target");
+                    throw new ArgumentException("Unsupported platform");
             }
         }
 
-        public static void MakeVersionHeadless(string apiKey, string appSecret, string label, string changelog, string buildDir, Action onFinish)
+        private void ExecuteLinux(string tool, string[] toolArguments)
         {
-            var thread = new Thread(
-                () => {
-                    MakeVersion(apiKey, appSecret, label, changelog, buildDir);
-                    onFinish();
-                }
-            );
-
-            thread.Start();
-        }
-
-        public static void Execute(string tool, string[] toolArguments, bool openConsole = false)
-        {
-            var path = Path.GetFullPath(Path.Combine("Assets/PatchKitTools/Tools", "win32/patchkit-tools.bat"));
-
-            string prefix = Config.instance().closeConsoleWindowAutomatically ? "/C" : "/K";
-
-            var processArguments = prefix + path + " " + tool;
+            var path = Path.GetFullPath(Path.Combine(_toolsLocation, "patchkit-tools"));
+                
+            if (!File.Exists(path))
+            {
+                throw new ArgumentException("Executable does not exist");
+            }
+        
+            string processArguments = "bash -c '" + path + " " + tool;
 
             if (toolArguments != null)
             {
@@ -108,27 +107,46 @@ namespace PatchKit.Tools.Integration
                 }
             }
 
-            var processInfo = new ProcessStartInfo
+            processArguments += "'";
+            
+            var console = new TerminalWrapper(_platform);
+            console.Launch(processArguments);
+        }
+
+        private void ExecuteWindows(string tool, string[] toolArguments, bool openConsole = false)
+        {
+            var path = Path.GetFullPath(Path.Combine(_toolsLocation, "patchkit-tools.bat"));
+
+            var processArguments = path + " " + tool;
+
+            if (toolArguments != null)
             {
-                FileName = "cmd.exe",
-                Arguments = processArguments,
-                CreateNoWindow = !openConsole,
-                UseShellExecute = false,
-                RedirectStandardOutput = !openConsole
-            };
-
-            UnityEngine.Debug.Log("Executing: " + processArguments);
-
-            using (var process = Process.Start(processInfo))
-            {
-                process.WaitForExit();
-
-                if (!openConsole)
+                processArguments += " ";
+                foreach (string arg in toolArguments)
                 {
-                    var output = process.StandardOutput.ReadToEnd();
-                    UnityEngine.Debug.Log("Output: " + output);
+                    if (arg.Contains(' '))
+                    {
+                        processArguments += "\"" + arg + "\" ";
+                    }
+                    else
+                    {
+                        processArguments += arg + " ";
+                    }
                 }
             }
+            
+            var console = new TerminalWrapper(_platform);
+            console.Launch(processArguments);
+        }
+
+        private void Clear()
+        {
+            Directory.Delete(_toolsLocation, true);
+        }
+
+        public void Dispose()
+        {
+//            Clear();
         }
     }
 }

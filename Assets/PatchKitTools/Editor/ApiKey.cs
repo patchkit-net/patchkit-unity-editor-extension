@@ -21,11 +21,11 @@ namespace PatchKit.Tools.Integration
             try
             {
                 string apiKeyPath = ApiKeyFilePath();
-                Debug.Log("Loading cached api key from " + apiKeyPath);
+                UnityEngine.Debug.Log("Loading cached api key from " + apiKeyPath);
 
                 if (!File.Exists(apiKeyPath))
                 {
-                    Debug.Log("Cached api key doesn't exist.");
+                    UnityEngine.Debug.Log("Cached api key doesn't exist.");
                     return null;
                 }
 
@@ -34,7 +34,7 @@ namespace PatchKit.Tools.Integration
             }
             catch(Exception e)
             {
-                Debug.LogError(e);
+                UnityEngine.Debug.LogError(e);
                 return null;
             }
         }
@@ -55,7 +55,7 @@ namespace PatchKit.Tools.Integration
             }
             catch(Exception e)
             {
-                Debug.LogError(e);
+                UnityEngine.Debug.LogError(e);
             }
         }
 

@@ -47,7 +47,7 @@ namespace PatchKit.Tools.Integration.Views
             
             GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
 
-            bool shouldFilterByPlatform = Config.instance().filterAppsByPlatform;
+            bool shouldFilterByPlatform = Config.Instance().FilterAppsByPlatform;
             var buildTargetName = EditorUserBuildSettings.activeBuildTarget.ToPatchKitString();
 
             if (_api == null)
