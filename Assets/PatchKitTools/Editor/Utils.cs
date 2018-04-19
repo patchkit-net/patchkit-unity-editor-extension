@@ -30,7 +30,6 @@ namespace PatchKit.Tools.Integration
                     return "mac_x86";
 
                 case BuildTarget.StandaloneOSXIntel64:
-                case BuildTarget.StandaloneOSX:
                     return "mac_x86_64";
 
                 default:
