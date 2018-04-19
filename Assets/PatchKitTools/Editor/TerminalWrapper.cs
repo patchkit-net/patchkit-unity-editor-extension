@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
 using UnityEngine;
 
 namespace PatchKit.Tools.Integration
@@ -105,15 +106,16 @@ namespace PatchKit.Tools.Integration
             };
 
             UnityEngine.Debug.Log(string.Format("Launching {0} {1}", filename, args));
-            
             var process = Process.Start(processInfo);
-
-            process.WaitForExit();
             
-            if (process.ExitCode != 0)
+            if (process.HasExited && process.ExitCode != 0)
             {
                 throw new Exception(string.Format("Non zero ({0}) return code.", process.ExitCode));
             }
+
+            var thread = new Thread(() => {
+                process.WaitForExit();
+            });
         }
         
     }

@@ -126,7 +126,7 @@ namespace PatchKit.Tools.Integration
 
         private void OnPublishStart()
         {
-            _currentView = new Views.Message("Publishing is in progress, it is now safe to close this window.", MessageType.Info);
+            _currentView = new Views.Message("A console window should open shortly\nKeep the console window open until an appropriate message appears. \nIt is now safe to close this window.", MessageType.Info);
         }
 
         private void OnGUI()

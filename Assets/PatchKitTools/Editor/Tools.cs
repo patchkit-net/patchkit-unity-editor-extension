@@ -28,6 +28,8 @@ namespace PatchKit.Tools.Integration
             }
             
             Utils.ExtractTools(sourceZip, _toolsLocation);
+
+            Utils.AddExecutablePermissions(_toolsLocation, true);
         }
         
         public void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir)
