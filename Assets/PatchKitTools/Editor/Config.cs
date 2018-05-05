@@ -55,9 +55,9 @@ namespace PatchKit.Tools.Integration
         public string LocalCachePath = ".appcache";
 
         public static readonly ToolsConfig ToolsLocations = new ToolsConfig{
-            WindowsTools = "PatchKitTools/Resources/patchkit-tools-win32.zip",
-            OsxTools = "PatchKitTools/Resources/patchkit-tools-osx.zip",
-            LinuxTools = "PatchKitTools/Resources/patchkit-tools-linux-x86.zip",
+            WindowsTools = "PatchKitTools/ToolsPackages/patchkit-tools-win32.zip",
+            OsxTools = "PatchKitTools/ToolsPackages/patchkit-tools-osx.zip",
+            LinuxTools = "PatchKitTools/ToolsPackages/patchkit-tools-linux-x86.zip",
         };
         
         public const string ToolsExtractLocation = "Temp/";
