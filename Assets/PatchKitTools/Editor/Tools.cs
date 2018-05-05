@@ -32,7 +32,7 @@ namespace PatchKit.Tools.Integration
             Utils.AddExecutablePermissions(_toolsLocation, true);
         }
         
-        public void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir)
+        public void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir, bool autoPublishAfterUpload)
         {
             var arguments = new List<string> {
                 "--secret", appSecret,
@@ -49,7 +49,7 @@ namespace PatchKit.Tools.Integration
                 arguments.Add("true");
             }
 
-            if (Config.Instance().AutoPublishAfterUpload)
+            if (autoPublishAfterUpload)
             {
                 arguments.Add("-p");
                 arguments.Add("true");

@@ -57,7 +57,6 @@ namespace PatchKit.Tools.Integration
         [Header("Tools options")]
         public bool CloseConsoleWindowAutomatically = false;
         public bool ForceOverrideDraftVersion = true;
-        public bool AutoPublishAfterUpload = false;
 
         public ToolsConfig ToolsLocations;
         
