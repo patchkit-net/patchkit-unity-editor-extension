@@ -54,8 +54,6 @@ namespace PatchKit.Tools.Integration
 
         public string LocalCachePath = ".appcache";
 
-        public bool FilterAppsByPlatform = true;
-
         public bool PrettyJsonInAppCache = false;
 
 
