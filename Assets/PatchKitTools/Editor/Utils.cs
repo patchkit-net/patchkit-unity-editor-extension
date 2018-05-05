@@ -44,13 +44,13 @@ namespace PatchKit.Tools.Integration
             
             var config = Config.Instance();
 
-            if (string.IsNullOrEmpty(config.ToolsExtractLocation))
+            if (string.IsNullOrEmpty(Config.ToolsExtractLocation))
             {
                 basePath = Application.persistentDataPath;
             }
             else
             {
-                basePath = config.ToolsExtractLocation;
+                basePath = Config.ToolsExtractLocation;
             }
 
             return Path.Combine(basePath, postfix);
@@ -64,15 +64,15 @@ namespace PatchKit.Tools.Integration
             switch (platform)
             {
                 case RuntimePlatform.LinuxEditor:
-                    basePath = config.ToolsLocations.LinuxX86Tools;
+                    basePath = Config.ToolsLocations.LinuxTools;
                     break;
                 
                 case RuntimePlatform.WindowsEditor:
-                    basePath = config.ToolsLocations.WindowsTools;
+                    basePath = Config.ToolsLocations.WindowsTools;
                     break;
                     
                 case RuntimePlatform.OSXEditor:
-                    basePath = config.ToolsLocations.OsxTools;
+                    basePath = Config.ToolsLocations.OsxTools;
                     break;
                     
                 default:
