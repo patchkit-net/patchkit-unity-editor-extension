@@ -18,9 +18,16 @@ namespace PatchKit.Tools.Integration.Views
             var scenes = EditorBuildSettings.scenes.Select(s => s.path).ToArray();
             var buildLocation = EditorUserBuildSettings.GetBuildLocation(buildTarget);
 
+            if (buildTarget == BuildTarget.StandaloneLinuxUniversal || buildTarget == BuildTarget.StandaloneOSXIntel64)
+            {
+                OnFailure("Unsupported build target.");
+                return;
+            }
+
             if (string.IsNullOrEmpty(buildLocation))
             {
-                EditorGUILayout.HelpBox("Build location is empty.", MessageType.Warning);
+                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", "");
+                EditorUserBuildSettings.SetBuildLocation(buildTarget, buildLocation);
                 return;
             }
 
