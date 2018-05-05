@@ -54,9 +54,6 @@ namespace PatchKit.Tools.Integration
 
         public string LocalCachePath = ".appcache";
 
-        public bool PrettyJsonInAppCache = false;
-
-
         [Header("Tools options")]
         public bool CloseConsoleWindowAutomatically = false;
         public bool ForceOverrideDraftVersion = true;
