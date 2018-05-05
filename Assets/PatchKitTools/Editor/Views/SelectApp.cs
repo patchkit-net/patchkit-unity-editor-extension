@@ -92,13 +92,20 @@ namespace PatchKit.Tools.Integration.Views
 
             _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
 
-            _appViews.ForEach(app => {
-                app.Show();
-                if (GUILayout.Button("Select"))
-                {
-                    if (OnAppSelected != null) OnAppSelected(app.Data);
-                }
-            });
+            if (_appViews != null)
+            {
+                _appViews.ForEach(app => {
+                    app.Show();
+                    if (GUILayout.Button("Select"))
+                    {
+                        if (OnAppSelected != null) OnAppSelected(app.Data);
+                    }
+                });
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Failed to load any apps, maybe your api key is invalid.", MessageType.Warning);
+            }
 
             EditorGUILayout.EndScrollView();
         }
