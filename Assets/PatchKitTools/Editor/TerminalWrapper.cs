@@ -113,7 +113,7 @@ namespace PatchKit.Tools.Integration
                 throw new Exception(string.Format("Non zero ({0}) return code.", process.ExitCode));
             }
 
-            var thread = new Thread(() => {
+            new Thread(() => {
                 process.WaitForExit();
             });
         }

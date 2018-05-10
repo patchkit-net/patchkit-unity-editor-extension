@@ -7,7 +7,6 @@ namespace PatchKit.Tools.Integration.Views
     public class SubmitKey : IView
     {
         private string _apiKeyString = "";
-        private bool _invalidSubmit = false;
 
         public void Show()
         {            

@@ -23,13 +23,12 @@ namespace PatchKit.Tools.Integration
                     return "linux_x86";
 
                 case BuildTarget.StandaloneLinux64:
-                case BuildTarget.StandaloneLinuxUniversal:
                     return "linux_x86_64";
 
                 case BuildTarget.StandaloneOSXIntel:
                     return "mac_x86";
 
-                case BuildTarget.StandaloneOSXIntel64:
+                case BuildTarget.StandaloneOSX:
                     return "mac_x86_64";
 
                 default:
@@ -42,8 +41,6 @@ namespace PatchKit.Tools.Integration
             const string postfix = "pk-tools";
             string basePath = null;
             
-            var config = Config.Instance();
-
             if (string.IsNullOrEmpty(Config.ToolsExtractLocation))
             {
                 basePath = Application.persistentDataPath;
@@ -58,7 +55,6 @@ namespace PatchKit.Tools.Integration
 
         public static string PlatformToToolsSource(RuntimePlatform platform)
         {
-            var config = Config.Instance();
             string basePath = null;
             
             switch (platform)
