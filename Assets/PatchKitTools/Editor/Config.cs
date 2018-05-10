@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using App = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration
 {
@@ -52,13 +54,14 @@ namespace PatchKit.Tools.Integration
         
         public Api.ApiConnectionSettings ConnectionSettings;
 
-        public string LocalCachePath = ".appcache";
-
         public static readonly ToolsConfig ToolsLocations = new ToolsConfig{
             WindowsTools = "PatchKitTools/ToolsPackages/patchkit-tools-win32.zip",
             OsxTools = "PatchKitTools/ToolsPackages/patchkit-tools-osx.zip",
             LinuxTools = "PatchKitTools/ToolsPackages/patchkit-tools-linux-x86.zip",
         };
+
+        [SerializeField]
+        public AppCache Cache = new AppCache();
         
         public const string ToolsExtractLocation = "Temp/";
     }

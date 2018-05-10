@@ -11,19 +11,22 @@ namespace PatchKit.Tools.Integration.Debug
         {
             var config = target as Config;
 
-            DrawDefaultInspector();
-            
-            EditorGUILayout.Separator();
-            GUILayout.Label("Debug options:");
+            EditorGUILayout.LabelField("Cached apps:", EditorStyles.boldLabel);
+
+            foreach (var entry in config.Cache.AppsByPlatform())
+            {
+                EditorGUILayout.LabelField(entry.Key.ToPatchKitString());
+                EditorGUILayout.SelectableLabel(entry.Value, EditorStyles.helpBox);
+            }
 
             if (GUILayout.Button("Reset build settings"))
             {
                 EditorUserBuildSettings.SetBuildLocation(EditorUserBuildSettings.activeBuildTarget, "");
             }
 
-            if (GUILayout.Button("Delete appcache"))
+            if (GUILayout.Button("Clear cached apps"))
             {
-                File.Delete(config.LocalCachePath);
+                config.Cache.Clear();
             }
         }
     }

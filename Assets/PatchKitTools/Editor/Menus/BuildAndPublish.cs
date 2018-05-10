@@ -29,7 +29,7 @@ namespace PatchKit.Tools.Integration
         {
             LockReload();
             
-            _appCache = new AppCache(Config.Instance().LocalCachePath);
+            _appCache = Config.Instance().Cache;
 
             _apiKey = ApiKey.LoadCached();
 
@@ -44,14 +44,15 @@ namespace PatchKit.Tools.Integration
             else
             {
                 _api = new ApiUtils(_apiKey);
-                _selectedApp = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
+                string selectedAppSecret = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
 
-                if (!_selectedApp.HasValue)
+                if (string.IsNullOrEmpty(selectedAppSecret))
                 {
                     BeginSelectAppView();
                 }
                 else
                 {
+                    _selectedApp = _api.GetAppInfo(selectedAppSecret);
                     BeginBuildView();
                 }
             }            
@@ -65,7 +66,7 @@ namespace PatchKit.Tools.Integration
 
             _api = new ApiUtils(_apiKey);
 
-            _selectedApp = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
+            _selectedApp = _api.GetAppInfo(_appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget));
 
             if (_selectedApp.HasValue)
             {

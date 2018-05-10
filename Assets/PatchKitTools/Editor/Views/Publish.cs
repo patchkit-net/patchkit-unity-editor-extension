@@ -36,8 +36,11 @@ namespace PatchKit.Tools.Integration.Views
             GUILayout.Label("Changelog: ");
             _changelog = GUILayout.TextArea(_changelog);
 
-            _autoPublishAfterUpload = EditorGUILayout.Toggle("Automatically publish after upload", _autoPublishAfterUpload);
-            _forceOverrideDraft = EditorGUILayout.Toggle("Override draft version if exists", _forceOverrideDraft);
+            EditorGUILayout.LabelField("Automatically publish after upload");
+            _autoPublishAfterUpload = EditorGUILayout.Toggle(_autoPublishAfterUpload);
+
+            EditorGUILayout.LabelField("Override draft version if exists");
+            _forceOverrideDraft = EditorGUILayout.Toggle(_forceOverrideDraft);
 
             if (!_forceOverrideDraft)
             {

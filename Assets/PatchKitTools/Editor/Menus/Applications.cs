@@ -34,10 +34,10 @@ namespace PatchKit.Tools.Integration
                 _api = new ApiUtils(_apiKey);
             }
 
-            _appCache = new AppCache(Config.Instance().LocalCachePath);
+            _appCache = Config.Instance().Cache;
 
             _cachedAppsView = _appCache.AppsByPlatform()
-                .Select(entry => new KeyValuePair<BuildTarget, Views.App>(entry.Key, new Views.App(entry.Value)))
+                .Select(entry => new KeyValuePair<BuildTarget, Views.App>(entry.Key, new Views.App(_api.GetAppInfo(entry.Value))))
                 .ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
