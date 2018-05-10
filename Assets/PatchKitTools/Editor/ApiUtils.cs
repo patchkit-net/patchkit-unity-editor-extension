@@ -12,10 +12,19 @@ namespace PatchKit.Tools.Integration
 
         public ApiUtils(ApiKey apiKey)
         {
+            if (!apiKey.IsValid())
+            {
+                throw new ArgumentException("apiKey");
+            }
             _apiKey = apiKey;
             _api = new Api.MainApiConnection(
                 Config.Instance().ConnectionSettings
             );
+
+            if (_api == null)
+            {
+                throw new Exception("Cannot connect to API.");
+            }
         }
 
         public string Key
@@ -59,9 +68,29 @@ namespace PatchKit.Tools.Integration
             return _apps;
         }
 
-        public App GetAppInfo(string secret)
+        public App GetAppInfo(string secret, bool canUseCache = true)
         {
-            return _api.GetApplicationInfo(secret);
+            if (string.IsNullOrEmpty(secret))
+            {
+                throw new ArgumentNullException(secret);
+            }
+            
+            if (canUseCache && _apps != null)
+            {
+                if (_apps.Any(app => app.Secret == secret))
+                {
+                    return _apps.Find(app => app.Secret == secret);
+                }
+            }
+
+            var newAppInfo = _api.GetApplicationInfo(secret);
+            
+            if (_apps != null && !_apps.Contains(newAppInfo))
+            {
+                _apps.Add(newAppInfo);
+            }
+
+            return newAppInfo;
         }
 
         public App CreateNewApp(string name, string platform)
