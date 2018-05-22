@@ -4,6 +4,7 @@ using System.IO;
 using Ionic.Zip;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PatchKit.Tools.Integration
 {
@@ -25,9 +26,6 @@ namespace PatchKit.Tools.Integration
                 case BuildTarget.StandaloneLinux64:
                     return "linux_x86_64";
 
-                case BuildTarget.StandaloneOSXIntel:
-                    return "mac_x86";
-
                 case BuildTarget.StandaloneOSX:
                     return "mac_x86_64";
 
@@ -41,14 +39,7 @@ namespace PatchKit.Tools.Integration
             const string postfix = "pk-tools";
             string basePath = null;
             
-            if (string.IsNullOrEmpty(Config.ToolsExtractLocation))
-            {
-                basePath = Application.persistentDataPath;
-            }
-            else
-            {
-                basePath = Config.ToolsExtractLocation;
-            }
+            Assert.IsFalse(string.IsNullOrEmpty(Config.ToolsExtractLocation));
 
             return Path.Combine(basePath, postfix);
         }

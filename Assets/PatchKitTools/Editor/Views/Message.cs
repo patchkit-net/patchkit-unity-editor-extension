@@ -1,6 +1,4 @@
-using System;
 using UnityEditor;
-using UnityEngine;
 
 namespace PatchKit.Tools.Integration.Views
 {

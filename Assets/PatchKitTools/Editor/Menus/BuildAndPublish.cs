@@ -1,9 +1,5 @@
 ﻿using UnityEditor;
-using UnityEngine;
-using PatchKit.Api;
 using PatchKit.Api.Models.Main;
-using PatchKit.Network;
-using System.Linq;
 using System.IO;
 
 namespace PatchKit.Tools.Integration

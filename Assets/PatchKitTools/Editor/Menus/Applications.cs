@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-using App = PatchKit.Api.Models.Main.App;
-
 namespace PatchKit.Tools.Integration
 {
     public class Applications : EditorWindow

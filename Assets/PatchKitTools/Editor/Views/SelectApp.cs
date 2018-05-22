@@ -3,8 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using PatchKit.Network;
-
 using AppData = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration.Views

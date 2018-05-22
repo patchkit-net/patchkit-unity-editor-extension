@@ -1,11 +1,8 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Newtonsoft.Json;
-
 using App = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration
