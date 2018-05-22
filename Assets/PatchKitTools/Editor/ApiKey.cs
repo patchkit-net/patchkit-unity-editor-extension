@@ -1,7 +1,4 @@
-using UnityEditor;
 using UnityEngine;
-using System;
-using System.IO;
 using System.Linq;
 
 namespace PatchKit.Tools.Integration
@@ -11,6 +8,24 @@ namespace PatchKit.Tools.Integration
         public readonly string Key;
         private const string PrefsKey = "api-key";
         
+        public string Encrypt()
+        {
+            const string encryptionKey = "42";
+            
+            byte[] encBytes = Encryption.EncryptString(Key, encryptionKey);
+            
+            return Encryption.EncryptedBytesToString(encBytes);
+        }
+
+        public static string Decrypt(string encrypted)
+        {
+            const string encryptionKey = "42";
+
+            byte[] encBytes = Encryption.EncryptedStringToBytes(encrypted);
+
+            return Encryption.DecryptString(encBytes, encryptionKey);
+        }
+
         public ApiKey(string keyString)
         {
             Key = keyString;
@@ -20,7 +35,9 @@ namespace PatchKit.Tools.Integration
         {
             if (PlayerPrefs.HasKey(PrefsKey))
             {
-                return new ApiKey(PlayerPrefs.GetString(PrefsKey));
+                string encrypted = PlayerPrefs.GetString(PrefsKey);
+                
+                return new ApiKey(Decrypt(encrypted));
             }
 
             return null;
@@ -28,7 +45,9 @@ namespace PatchKit.Tools.Integration
 
         public static void Cache(ApiKey key)
         {
-            PlayerPrefs.SetString(PrefsKey, key.Key);
+            var enc = key.Encrypt();
+            
+            PlayerPrefs.SetString(PrefsKey, enc);
             PlayerPrefs.Save();
         }
 
