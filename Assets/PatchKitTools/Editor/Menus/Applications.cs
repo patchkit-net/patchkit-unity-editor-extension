@@ -12,7 +12,7 @@ namespace PatchKit.Tools.Integration
         private ApiUtils _api;
 
         private AppCache _appCache;
-        private Dictionary<BuildTarget, Views.App> _cachedAppsView;
+        private Dictionary<BuildTarget, Views.EditableApp> _cachedAppsView;
 
         [MenuItem("Window/PatchKit/Applications")]
         public static void ShowWindow()
@@ -35,7 +35,7 @@ namespace PatchKit.Tools.Integration
             _appCache = Config.Instance().Cache;
 
             _cachedAppsView = _appCache.AppsByPlatform()
-                .Select(entry => new KeyValuePair<BuildTarget, Views.App>(entry.Key, new Views.App(_api.GetAppInfo(entry.Value))))
+                .Select(entry => new KeyValuePair<BuildTarget, Views.EditableApp>(entry.Key, new Views.EditableApp(entry.Key, _api, entry.Value)))
                 .ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
@@ -62,11 +62,11 @@ namespace PatchKit.Tools.Integration
 
                 foreach (var entry in _cachedAppsView)
                 {
-                    GUILayout.Label("For " + entry.Key.ToString());
+                    GUILayout.Label("For " + entry.Key.ToString(), EditorStyles.boldLabel);
                     entry.Value.Show();
-                    if (GUILayout.Button("Reset"))
+                    if (GUILayout.Button("Remove entry"))
                     {
-                        _appCache.RemoveEntry(entry.Key, entry.Value.Data);
+                        _appCache.RemoveEntry(entry.Key);
                         Init();
                     }
 
