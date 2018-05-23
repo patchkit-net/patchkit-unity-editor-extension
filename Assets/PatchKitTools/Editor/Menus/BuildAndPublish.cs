@@ -88,6 +88,7 @@ namespace PatchKit.Tools.Integration
 
             build.OnSuccess += OnBuildSuccess;
             build.OnFailure += OnBuildFailed;
+            build.OnChangeApp += OnBuildChangeApp;
 
             _currentView = build;
         }
@@ -119,6 +120,11 @@ namespace PatchKit.Tools.Integration
         {
             UnityEngine.Debug.LogError(errorMessage);
             _currentView = new Views.Message("Build failed, " + errorMessage, MessageType.Error);
+        }
+
+        private void OnBuildChangeApp()
+        {
+            BeginSelectAppView();
         }
 
         private void OnPublishStart()

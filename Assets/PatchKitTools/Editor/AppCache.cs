@@ -31,7 +31,16 @@ namespace PatchKit.Tools.Integration
 
         public void UpdateEntry(BuildTarget target, App app)
         {
-            _appsList.Add(new CacheEntry(target, app.Secret));
+            Predicate<CacheEntry> predicate = entry => entry.Target == target;
+            if (_appsList.Exists(predicate))
+            {
+                var existingEntry = _appsList.Find(predicate);
+                existingEntry.Secret = app.Secret;
+            }
+            else
+            {
+                _appsList.Add(new CacheEntry(target, app.Secret));            
+            }
         }
 
         public void RemoveEntry(App app)

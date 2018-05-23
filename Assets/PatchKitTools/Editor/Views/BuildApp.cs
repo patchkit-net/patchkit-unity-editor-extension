@@ -48,8 +48,6 @@ namespace PatchKit.Tools.Integration.Views
 
             if (!_buildExecuted && GUILayout.Button("Ok"))
             {
-                GUILayout.Label("Building...");
-
                 UnityEngine.Debug.Log("Bulding the player");
                 errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
 
@@ -69,9 +67,15 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (OnSuccess != null) OnSuccess();
             }
+            
+            if (GUILayout.Button("Change app"))
+            {
+                if (OnChangeApp != null) OnChangeApp();
+            }
         }
 
         public event Action OnSuccess;
         public event Action<string> OnFailure;
+        public event Action OnChangeApp;
     }
 }
