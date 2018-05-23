@@ -6,24 +6,21 @@ namespace PatchKit.Tools.Integration
     public class ApiKey
     {
         public readonly string Key;
-        private const string PrefsKey = "api-key";
+        private const string PrefsKey = "patchkit-tools-integration-api-key";
+        private const string EncryptionPassword = "42";
         
         public string Encrypt()
-        {
-            const string encryptionKey = "42";
-            
-            byte[] encBytes = Encryption.EncryptString(Key, encryptionKey);
+        {            
+            byte[] encBytes = Encryption.EncryptString(Key, EncryptionPassword);
             
             return Encryption.EncryptedBytesToString(encBytes);
         }
 
         public static string Decrypt(string encrypted)
         {
-            const string encryptionKey = "42";
-
             byte[] encBytes = Encryption.EncryptedStringToBytes(encrypted);
 
-            return Encryption.DecryptString(encBytes, encryptionKey);
+            return Encryption.DecryptString(encBytes, EncryptionPassword);
         }
 
         public ApiKey(string keyString)
