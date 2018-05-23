@@ -26,7 +26,11 @@ namespace PatchKit.Tools.Integration
                 case BuildTarget.StandaloneLinux64:
                     return "linux_x86_64";
 
-                case BuildTarget.StandaloneOSX:
+#if UNITY_2017_1_OR_NEWER
+                case BuildTarget.StandaloneOSX:      
+#else
+                case BuildTarget.StandaloneOSXIntel64:
+#endif
                     return "mac_x86_64";
 
                 default:
