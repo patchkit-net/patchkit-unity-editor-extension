@@ -25,6 +25,10 @@ namespace PatchKit.Tools.Integration
             if (_apiKey == null)
             {
                 _apiKey = ApiKey.LoadCached();
+                if (_apiKey == null)
+                {
+                    return;
+                }
             }
 
             if (_api == null)
@@ -56,27 +60,34 @@ namespace PatchKit.Tools.Integration
                 Init();
             }
 
-            if (_cachedAppsView != null && _cachedAppsView.Count > 0)
+            if (_apiKey == null)
             {
-                GUILayout.Label("Currently cached app:", EditorStyles.boldLabel);
-
-                foreach (var entry in _cachedAppsView)
-                {
-                    GUILayout.Label("For " + entry.Key.ToString(), EditorStyles.boldLabel);
-                    entry.Value.Show();
-                    if (GUILayout.Button("Remove entry"))
-                    {
-                        _appCache.RemoveEntry(entry.Key);
-                        Init();
-                    }
-
-                    EditorGUILayout.Separator();
-                }
+                EditorGUILayout.HelpBox("Please resolve the API key using the Account window.", MessageType.Error);
             }
             else
             {
-                EditorGUILayout.HelpBox("No cached apps.", MessageType.Info);
-            }
+                if (_cachedAppsView != null && _cachedAppsView.Count > 0)
+                {
+                    GUILayout.Label("Currently cached app:", EditorStyles.boldLabel);
+
+                    foreach (var entry in _cachedAppsView)
+                    {
+                        GUILayout.Label("For " + entry.Key.ToString(), EditorStyles.boldLabel);
+                        entry.Value.Show();
+                        if (GUILayout.Button("Remove entry"))
+                        {
+                            _appCache.RemoveEntry(entry.Key);
+                            Init();
+                        }
+
+                        EditorGUILayout.Separator();
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("No cached apps.", MessageType.Info);
+                }
+            }            
         }
     }
 }
