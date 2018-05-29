@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,7 +31,14 @@ namespace PatchKit.Tools.Integration
             Utils.AddExecutablePermissions(_toolsLocation, true);
         }
         
-        public void MakeVersion(string apiKey, string appSecret, string label, string changelog, string buildDir)
+        public void MakeVersion(
+            string apiKey, 
+            string appSecret, 
+            string label, 
+            string changelog, 
+            string buildDir, 
+            bool autoPublishAfterUpload,
+            bool forceOverrideDraftVersion)
         {
             var arguments = new List<string> {
                 "--secret", appSecret,
@@ -43,13 +49,13 @@ namespace PatchKit.Tools.Integration
                 "--host", Config.Instance().ConnectionSettings.MainServer.Host
             };
 
-            if (Config.Instance().ForceOverrideDraftVersion)
+            if (forceOverrideDraftVersion)
             {
                 arguments.Add("-x");
                 arguments.Add("true");
             }
 
-            if (Config.Instance().AutoPublishAfterUpload)
+            if (autoPublishAfterUpload)
             {
                 arguments.Add("-p");
                 arguments.Add("true");

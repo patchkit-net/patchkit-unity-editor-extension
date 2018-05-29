@@ -17,15 +17,7 @@ MonoBehaviour:
       Port: 80
       UseHttps: 0
     CacheServers: []
-  LocalCachePath: PatchKitTools/.appcache
-  FilterAppsByPlatform: 1
-  PrettyJsonInAppCache: 0
-  CloseConsoleWindowAutomatically: 0
-  ForceOverrideDraftVersion: 1
-  AutoPublishAfterUpload: 0
-  ToolsLocations:
-    WindowsTools: PatchKitTools/Resources/patchkit-tools-win32.zip
-    OsxTools: PatchKitTools/Resources/patchkit-tools-osx.zip
-    LinuxX86Tools: PatchKitTools/Resources/patchkit-tools-linux-x86.zip
-    LinuxX8664Tools: PatchKitTools/Resources/patchkit-tools-linux-x86_64.zip
-  ToolsExtractLocation: Temp/
+  Cache:
+    _appsList:
+    - Target: 24
+      Secret: 8b7055bfa5cc9d28caa93e77376db6b9

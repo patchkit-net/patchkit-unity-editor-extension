@@ -3,8 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using PatchKit.Network;
-
 using AppData = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration.Views
@@ -17,12 +15,47 @@ namespace PatchKit.Tools.Integration.Views
 
         private string newAppName = "NewApp";
 
+        private bool _shouldFilterByPlatform = true;
+        public bool ShouldFilterByPlatform 
+        {
+            get {
+                return _shouldFilterByPlatform;
+            }
+
+            private set {
+                if (value != _shouldFilterByPlatform)
+                {
+                    _shouldFilterByPlatform = value;
+                    Reload();
+                }
+            }
+        }
+
         public SelectApp(ApiUtils api)
         {
             _api = api;
+
+            Reload();
         }
 
         private Vector2 _scrollViewVector = Vector2.zero;
+
+        private void Reload()
+        {
+            var apps = _api.GetAppsCached(); 
+
+            if (apps == null)
+            {
+                return;
+            }
+
+            var buildTargetName = EditorUserBuildSettings.activeBuildTarget.ToPatchKitString();
+
+            _appViews = apps
+                    .Where(app => !ShouldFilterByPlatform || (app.Platform == buildTargetName))
+                    .Select(app => new Views.App(app))
+                    .ToList();
+        }
 
         public void Show()
         {
@@ -47,8 +80,7 @@ namespace PatchKit.Tools.Integration.Views
             
             GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
 
-            bool shouldFilterByPlatform = Config.Instance().FilterAppsByPlatform;
-            var buildTargetName = EditorUserBuildSettings.activeBuildTarget.ToPatchKitString();
+            ShouldFilterByPlatform = EditorGUILayout.Toggle("Filter apps by platform", ShouldFilterByPlatform);
 
             if (_api == null)
             {
@@ -56,30 +88,22 @@ namespace PatchKit.Tools.Integration.Views
                 return;
             }
 
-            if (_appViews == null)
-            {
-                var apps = _api.GetAppsCached(); 
-
-                if (apps == null)
-                {
-                    return;
-                }
-
-                _appViews = apps
-                    .Where(app => !shouldFilterByPlatform || (app.Platform == buildTargetName))
-                    .Select(app => new Views.App(app))
-                    .ToList();
-            }
-
             _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
 
-            _appViews.ForEach(app => {
-                app.Show();
-                if (GUILayout.Button("Select"))
-                {
-                    if (OnAppSelected != null) OnAppSelected(app.Data);
-                }
-            });
+            if (_appViews != null)
+            {
+                _appViews.ForEach(app => {
+                    app.Show();
+                    if (GUILayout.Button("Select"))
+                    {
+                        if (OnAppSelected != null) OnAppSelected(app.Data);
+                    }
+                });
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Failed to load any apps, maybe your api key is invalid.", MessageType.Warning);
+            }
 
             EditorGUILayout.EndScrollView();
         }

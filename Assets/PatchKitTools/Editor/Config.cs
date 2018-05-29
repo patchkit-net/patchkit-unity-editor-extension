@@ -46,26 +46,21 @@ namespace PatchKit.Tools.Integration
         {
             public string WindowsTools;
             public string OsxTools;
-            public string LinuxX86Tools;
+            public string LinuxTools;
             public string LinuxX8664Tools;
         }
         
         public Api.ApiConnectionSettings ConnectionSettings;
 
-        public string LocalCachePath = ".appcache";
+        public static readonly ToolsConfig ToolsLocations = new ToolsConfig{
+            WindowsTools = "PatchKitTools/ToolsPackages/patchkit-tools-win32.zip",
+            OsxTools = "PatchKitTools/ToolsPackages/patchkit-tools-osx.zip",
+            LinuxTools = "PatchKitTools/ToolsPackages/patchkit-tools-linux-x86.zip",
+        };
 
-        public bool FilterAppsByPlatform = true;
-
-        public bool PrettyJsonInAppCache = false;
-
-
-        [Header("Tools options")]
-        public bool CloseConsoleWindowAutomatically = false;
-        public bool ForceOverrideDraftVersion = true;
-        public bool AutoPublishAfterUpload = false;
-
-        public ToolsConfig ToolsLocations;
+        [SerializeField]
+        public AppCache Cache = new AppCache();
         
-        public string ToolsExtractLocation;
+        public const string ToolsExtractLocation = "Temp/";
     }
 }

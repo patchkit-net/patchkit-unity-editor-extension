@@ -1,5 +1,4 @@
-﻿using System.IO;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace PatchKit.Tools.Integration.Debug
@@ -10,20 +9,18 @@ namespace PatchKit.Tools.Integration.Debug
         public override void OnInspectorGUI()
         {
             var config = target as Config;
-
-            DrawDefaultInspector();
             
-            EditorGUILayout.Separator();
-            GUILayout.Label("Debug options:");
-
-            if (GUILayout.Button("Reset build settings"))
+            if (GUILayout.Button("Clear cached apps"))
             {
-                EditorUserBuildSettings.SetBuildLocation(EditorUserBuildSettings.activeBuildTarget, "");
+                config.Cache.Clear();
             }
+            
+            EditorGUILayout.LabelField("Cached apps:", EditorStyles.boldLabel);
 
-            if (GUILayout.Button("Delete appcache"))
+            foreach (var entry in config.Cache.AppsByPlatform())
             {
-                File.Delete(config.LocalCachePath);
+                EditorGUILayout.LabelField(entry.Key.ToPatchKitString());
+                EditorGUILayout.SelectableLabel(entry.Value, EditorStyles.helpBox);
             }
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,6 +13,8 @@ namespace PatchKit.Tools.Integration.Views
 
         private string _label = "";
         private string _changelog = "";
+        private bool _autoPublishAfterUpload = true;
+        private bool _forceOverrideDraft = true;
 
         private bool _publishHasBeenExecuted;
 
@@ -33,6 +34,17 @@ namespace PatchKit.Tools.Integration.Views
 
             GUILayout.Label("Changelog: ");
             _changelog = GUILayout.TextArea(_changelog);
+
+            EditorGUILayout.LabelField("Automatically publish after upload");
+            _autoPublishAfterUpload = EditorGUILayout.Toggle(_autoPublishAfterUpload);
+
+            EditorGUILayout.LabelField("Override draft version if exists");
+            _forceOverrideDraft = EditorGUILayout.Toggle(_forceOverrideDraft);
+
+            if (!_forceOverrideDraft)
+            {
+                EditorGUILayout.HelpBox("If a draft version exists, interaction with the console will be necessary.", MessageType.Warning);
+            }
 
             if (CanBuild())
             {
@@ -60,7 +72,7 @@ namespace PatchKit.Tools.Integration.Views
             using (var tools = new Tools(toolsSource, toolsTarget, platform))
             {
                 UnityEngine.Debug.Log("Making version...");
-                tools.MakeVersion(_apiKey.Key, _appSecret, _label, _changelog, _buildDir);
+                tools.MakeVersion(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, _autoPublishAfterUpload, _forceOverrideDraft);
 
                 if (OnPublish != null) OnPublish();
             }

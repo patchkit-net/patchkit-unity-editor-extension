@@ -18,9 +18,16 @@ namespace PatchKit.Tools.Integration.Views
             var scenes = EditorBuildSettings.scenes.Select(s => s.path).ToArray();
             var buildLocation = EditorUserBuildSettings.GetBuildLocation(buildTarget);
 
+            if (buildTarget == BuildTarget.StandaloneLinuxUniversal || buildTarget == BuildTarget.StandaloneOSXIntel64)
+            {
+                OnFailure("Unsupported build target.");
+                return;
+            }
+
             if (string.IsNullOrEmpty(buildLocation))
             {
-                EditorGUILayout.HelpBox("Build location is empty.", MessageType.Warning);
+                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", "");
+                EditorUserBuildSettings.SetBuildLocation(buildTarget, buildLocation);
                 return;
             }
 
@@ -41,8 +48,6 @@ namespace PatchKit.Tools.Integration.Views
 
             if (!_buildExecuted && GUILayout.Button("Ok"))
             {
-                GUILayout.Label("Building...");
-
                 UnityEngine.Debug.Log("Bulding the player");
                 errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
 
@@ -62,9 +67,15 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (OnSuccess != null) OnSuccess();
             }
+            
+            if (GUILayout.Button("Change app"))
+            {
+                if (OnChangeApp != null) OnChangeApp();
+            }
         }
 
         public event Action OnSuccess;
         public event Action<string> OnFailure;
+        public event Action OnChangeApp;
     }
 }

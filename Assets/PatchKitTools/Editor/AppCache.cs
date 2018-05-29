@@ -1,116 +1,95 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Newtonsoft.Json;
-
 using App = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration
 {
+    [Serializable]
+    public struct CacheEntry
+    {
+        public CacheEntry(BuildTarget target, string secret)
+        {
+            this.Target = target;
+            this.Secret = secret;
+        }
+
+        [SerializeField]
+        public BuildTarget Target;
+
+        [SerializeField]
+        public string Secret;
+
+    }
+
+    [Serializable]
     public class AppCache
     {
-        private Dictionary<BuildTarget, App> _apps;
-
-        private readonly string _cacheFilePath;
-
-        public AppCache(string cacheFilePath)
-        {
-            _cacheFilePath = cacheFilePath;
-            _apps = Load(CacheFilePath());
-
-            if (_apps == null)
-            {
-                _apps = new Dictionary<BuildTarget, App>();
-            }
-        }
-
-        public static Dictionary<BuildTarget, App> Load(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                return null;
-            }
-
-            var jsonData = File.ReadAllText(filePath);
-            var apps = JsonConvert.DeserializeObject<Dictionary<BuildTarget, App>>(jsonData);
-
-            if (apps == null)
-            {
-                return null;
-            }
-
-            return apps;
-        }
-
-        public void Save()
-        {
-            var formatting = Config.Instance().PrettyJsonInAppCache ? Formatting.Indented : Formatting.None;
-            var jsonData = JsonConvert.SerializeObject(_apps, formatting);
-            File.WriteAllText(CacheFilePath(), jsonData);
-        }
-
-        public string CacheFilePath()
-        {
-            var dataPath = Application.dataPath;
-            string appCacheFilename = _cacheFilePath;
-
-            var appCacheFilePath = Path.Combine(dataPath, appCacheFilename);
-
-            return appCacheFilePath;
-        }
+        public List<CacheEntry> _appsList = new List<CacheEntry>();
 
         public void UpdateEntry(BuildTarget target, App app)
         {
-            _apps.Add(target, app);
-            
-            Save();
+            Predicate<CacheEntry> predicate = entry => entry.Target == target;
+            if (_appsList.Exists(predicate))
+            {
+                var existingEntry = _appsList.Find(predicate);
+                existingEntry.Secret = app.Secret;
+            }
+            else
+            {
+                _appsList.Add(new CacheEntry(target, app.Secret));            
+            }
         }
 
         public void RemoveEntry(App app)
         {
-            _apps = _apps
-                .Where(entry => entry.Value.Secret != app.Secret)
-                .ToDictionary(entry => entry.Key, entry => entry.Value);
-
-            Save();
+            _appsList = _appsList
+                .Where(entry => entry.Secret != app.Secret)
+                .ToList();
         }
 
         public void RemoveEntry(BuildTarget target, App app)
         {
-            _apps = _apps
-                .Where(entry => entry.Key != target && entry.Value.Secret != app.Secret)
-                .ToDictionary(entry => entry.Key, entry => entry.Value);
-
-            Save();
+            _appsList = _appsList
+                .Where(entry => entry.Target != target && entry.Secret != app.Secret)
+                .ToList();
         }
 
         public void RemoveEntry(BuildTarget target)
         {
-            _apps.Remove(target);
-            Save();
+            _appsList = _appsList
+                .Where(entry => entry.Target != target)
+                .ToList();
         }
 
-        public App? AppByPlatform(BuildTarget target)
+        public string AppByPlatform(BuildTarget target)
         {
-            if (!_apps.ContainsKey(target))
+            if (_appsList.Any(e => e.Target == target))
             {
-                return null;
+                return _appsList.Find(e => e.Target == target).Secret;
             }
 
-            return _apps[target];
+            return null;
         }
 
-        public Dictionary<BuildTarget, App> AppsByPlatform()
+        public Dictionary<BuildTarget, string> AppsByPlatform()
         {
-            return _apps;
+            return _appsList
+                .ToDictionary(e => e.Target, e => e.Secret);
         }
 
-        public List<App> Apps()
+        public List<string> Apps()
         {
-            return _apps.Values.ToList();
+            return _appsList
+                .Select(e => e.Secret)
+                .ToList();
+        }
+
+        public void Clear()
+        {
+            _appsList.Clear();
         }
     }
 }

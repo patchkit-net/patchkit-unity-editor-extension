@@ -4,6 +4,7 @@ using System.IO;
 using Ionic.Zip;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PatchKit.Tools.Integration
 {
@@ -23,13 +24,13 @@ namespace PatchKit.Tools.Integration
                     return "linux_x86";
 
                 case BuildTarget.StandaloneLinux64:
-                case BuildTarget.StandaloneLinuxUniversal:
                     return "linux_x86_64";
 
-                case BuildTarget.StandaloneOSXIntel:
-                    return "mac_x86";
-
+#if UNITY_2017_1_OR_NEWER
+                case BuildTarget.StandaloneOSX:      
+#else
                 case BuildTarget.StandaloneOSXIntel64:
+#endif
                     return "mac_x86_64";
 
                 default:
@@ -42,37 +43,27 @@ namespace PatchKit.Tools.Integration
             const string postfix = "pk-tools";
             string basePath = null;
             
-            var config = Config.Instance();
-
-            if (string.IsNullOrEmpty(config.ToolsExtractLocation))
-            {
-                basePath = Application.persistentDataPath;
-            }
-            else
-            {
-                basePath = config.ToolsExtractLocation;
-            }
+            Assert.IsFalse(string.IsNullOrEmpty(Config.ToolsExtractLocation));
 
             return Path.Combine(basePath, postfix);
         }
 
         public static string PlatformToToolsSource(RuntimePlatform platform)
         {
-            var config = Config.Instance();
             string basePath = null;
             
             switch (platform)
             {
                 case RuntimePlatform.LinuxEditor:
-                    basePath = config.ToolsLocations.LinuxX86Tools;
+                    basePath = Config.ToolsLocations.LinuxTools;
                     break;
                 
                 case RuntimePlatform.WindowsEditor:
-                    basePath = config.ToolsLocations.WindowsTools;
+                    basePath = Config.ToolsLocations.WindowsTools;
                     break;
                     
                 case RuntimePlatform.OSXEditor:
-                    basePath = config.ToolsLocations.OsxTools;
+                    basePath = Config.ToolsLocations.OsxTools;
                     break;
                     
                 default:

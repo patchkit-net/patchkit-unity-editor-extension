@@ -1,7 +1,4 @@
-using UnityEditor;
 using UnityEngine;
-using System;
-using System.IO;
 using System.Linq;
 
 namespace PatchKit.Tools.Integration
@@ -9,8 +6,23 @@ namespace PatchKit.Tools.Integration
     public class ApiKey
     {
         public readonly string Key;
-        private const string Filename = "api-key";
+        private const string PrefsKey = "patchkit-tools-integration-api-key";
+        private const string EncryptionPassword = "42";
         
+        public string Encrypt()
+        {            
+            byte[] encBytes = Encryption.EncryptString(Key, EncryptionPassword);
+            
+            return Encryption.EncryptedBytesToString(encBytes);
+        }
+
+        public static string Decrypt(string encrypted)
+        {
+            byte[] encBytes = Encryption.EncryptedStringToBytes(encrypted);
+
+            return Encryption.DecryptString(encBytes, EncryptionPassword);
+        }
+
         public ApiKey(string keyString)
         {
             Key = keyString;
@@ -18,70 +30,33 @@ namespace PatchKit.Tools.Integration
 
         public static ApiKey LoadCached()
         {
-            try
+            if (PlayerPrefs.HasKey(PrefsKey))
             {
-                string apiKeyPath = ApiKeyFilePath();
-                UnityEngine.Debug.Log("Loading cached api key from " + apiKeyPath);
-
-                if (!File.Exists(apiKeyPath))
-                {
-                    UnityEngine.Debug.Log("Cached api key doesn't exist.");
-                    return null;
-                }
-
-                var cachedKey = new ApiKey(File.ReadAllText(apiKeyPath));
-                return cachedKey;
+                string encrypted = PlayerPrefs.GetString(PrefsKey);
+                
+                return new ApiKey(Decrypt(encrypted));
             }
-            catch(Exception e)
-            {
-                UnityEngine.Debug.LogError(e);
-                return null;
-            }
+
+            return null;
         }
 
         public static void Cache(ApiKey key)
         {
-            try
-            {
-                string apiKeyPath = ApiKeyFilePath();
-                string apiKeyParentDir = Directory.GetParent(apiKeyPath).ToString();
-
-                if (!Directory.Exists(apiKeyParentDir))
-                {
-                    Directory.CreateDirectory(apiKeyParentDir);
-                }
-
-                File.WriteAllText(apiKeyPath, key.Key);
-            }
-            catch(Exception e)
-            {
-                UnityEngine.Debug.LogError(e);
-            }
+            var enc = key.Encrypt();
+            
+            PlayerPrefs.SetString(PrefsKey, enc);
+            PlayerPrefs.Save();
         }
 
         public static void ClearCached()
         {
-            string apiKeyPath = ApiKeyFilePath();
-            if (File.Exists(apiKeyPath))
-            {
-                File.Delete(apiKeyPath);
-            }
+            PlayerPrefs.DeleteKey(PrefsKey);
+            PlayerPrefs.Save();
         }
 
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(Key) && Key.All(char.IsLetterOrDigit);
-        }
-
-        public static string ApiKeyFilePath()
-        {
-            var sep = Path.DirectorySeparatorChar;
-
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-            var projectDataPath = Path.Combine(appDataPath, "PatchKit" + sep + "Tools" + sep + UnityEngine.Application.productName);
-            var apiFilePath = Path.Combine(projectDataPath, Filename);
-            return apiFilePath;
         }
     }
 }

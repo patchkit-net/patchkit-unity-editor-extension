@@ -1,9 +1,5 @@
 ﻿using UnityEditor;
-using UnityEngine;
-using PatchKit.Api;
 using PatchKit.Api.Models.Main;
-using PatchKit.Network;
-using System.Linq;
 using System.IO;
 
 namespace PatchKit.Tools.Integration
@@ -29,7 +25,7 @@ namespace PatchKit.Tools.Integration
         {
             LockReload();
             
-            _appCache = new AppCache(Config.Instance().LocalCachePath);
+            _appCache = Config.Instance().Cache;
 
             _apiKey = ApiKey.LoadCached();
 
@@ -44,14 +40,15 @@ namespace PatchKit.Tools.Integration
             else
             {
                 _api = new ApiUtils(_apiKey);
-                _selectedApp = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
+                string selectedAppSecret = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
 
-                if (!_selectedApp.HasValue)
+                if (string.IsNullOrEmpty(selectedAppSecret))
                 {
                     BeginSelectAppView();
                 }
                 else
                 {
+                    _selectedApp = _api.GetAppInfo(selectedAppSecret);
                     BeginBuildView();
                 }
             }            
@@ -65,7 +62,7 @@ namespace PatchKit.Tools.Integration
 
             _api = new ApiUtils(_apiKey);
 
-            _selectedApp = _appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget);
+            _selectedApp = _api.GetAppInfo(_appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget));
 
             if (_selectedApp.HasValue)
             {
@@ -91,6 +88,7 @@ namespace PatchKit.Tools.Integration
 
             build.OnSuccess += OnBuildSuccess;
             build.OnFailure += OnBuildFailed;
+            build.OnChangeApp += OnBuildChangeApp;
 
             _currentView = build;
         }
@@ -122,6 +120,11 @@ namespace PatchKit.Tools.Integration
         {
             UnityEngine.Debug.LogError(errorMessage);
             _currentView = new Views.Message("Build failed, " + errorMessage, MessageType.Error);
+        }
+
+        private void OnBuildChangeApp()
+        {
+            BeginSelectAppView();
         }
 
         private void OnPublishStart()

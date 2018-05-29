@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using PatchKit;
-
 using AppData = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration.Views
