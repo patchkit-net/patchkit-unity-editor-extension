@@ -19,7 +19,18 @@ namespace PatchKit.Tools.Integration.Views
             {
                 messages[i].Show();
             }
+
+          
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(new GUIContent("Close and restart", "Change application"), GUILayout.Width(150)))
+            {
+                if (OnChangeApp != null) OnChangeApp();
+            }
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
         }
+        public event System.Action OnChangeApp;
     }
 }
 

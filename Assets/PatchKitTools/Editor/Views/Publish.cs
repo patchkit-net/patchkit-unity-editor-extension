@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,7 +32,17 @@ namespace PatchKit.Tools.Integration.Views
         public void Show()
         {
             GUILayout.Label(_selectedApp.Value.Name, EditorStyles.centeredGreyMiniLabel);
-            GUILayout.Label("Publishing", EditorStyles.boldLabel);
+            if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
+            {
+                if (OnChangeApp != null) OnChangeApp();
+            }
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("\n                                 * Publishing *\n" +
+                " The version will be sent with the following informations. \n", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+
             
             GUILayout.Label("*Version label: ");
             _label = GUILayout.TextField(_label);
@@ -61,7 +71,10 @@ namespace PatchKit.Tools.Integration.Views
 
             if (CanBuild())
             {
-                if (GUILayout.Button("Submit"))
+                EditorGUILayout.Separator();
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Send version",GUILayout.Width(150)))
                 {
                     if (!TextValidation.IsEnglish(_changelog) || !TextValidation.IsEnglish(_label))
                     {
@@ -81,15 +94,12 @@ namespace PatchKit.Tools.Integration.Views
                         MakeVersionHeadless();
                     }
                 }
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndHorizontal();
             }
             else
             {
                 EditorGUILayout.HelpBox("* Version label cannot be empty.", MessageType.Error);
-            }
-
-            if (GUILayout.Button("Change application"))
-            {
-                if (OnChangeApp != null) OnChangeApp();
             }
         }
 

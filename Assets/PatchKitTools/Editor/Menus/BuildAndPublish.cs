@@ -16,13 +16,14 @@ namespace PatchKit.Tools.Integration
         private Views.IView _currentView;
         public static Views.MessagesView messagesView = new Views.MessagesView();
 
-        [MenuItem("File/Build and Publish")]
+        [MenuItem("PatchKit/Build And Publish #b",false, 51)]
         public static void ShowWindow()
         {
 
             EditorWindow window = EditorWindow.GetWindow(typeof(BuildAndPublish), false, "Build & Publish");
             window.maxSize = new UnityEngine.Vector2(410, 2000);
             messagesView.messages.Clear();
+
         }
 
         private void Awake()
@@ -55,7 +56,8 @@ namespace PatchKit.Tools.Integration
                     _selectedApp = _api.GetAppInfo(selectedAppSecret);
                     BeginBuildView();
                 }
-            }            
+            }
+            messagesView.OnChangeApp += OnBuildChangeApp;
         }
 
         private void OnKeyResolved(ApiKey key)
@@ -86,7 +88,7 @@ namespace PatchKit.Tools.Integration
             BeginBuildView();
         }
 
-        private void BeginBuildView()
+        private void BeginBuildView() 
         {
             var build = new Views.BuildApp(_selectedApp);
 
@@ -95,15 +97,38 @@ namespace PatchKit.Tools.Integration
             build.OnChangeApp += OnBuildChangeApp;
 
             _currentView = build;
+
+            messagesView.messages.Clear();
         }
 
-        private void BeginSelectAppView()
+        private void BeginSelectAppView() // *** 1 view *** //
+        {
+            var chooseApp = new Views.ChooseApp();
+
+            chooseApp.OnCreateApp += OnCreateApp;
+            chooseApp.OnSelectApp += OnSelectApp;
+
+            _currentView = chooseApp;
+        }
+
+        private void OnSelectApp() // *** 2.1 view *** //
         {
             var selectApp = new Views.SelectApp(_api);
 
             selectApp.OnAppSelected += OnAppSelected;
+            selectApp.OnChangeApp += BeginSelectAppView;
 
             _currentView = selectApp;
+        }
+
+        private void OnCreateApp() // *** 2.2 view *** //
+        {
+            var createApp = new Views.CreateApp(_api);
+
+            createApp.OnAppSelected += OnAppSelected;
+            createApp.OnChangeApp += BeginSelectAppView;
+ 
+            _currentView = createApp;
         }
 
         private string ResolveBuildDir()
@@ -117,7 +142,7 @@ namespace PatchKit.Tools.Integration
 
             publishApp.OnPublishStart += OnPublishStart;
             publishApp.OnChangeApp += OnBuildChangeApp;
-
+            publishApp.OnChangeApp += BeginSelectAppView;
             _currentView = publishApp;
         }
 

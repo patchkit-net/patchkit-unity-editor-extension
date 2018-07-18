@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using PatchKit.Api.Models.Main;
@@ -35,7 +35,7 @@ namespace PatchKit.Tools.Integration.Views
 
             if (string.IsNullOrEmpty(buildLocation))
             {
-                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", ""); //to odpali�
+                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", ""); //to odpalić
                 EditorUserBuildSettings.SetBuildLocation(buildTarget, buildLocation);
                 return;
             }
@@ -45,7 +45,17 @@ namespace PatchKit.Tools.Integration.Views
 
             GUILayout.Label(_selectedApp.Value.Name, EditorStyles.centeredGreyMiniLabel);
 
-            GUILayout.Label("The project will be built with the following settings.", EditorStyles.boldLabel);
+            if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
+            {
+                if (OnChangeApp != null) OnChangeApp();
+            }
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("\n                               * Building *\n" +
+                " The project will be built with the following settings. \n", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+
             GUILayout.Label("Target: " + buildTarget.ToString());
             EditorGUILayout.BeginHorizontal();
             {
@@ -58,8 +68,13 @@ namespace PatchKit.Tools.Integration.Views
             }
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Scenes: ", EditorStyles.boldLabel);
-            
+            if (GUILayout.Button(new GUIContent("Edit Scenes", "Button open Build Settings window."), GUILayout.Width(120)))
+            {
+                EditorWindow.GetWindow(System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+            }
+            EditorGUILayout.EndHorizontal();
             for (int i = 0; i < scenes.Length; i++)
             {
                 GUILayout.Label(i + ". " + scenes[i]);
@@ -91,10 +106,6 @@ namespace PatchKit.Tools.Integration.Views
                 }
             }
             EditorGUILayout.EndHorizontal();
-            if (GUILayout.Button("Change application"))
-            {
-                if (OnChangeApp != null) OnChangeApp();
-            }
         }
 
         public event Action OnSuccess;

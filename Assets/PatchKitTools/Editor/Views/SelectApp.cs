@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -14,7 +14,7 @@ namespace PatchKit.Tools.Integration.Views
 
         private List<Views.App> _appViews;
 
-        private string newAppName = "NewApp";
+       // private string newAppName = "NewApp";
 
         private bool _shouldFilterByPlatform = true;
         public bool ShouldFilterByPlatform 
@@ -58,60 +58,27 @@ namespace PatchKit.Tools.Integration.Views
                     .ToList();
         }
 
-        private bool FindDuplicateApp(string name)
-        {
-            var api = _api.GetApps();
-            for (int i = 0; i < api.Count; i++)
-            {
-                if (api[i].Name == name) return true;
-            }
-            return false;
-        }
+        //private bool FindDuplicateApp(string name)
+        //{
+        //    var api = _api.GetApps();
+        //    for (int i = 0; i < api.Count; i++)
+        //    {
+        //        if (api[i].Name == name) return true;
+        //    }
+        //    return false;
+        //}
         public void Show()
         {
-
-            EditorGUILayout.LabelField("New app: ", EditorStyles.boldLabel);
-            newAppName = EditorGUILayout.TextField("Name: ", newAppName);
-
-
-
-            if (string.IsNullOrEmpty(newAppName))
-            {
-                EditorGUILayout.HelpBox("Application name cannot be empty.", MessageType.Error);
-            }
-            else
-            {
-                if (!TextValidation.IsEnglish(newAppName))
-                {
-                    EditorGUILayout.HelpBox("Name only allows english characters and ':', '_' or '-'", MessageType.Error);
-                }
-                else
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-
-                   
-                    if (GUILayout.Button("Add", GUILayout.Width(100)))
-                    {
-                        if (FindDuplicateApp(newAppName))
-                        {
-                            EditorUtility.DisplayDialog("Warning", "Application name is already taken.\nChange it and try again.", "Ok");
-                        }
-                        else
-                        {
-                            var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
-                            if (OnAppSelected != null) OnAppSelected(newApp);
-                        }
-
-                    }
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
-                }
-            }
-           
-            EditorGUILayout.Separator();
             
-            GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
+            if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
+            {
+                if (OnChangeApp != null) OnChangeApp();
+            }
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+                GUILayout.Label("\n Choose target PatchKit application from list below. \n", EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
 
             ShouldFilterByPlatform = EditorGUILayout.Toggle("Filter apps by platform", ShouldFilterByPlatform);
             if (_api == null)
@@ -121,31 +88,37 @@ namespace PatchKit.Tools.Integration.Views
             }
 
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
 
-            if (_appViews != null)
+            GUILayout.BeginVertical("box");
             {
-                _appViews.ForEach(app => {
-                    
-                    app.Show();
-                    GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Select", GUILayout.Width(100)))
-                    {
-                        if (OnAppSelected != null) OnAppSelected(app.Data);
-                    }
-                    GUILayout.FlexibleSpace();
-                    GUILayout.EndHorizontal();
-                });
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("Failed to load any apps, maybe your api key is invalid.", MessageType.Warning);
-            }
+                _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
 
-            EditorGUILayout.EndScrollView();
+                if (_appViews != null)
+                {
+                    _appViews.ForEach(app => {
+                        EditorGUILayout.BeginHorizontal();
+                        app.Show();
+                        
+                        if (GUILayout.Button("Select", GUILayout.Width(100)))
+                        {
+                            if (OnAppSelected != null) OnAppSelected(app.Data);
+                        }
+                        
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+                    });
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Failed to load any apps, maybe your api key is invalid.", MessageType.Warning);
+                }
+
+                EditorGUILayout.EndScrollView();
+            }
+            GUILayout.EndVertical();
         }
 
         public event Action<AppData> OnAppSelected;
+        public event Action OnChangeApp;
     }
 }
