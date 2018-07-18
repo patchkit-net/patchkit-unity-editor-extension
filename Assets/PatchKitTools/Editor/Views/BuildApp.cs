@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using PatchKit.Api.Models.Main;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +9,15 @@ namespace PatchKit.Tools.Integration.Views
 {
     public class BuildApp : IView
     {
+        
+        private Api.Models.Main.App? _selectedApp; 
+        public BuildApp(Api.Models.Main.App? selectedApp1)
+        {
+            _selectedApp = selectedApp1;
+        }
+
         private bool _buildExecuted = false;
+        private Api.Models.Main.App? _selectedApp1;
 
         public void Show()
         {
@@ -26,7 +35,7 @@ namespace PatchKit.Tools.Integration.Views
 
             if (string.IsNullOrEmpty(buildLocation))
             {
-                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", "");
+                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", ""); //to odpaliæ
                 EditorUserBuildSettings.SetBuildLocation(buildTarget, buildLocation);
                 return;
             }
@@ -34,10 +43,20 @@ namespace PatchKit.Tools.Integration.Views
             bool buildDirectoryExists = Directory.Exists(Path.GetDirectoryName(buildLocation));
             bool buildExists = File.Exists(buildLocation);
 
-            GUILayout.Label("The project will be built with the following settings.", EditorStyles.boldLabel);
+            GUILayout.Label(_selectedApp.Value.Name, EditorStyles.centeredGreyMiniLabel);
 
+            GUILayout.Label("The project will be built with the following settings.", EditorStyles.boldLabel);
             GUILayout.Label("Target: " + buildTarget.ToString());
-            GUILayout.Label("Location: " + buildLocation);
+            EditorGUILayout.BeginHorizontal();
+            {
+                GUILayout.Label(new GUIContent("Location: " + buildLocation, buildLocation) , GUILayout.MaxWidth(300));
+                if(GUILayout.Button(new GUIContent("Change", "Change build location")))
+                {
+                    buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", "");
+                    EditorUserBuildSettings.SetBuildLocation(buildTarget, buildLocation);
+                }
+            }
+            EditorGUILayout.EndHorizontal();
 
             GUILayout.Label("Scenes: ", EditorStyles.boldLabel);
             
@@ -45,30 +64,34 @@ namespace PatchKit.Tools.Integration.Views
             {
                 GUILayout.Label(i + ". " + scenes[i]);
             }
-
-            if (!_buildExecuted && GUILayout.Button("Ok"))
+            EditorGUILayout.Separator();
+            EditorGUILayout.Separator();
+            EditorGUILayout.BeginHorizontal();
             {
-                UnityEngine.Debug.Log("Bulding the player");
-                errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
-
-                _buildExecuted = true;
-
-                if (!string.IsNullOrEmpty(errorMessage))
+                if (!_buildExecuted && GUILayout.Button(new GUIContent("Build", "Build new version")))
                 {
-                    if (OnFailure != null) OnFailure(errorMessage);
+                    UnityEngine.Debug.Log("Bulding the player");
+                    errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
+
+                    _buildExecuted = true;
+
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        if (OnFailure != null) OnFailure(errorMessage);
+                    }
+                    else
+                    {
+                        if (OnSuccess != null) OnSuccess();
+                    }
                 }
-                else
+
+                if (buildDirectoryExists && buildExists && GUILayout.Button(new GUIContent("Skip", "Use last build")))
                 {
                     if (OnSuccess != null) OnSuccess();
                 }
             }
-
-            if (buildDirectoryExists && buildExists && GUILayout.Button("Skip"))
-            {
-                if (OnSuccess != null) OnSuccess();
-            }
-            
-            if (GUILayout.Button("Change app"))
+            EditorGUILayout.EndHorizontal();
+            if (GUILayout.Button("Change application"))
             {
                 if (OnChangeApp != null) OnChangeApp();
             }

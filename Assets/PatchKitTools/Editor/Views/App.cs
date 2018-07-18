@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using AppData = PatchKit.Api.Models.Main.App;
 
@@ -31,14 +31,14 @@ namespace PatchKit.Tools.Integration.Views
 
             if (_isCollapsed)
             {
-                if (GUILayout.Button("Details +"))
+                if (GUILayout.Button("Details ↓", GUILayout.MinWidth(200), GUILayout.MaxWidth(400)))
                 {
                     _isCollapsed = false;
                 }
             }
             else
             {
-                if (GUILayout.Button("Details -"))
+                if (GUILayout.Button("Details ↑", GUILayout.MinWidth(200), GUILayout.MaxWidth(400)))
                 {
                     _isCollapsed = true;
                 }

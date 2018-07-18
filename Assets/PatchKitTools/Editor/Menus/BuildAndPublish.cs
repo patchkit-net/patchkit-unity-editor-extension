@@ -14,11 +14,15 @@ namespace PatchKit.Tools.Integration
         private bool _reimportLock = false;
 
         private Views.IView _currentView;
+        public static Views.MessagesView messagesView = new Views.MessagesView();
 
         [MenuItem("File/Build and Publish")]
         public static void ShowWindow()
         {
-            EditorWindow.GetWindow(typeof(BuildAndPublish), false, "Build & Publish");
+
+            EditorWindow window = EditorWindow.GetWindow(typeof(BuildAndPublish), false, "Build & Publish");
+            window.maxSize = new UnityEngine.Vector2(410, 2000);
+            messagesView.messages.Clear();
         }
 
         private void Awake()
@@ -84,7 +88,7 @@ namespace PatchKit.Tools.Integration
 
         private void BeginBuildView()
         {
-            var build = new Views.BuildApp();
+            var build = new Views.BuildApp(_selectedApp);
 
             build.OnSuccess += OnBuildSuccess;
             build.OnFailure += OnBuildFailed;
@@ -109,17 +113,19 @@ namespace PatchKit.Tools.Integration
 
         private void OnBuildSuccess()
         {
-            var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir());
+            var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir(),_selectedApp);
 
             publishApp.OnPublishStart += OnPublishStart;
+            publishApp.OnChangeApp += OnBuildChangeApp;
 
             _currentView = publishApp;
         }
 
         private void OnBuildFailed(string errorMessage)
         {
-            UnityEngine.Debug.LogError(errorMessage);
-            _currentView = new Views.Message("Build failed, " + errorMessage, MessageType.Error);
+            messagesView.AddMessage("Build failed, " + errorMessage, MessageType.Error);
+            _currentView = messagesView;
+            
         }
 
         private void OnBuildChangeApp()
@@ -129,7 +135,9 @@ namespace PatchKit.Tools.Integration
 
         private void OnPublishStart()
         {
-            _currentView = new Views.Message("A console window should open shortly\nKeep the console window open until an appropriate message appears. \nIt is now safe to close this window.", MessageType.Info);
+            messagesView.AddMessage("Processing...", MessageType.Info);
+            _currentView = messagesView;
+           
         }
 
         private void OnGUI()

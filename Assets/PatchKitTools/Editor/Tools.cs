@@ -27,8 +27,11 @@ namespace PatchKit.Tools.Integration
             }
             
             Utils.ExtractTools(sourceZip, _toolsLocation);
-
-            Utils.AddExecutablePermissions(_toolsLocation, true);
+            if(platform != RuntimePlatform.WindowsEditor)
+            {
+                Utils.AddExecutablePermissions(_toolsLocation, true);
+            }
+            
         }
         
         public void MakeVersion(
@@ -69,11 +72,13 @@ namespace PatchKit.Tools.Integration
             switch (_platform)
             {
                 case RuntimePlatform.WindowsEditor:
+                    BuildAndPublish.messagesView.AddMessage("Executing for windows...", UnityEditor.MessageType.Info);
                     UnityEngine.Debug.Log("Executing for windows...");
                     ExecuteWindows(tool, toolArguments);
                     break;
                 
                 case RuntimePlatform.LinuxEditor:
+                    BuildAndPublish.messagesView.AddMessage("Executing for linux...", UnityEditor.MessageType.Info);
                     UnityEngine.Debug.Log("Executing for linux...");
                     ExecuteLinux(tool, toolArguments);
                     break;
@@ -82,6 +87,7 @@ namespace PatchKit.Tools.Integration
                     throw new NotImplementedException();
                 
                 default:
+                    BuildAndPublish.messagesView.AddMessage("Unsupported platform", UnityEditor.MessageType.Info);
                     throw new ArgumentException("Unsupported platform");
             }
         }

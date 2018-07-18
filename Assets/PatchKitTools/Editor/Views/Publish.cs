@@ -6,6 +6,8 @@ namespace PatchKit.Tools.Integration.Views
 {
     public class Publish : IView
     {
+        private Api.Models.Main.App? _selectedApp;
+
         private readonly ApiKey _apiKey;
 
         private readonly string _appSecret;
@@ -18,29 +20,40 @@ namespace PatchKit.Tools.Integration.Views
 
         private bool _publishHasBeenExecuted;
 
-        public Publish(ApiKey apiKey, string appSecret, string buildDir)
+        public Publish(ApiKey apiKey, string appSecret, string buildDir, Api.Models.Main.App? selectedApp)
         {
             _apiKey = apiKey;
             _appSecret = appSecret;
             _buildDir = buildDir;
+            _selectedApp = selectedApp;
+           
         }
 
         public void Show()
         {
+            GUILayout.Label(_selectedApp.Value.Name, EditorStyles.centeredGreyMiniLabel);
             GUILayout.Label("Publishing", EditorStyles.boldLabel);
             
-            GUILayout.Label("Version label: ");
+            GUILayout.Label("*Version label: ");
             _label = GUILayout.TextField(_label);
 
             GUILayout.Label("Changelog: ");
-            _changelog = GUILayout.TextArea(_changelog);
+            _changelog = GUILayout.TextArea(_changelog, GUILayout.MinHeight(200));
 
-            EditorGUILayout.LabelField("Automatically publish after upload");
-            _autoPublishAfterUpload = EditorGUILayout.Toggle(_autoPublishAfterUpload);
+            EditorGUILayout.Separator();
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField("Automatically publish after upload");
+                _autoPublishAfterUpload = EditorGUILayout.Toggle(_autoPublishAfterUpload);
+            }
+            EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.LabelField("Override draft version if exists");
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField("Override draft version if exists");
             _forceOverrideDraft = EditorGUILayout.Toggle(_forceOverrideDraft);
-
+            }
+            EditorGUILayout.EndHorizontal();
             if (!_forceOverrideDraft)
             {
                 EditorGUILayout.HelpBox("If a draft version exists, interaction with the console will be necessary.", MessageType.Warning);
@@ -48,16 +61,35 @@ namespace PatchKit.Tools.Integration.Views
 
             if (CanBuild())
             {
-                if (GUILayout.Button("Ok"))
+                if (GUILayout.Button("Submit"))
                 {
-                    if (OnPublishStart != null) OnPublishStart();
+                    if (!TextValidation.IsEnglish(_changelog) || !TextValidation.IsEnglish(_label))
+                    {
+                        if(EditorUtility.DisplayDialog("Warning", "Use only english characters and ':', '_' or '-' in label and changelog input.\n \n" +
+                            "Unfortunately PatchKit plugin does not support other languages encoding. If you need to write correct information, please loggin to your PatchKit Panel and set Version Properties for your application.",
+                            "Set using Panel", "Ok"))
+                        {
+                            
+                            //Application.OpenURL("https://panel.patchkit.net/apps/" + _selectedApp.Value.Id);
+                            Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Value.Id+ "/versions");
+                        }
+                    }
+                    else
+                    {
+                        if (OnPublishStart != null) OnPublishStart();
 
-                    MakeVersionHeadless();
+                        MakeVersionHeadless();
+                    }
                 }
             }
             else
             {
-                EditorGUILayout.HelpBox("Version label must not be empty.", MessageType.Error);
+                EditorGUILayout.HelpBox("* Version label cannot be empty.", MessageType.Error);
+            }
+
+            if (GUILayout.Button("Change application"))
+            {
+                if (OnChangeApp != null) OnChangeApp();
             }
         }
 
@@ -71,6 +103,7 @@ namespace PatchKit.Tools.Integration.Views
 //                () => {
             using (var tools = new Tools(toolsSource, toolsTarget, platform))
             {
+                BuildAndPublish.messagesView.AddMessage("Making version...", UnityEditor.MessageType.Info);
                 UnityEngine.Debug.Log("Making version...");
                 tools.MakeVersion(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, _autoPublishAfterUpload, _forceOverrideDraft);
 
@@ -89,5 +122,7 @@ namespace PatchKit.Tools.Integration.Views
 
         public event Action OnPublish;
         public event Action OnPublishStart;
+        public event Action OnChangeApp;
     }
+
 }

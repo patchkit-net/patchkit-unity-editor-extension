@@ -27,7 +27,8 @@ namespace PatchKit.Tools.Integration
                     return "linux_x86_64";
 
 #if UNITY_2017_1_OR_NEWER
-                case BuildTarget.StandaloneOSX:      
+                case BuildTarget.StandaloneOSXIntel:
+                    //case BuildTarget.StandaloneOSX:  //tak bylo
 #else
                 case BuildTarget.StandaloneOSXIntel64:
 #endif
@@ -41,11 +42,11 @@ namespace PatchKit.Tools.Integration
         public static string ToolsExtractLocation()
         {
             const string postfix = "pk-tools";
-            string basePath = null;
+           // string basePath = null;
             
             Assert.IsFalse(string.IsNullOrEmpty(Config.ToolsExtractLocation));
 
-            return Path.Combine(basePath, postfix);
+            return Path.Combine(Config.ToolsExtractLocation, postfix);
         }
 
         public static string PlatformToToolsSource(RuntimePlatform platform)

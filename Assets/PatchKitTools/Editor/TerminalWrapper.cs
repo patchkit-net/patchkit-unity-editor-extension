@@ -71,6 +71,7 @@ namespace PatchKit.Tools.Integration
                     return "konsole";
                 
                 default:
+                    BuildAndPublish.messagesView.AddMessage("Unknown or unsupported terminal.", UnityEditor.MessageType.Warning);
                     throw new ArgumentException("Unknown or unsupported terminal.");
             }
         }
@@ -87,7 +88,7 @@ namespace PatchKit.Tools.Integration
             
             if (_type == Type.Cmd)
             {
-                args = "/K " + argumentsString;
+                args = "/K " + argumentsString; // /C wyłącza okno, /K zostawia okno
             }
             else if (_type == Type.GnomeTerminal)
             {
@@ -105,10 +106,12 @@ namespace PatchKit.Tools.Integration
             };
 
             UnityEngine.Debug.Log(string.Format("Launching {0} {1}", filename, args));
+            BuildAndPublish.messagesView.AddMessage(string.Format("Launching {0} {1}", filename, args), UnityEditor.MessageType.Info);
             var process = Process.Start(processInfo);
             
             if (process.HasExited && process.ExitCode != 0)
             {
+                BuildAndPublish.messagesView.AddMessage(string.Format("Non zero ({0}) return code.", process.ExitCode), UnityEditor.MessageType.Warning);
                 throw new Exception(string.Format("Non zero ({0}) return code.", process.ExitCode));
             }
 
