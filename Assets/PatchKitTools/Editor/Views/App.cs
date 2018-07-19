@@ -30,26 +30,31 @@ namespace PatchKit.Tools.Integration.Views
                 GUILayout.Label(displayName, EditorStyles.boldLabel);
                 DisplayValueIfPresent("Platform: ", _data.Platform);
             EditorGUILayout.EndVertical();
-            //if (_isCollapsed)
-            //{
-            //    if (GUILayout.Button("Details ↓", GUILayout.MinWidth(200), GUILayout.MaxWidth(400)))
-            //    {
-            //        _isCollapsed = false;
-            //    }
-            //}
-            //else
-            //{
-            //    if (GUILayout.Button("Details ↑", GUILayout.MinWidth(200), GUILayout.MaxWidth(400)))
-            //    {
-            //        _isCollapsed = true;
-            //    }
 
-            //    DisplayValueIfPresent("Display name:", _data.DisplayName);
-            //    DisplayValueIfPresent("Author:", _data.Author);
+            #region Details - Future
+            /* 
+            if (_isCollapsed)
+            {
+                if (GUILayout.Button("Details ↓", GUILayout.MinWidth(200), GUILayout.MaxWidth(400)))
+                {
+                    _isCollapsed = false;
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Details ↑", GUILayout.MinWidth(200), GUILayout.MaxWidth(400)))
+                {
+                    _isCollapsed = true;
+                }
 
-            //    GUILayout.Label("Secret:");
-            //    EditorGUILayout.SelectableLabel(_data.Secret, EditorStyles.helpBox);
-            //}
+                DisplayValueIfPresent("Display name:", _data.DisplayName);
+                DisplayValueIfPresent("Author:", _data.Author);
+
+                GUILayout.Label("Secret:");
+                EditorGUILayout.SelectableLabel(_data.Secret, EditorStyles.helpBox);
+            }
+            */
+            #endregion
         }
 
         private void DisplayValueIfPresent(string label, string value)

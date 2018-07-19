@@ -88,7 +88,7 @@ namespace PatchKit.Tools.Integration
             BeginBuildView();
         }
 
-        private void BeginBuildView() 
+        private void BeginBuildView() // *** 3 view *** //
         {
             var build = new Views.BuildApp(_selectedApp);
 
@@ -136,9 +136,9 @@ namespace PatchKit.Tools.Integration
             return Path.GetDirectoryName(EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.activeBuildTarget));
         }
 
-        private void OnBuildSuccess()
+        private void OnBuildSuccess() // *** 4 view *** //
         {
-            var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir(),_selectedApp);
+            var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir(), _selectedApp);
 
             publishApp.OnPublishStart += OnPublishStart;
             publishApp.OnChangeApp += OnBuildChangeApp;

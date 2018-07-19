@@ -11,13 +11,13 @@ namespace PatchKit.Tools.Integration.Views
     {
         
         private Api.Models.Main.App? _selectedApp; 
+
         public BuildApp(Api.Models.Main.App? selectedApp1)
         {
             _selectedApp = selectedApp1;
         }
 
         private bool _buildExecuted = false;
-        private Api.Models.Main.App? _selectedApp1;
 
         public void Show()
         {
@@ -50,10 +50,12 @@ namespace PatchKit.Tools.Integration.Views
                 if (OnChangeApp != null) OnChangeApp();
             }
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("\n                               * Building *\n" +
-                " The project will be built with the following settings. \n", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
+            { 
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("\n                               * Building *\n" +
+                    " The project will be built with the following settings. \n", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+            }
             EditorGUILayout.EndHorizontal();
 
             GUILayout.Label("Target: " + buildTarget.ToString());
@@ -69,10 +71,12 @@ namespace PatchKit.Tools.Integration.Views
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Scenes: ", EditorStyles.boldLabel);
-            if (GUILayout.Button(new GUIContent("Edit Scenes", "Button open Build Settings window."), GUILayout.Width(120)))
-            {
-                EditorWindow.GetWindow(System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+            { 
+                GUILayout.Label("Scenes: ", EditorStyles.boldLabel);
+                if (GUILayout.Button(new GUIContent("Edit Scenes", "Button open Build Settings window."), GUILayout.Width(120)))
+                {
+                    EditorWindow.GetWindow(System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+                }
             }
             EditorGUILayout.EndHorizontal();
             for (int i = 0; i < scenes.Length; i++)

@@ -14,29 +14,28 @@ namespace PatchKit.Tools.Integration.Views
         {
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("\nSelect target PatchKit application.\n", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("\nSelect target PatchKit application.\n", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+            }
             EditorGUILayout.EndHorizontal();
 
-            // EditorGUILayout.BeginVertical();
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(new GUIContent("Choose Existing App", "Select PatchKit application from list of existing applications."), GUILayout.Width(150)))
-            {
-                if (OnSelectApp != null) OnSelectApp();
-            }
+            { 
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(new GUIContent("Choose Existing App", "Select PatchKit application from list of existing applications."), GUILayout.Width(150)))
+                {
+                    if (OnSelectApp != null) OnSelectApp();
+                }
 
-            if (GUILayout.Button(new GUIContent("Create New App", "Create new PatchKit application."), GUILayout.Width(150)))
-            {
-                if (OnCreateApp != null) OnCreateApp();
+                if (GUILayout.Button(new GUIContent("Create New App", "Create new PatchKit application."), GUILayout.Width(150)))
+                {
+                    if (OnCreateApp != null) OnCreateApp();
+                }
+                GUILayout.FlexibleSpace();
             }
-            GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
-            //  EditorGUILayout.EndVertical();
-
-
-
         }
 
         public event Action OnCreateApp;

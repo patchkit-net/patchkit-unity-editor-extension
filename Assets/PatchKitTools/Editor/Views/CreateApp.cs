@@ -16,49 +16,10 @@ namespace PatchKit.Tools.Integration.Views
 
         private string newAppName = "NewApp";
 
-        //  private bool _shouldFilterByPlatform = true;
-        //public bool ShouldFilterByPlatform
-        //{
-        //    get
-        //    {
-        //        return _shouldFilterByPlatform;
-        //    }
-
-        //    private set
-        //    {
-        //        if (value != _shouldFilterByPlatform)
-        //        {
-        //            _shouldFilterByPlatform = value;
-        //           // Reload();
-        //        }
-        //    }
-        //}
-
         public CreateApp(ApiUtils api)
         {
             _api = api;
-
-            // Reload();
         }
-
-        //   private Vector2 _scrollViewVector = Vector2.zero;
-
-        //private void Reload()
-        //{
-        //    var apps = _api.GetAppsCached();
-
-        //    if (apps == null)
-        //    {
-        //        return;
-        //    }
-
-        //    var buildTargetName = EditorUserBuildSettings.activeBuildTarget.ToPatchKitString();
-
-        //    _appViews = apps
-        //            .Where(app => !ShouldFilterByPlatform || (app.Platform == buildTargetName))
-        //            .Select(app => new Views.App(app))
-        //            .ToList();
-        //}
 
         private bool FindDuplicateApp(string name)
         {
@@ -77,9 +38,11 @@ namespace PatchKit.Tools.Integration.Views
             }
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("\n Create new application as a target.\n", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("\n Create new application as a target.\n", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+            }
             EditorGUILayout.EndHorizontal();
 
             newAppName = EditorGUILayout.TextField("Name: ", newAppName);
@@ -104,70 +67,34 @@ namespace PatchKit.Tools.Integration.Views
             }
             else
             {
-                if (!TextValidation.IsEnglish(newAppName))
+                if (!TextValidation.DoesStringContainOnlyAllowedCharacters(newAppName))
                 {
                     EditorGUILayout.HelpBox("Name only allows english characters and ':', '_' or '-'", MessageType.Error);
                 }
                 else
                 {
                     GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-
-
-                    if (GUILayout.Button("Add", GUILayout.Width(100)))
-                    {
-                        if (FindDuplicateApp(newAppName))
+                    { 
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("Add", GUILayout.Width(100)))
                         {
-                            EditorUtility.DisplayDialog("Warning", "Application name is already taken.\nChange it and try again.", "Ok");
-                        }
-                        else
-                        {
-                            var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
-                            if (OnAppSelected != null) OnAppSelected(newApp);
-                        }
+                            if (FindDuplicateApp(newAppName))
+                            {
+                                EditorUtility.DisplayDialog("Warning", "Application name is already taken.\nChange it and try again.", "Ok");
+                            }
+                            else
+                            {
+                                var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
+                                if (OnAppSelected != null) OnAppSelected(newApp);
+                            }
 
+                        }
+                        GUILayout.FlexibleSpace();
                     }
-                    GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
 
             }
-
-            //EditorGUILayout.Separator();
-
-            //GUILayout.Label("Your apps: ", EditorStyles.boldLabel);
-
-            //ShouldFilterByPlatform = EditorGUILayout.Toggle("Filter apps by platform", ShouldFilterByPlatform);
-            //if (_api == null)
-            //{
-            //    EditorGUILayout.HelpBox("Cannot resolve connection to API", MessageType.Error);
-            //    return;
-            //}
-
-            //EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            //_scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
-
-            //if (_appViews != null)
-            //{
-            //    _appViews.ForEach(app => {
-
-            //        app.Show();
-            //        GUILayout.BeginHorizontal();
-            //        GUILayout.FlexibleSpace();
-            //        if (GUILayout.Button("Select", GUILayout.Width(100)))
-            //        {
-            //            if (OnAppSelected != null) OnAppSelected(app.Data);
-            //        }
-            //        GUILayout.FlexibleSpace();
-            //        GUILayout.EndHorizontal();
-            //    });
-            //}
-            //else
-            //{
-            //    EditorGUILayout.HelpBox("Failed to load any apps, maybe your api key is invalid.", MessageType.Warning);
-            //}
-
-            //EditorGUILayout.EndScrollView();
         }
 
         public event Action<AppData> OnAppSelected;

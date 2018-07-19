@@ -37,10 +37,12 @@ namespace PatchKit.Tools.Integration.Views
                 if (OnChangeApp != null) OnChangeApp();
             }
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("\n                                 * Publishing *\n" +
-                " The version will be sent with the following informations. \n", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("\n                                 * Publishing *\n" +
+                    " The version will be sent with the following informations. \n", EditorStyles.boldLabel);
+                GUILayout.FlexibleSpace();
+            }
             EditorGUILayout.EndHorizontal();
 
             
@@ -61,9 +63,10 @@ namespace PatchKit.Tools.Integration.Views
             EditorGUILayout.BeginHorizontal();
             {
                 EditorGUILayout.LabelField("Override draft version if exists");
-            _forceOverrideDraft = EditorGUILayout.Toggle(_forceOverrideDraft);
+                _forceOverrideDraft = EditorGUILayout.Toggle(_forceOverrideDraft);
             }
             EditorGUILayout.EndHorizontal();
+
             if (!_forceOverrideDraft)
             {
                 EditorGUILayout.HelpBox("If a draft version exists, interaction with the console will be necessary.", MessageType.Warning);
@@ -73,28 +76,30 @@ namespace PatchKit.Tools.Integration.Views
             {
                 EditorGUILayout.Separator();
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Send version",GUILayout.Width(150)))
                 {
-                    if (!TextValidation.IsEnglish(_changelog) || !TextValidation.IsEnglish(_label))
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("Send version",GUILayout.Width(150)))
                     {
-                        if(EditorUtility.DisplayDialog("Warning", "Use only english characters and ':', '_' or '-' in label and changelog input.\n \n" +
-                            "Unfortunately PatchKit plugin does not support other languages encoding. If you need to write correct information, please loggin to your PatchKit Panel and set Version Properties for your application.",
-                            "Set using Panel", "Ok"))
+                        if (!TextValidation.DoesStringContainOnlyAllowedCharacters(_changelog) || !TextValidation.DoesStringContainOnlyAllowedCharacters(_label))
                         {
+                            if(EditorUtility.DisplayDialog("Warning", "Use only english characters and ':', '_' or '-' in label and changelog input.\n \n" +
+                                "Unfortunately PatchKit plugin does not support other languages encoding. If you need to write correct information, please loggin to your PatchKit Panel and set Version Properties for your application.",
+                                "Set using Panel", "Ok"))
+                            {
                             
-                            //Application.OpenURL("https://panel.patchkit.net/apps/" + _selectedApp.Value.Id);
-                            Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Value.Id+ "/versions");
+                                //Application.OpenURL("https://panel.patchkit.net/apps/" + _selectedApp.Value.Id);
+                                Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Value.Id+ "/versions");
+                            }
+                        }
+                        else
+                        {
+                            if (OnPublishStart != null) OnPublishStart();
+
+                            MakeVersionHeadless();
                         }
                     }
-                    else
-                    {
-                        if (OnPublishStart != null) OnPublishStart();
-
-                        MakeVersionHeadless();
-                    }
+                    GUILayout.FlexibleSpace();
                 }
-                GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
             }
             else
@@ -109,8 +114,6 @@ namespace PatchKit.Tools.Integration.Views
             string toolsSource = Utils.PlatformToToolsSource(platform);
             string toolsTarget = Utils.ToolsExtractLocation();
             
-//            var thread = new Thread(
-//                () => {
             using (var tools = new Tools(toolsSource, toolsTarget, platform))
             {
                 BuildAndPublish.messagesView.AddMessage("Making version...", UnityEditor.MessageType.Info);
@@ -119,10 +122,6 @@ namespace PatchKit.Tools.Integration.Views
 
                 if (OnPublish != null) OnPublish();
             }
-//                }
-//            );
-
-//            thread.Start();
         }
 
         private bool CanBuild()

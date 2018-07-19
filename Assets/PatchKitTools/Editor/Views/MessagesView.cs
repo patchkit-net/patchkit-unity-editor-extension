@@ -20,7 +20,6 @@ namespace PatchKit.Tools.Integration.Views
                 messages[i].Show();
             }
 
-          
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(new GUIContent("Close and restart", "Change application"), GUILayout.Width(150)))

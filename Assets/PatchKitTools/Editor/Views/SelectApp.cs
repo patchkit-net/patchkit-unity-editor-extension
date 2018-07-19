@@ -11,12 +11,9 @@ namespace PatchKit.Tools.Integration.Views
     public class SelectApp : IView
     {
         private readonly ApiUtils _api;
-
         private List<Views.App> _appViews;
-
-       // private string newAppName = "NewApp";
-
         private bool _shouldFilterByPlatform = true;
+
         public bool ShouldFilterByPlatform 
         {
             get {
@@ -58,15 +55,6 @@ namespace PatchKit.Tools.Integration.Views
                     .ToList();
         }
 
-        //private bool FindDuplicateApp(string name)
-        //{
-        //    var api = _api.GetApps();
-        //    for (int i = 0; i < api.Count; i++)
-        //    {
-        //        if (api[i].Name == name) return true;
-        //    }
-        //    return false;
-        //}
         public void Show()
         {
             
@@ -74,10 +62,13 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (OnChangeApp != null) OnChangeApp();
             }
+
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
+            {
+                GUILayout.FlexibleSpace();
                 GUILayout.Label("\n Choose target PatchKit application from list below. \n", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
+            }
             EditorGUILayout.EndHorizontal();
 
             ShouldFilterByPlatform = EditorGUILayout.Toggle("Filter apps by platform", ShouldFilterByPlatform);
