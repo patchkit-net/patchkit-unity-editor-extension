@@ -16,7 +16,7 @@ namespace PatchKit.Tools.Integration
         private Views.IView _currentView;
         public static Views.MessagesView messagesView = new Views.MessagesView();
 
-        [MenuItem("PatchKit/Build And Publish #b",false, 51)]
+        [MenuItem("Tools/PatchKit/Build And Publish %&#b",false, 51)]
         public static void ShowWindow()
         {
 

@@ -7,7 +7,7 @@ namespace PatchKit.Tools.Integration
     {
         private ApiKey _apiKey;
 
-        [MenuItem("PatchKit/Account", false, 2)]
+        [MenuItem("Tools/PatchKit/Account", false, 2)]
         public static void ShowWindow()
         {
             EditorWindow.GetWindow(typeof(Account), false, "Account");            

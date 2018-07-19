@@ -14,7 +14,7 @@ namespace PatchKit.Tools.Integration
         private AppCache _appCache;
         private Dictionary<BuildTarget, Views.EditableApp> _cachedAppsView;
 
-        [MenuItem("PatchKit/Applications", false, 1)]
+        [MenuItem("Tools/PatchKit/Applications", false, 1)]
         public static void ShowWindow()
         {
             EditorWindow.GetWindow(typeof(Applications), false, "Applications");
