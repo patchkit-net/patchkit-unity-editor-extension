@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using PatchKit.Api.Models.Main;
 using UnityEditor;
 using UnityEngine;
-using AppData = PatchKit.Api.Models.Main.App;
 
 namespace PatchKit.Tools.Integration.Views
 {
@@ -24,7 +22,8 @@ namespace PatchKit.Tools.Integration.Views
             EditorGUILayout.BeginHorizontal();
             { 
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Choose Existing App", "Select PatchKit application from list of existing applications."), GUILayout.Width(150)))
+                if (GUILayout.Button(new GUIContent("Choose Existing App", 
+                    "Select a PatchKit application from the list of existing applications."), GUILayout.Width(150)))
                 {
                     if (OnSelectApp != null) OnSelectApp();
                 }

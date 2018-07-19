@@ -8,16 +8,22 @@ namespace PatchKit.Tools.Integration.Views
 
     public class MessagesView : IView
     {
-        public List<Message> messages = new List<Message>();
+        private List<Message> _messages = new List<Message>();
+        public void ClearList()
+        {
+            _messages.Clear();
+        }
+
         public void AddMessage(string message, MessageType messageType)
         {
-            messages.Add(new Message(message, messageType));
+            _messages.Add(new Message(message, messageType));
         }
+
         public void Show()
         {
-            for(int i=0; i< messages.Count; i++)
+            for(int i = 0 ; i < _messages.Count; i++)
             {
-                messages[i].Show();
+                _messages[i].Show();
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -29,6 +35,7 @@ namespace PatchKit.Tools.Integration.Views
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
         }
+
         public event System.Action OnChangeApp;
     }
 }

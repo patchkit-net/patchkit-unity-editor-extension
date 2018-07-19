@@ -35,7 +35,7 @@ namespace PatchKit.Tools.Integration.Views
 
             if (string.IsNullOrEmpty(buildLocation))
             {
-                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", ""); //to odpalić
+                buildLocation = EditorUtility.SaveFilePanel("Select build location:", "", "", "");
                 EditorUserBuildSettings.SetBuildLocation(buildTarget, buildLocation);
                 return;
             }
@@ -89,7 +89,7 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (!_buildExecuted && GUILayout.Button(new GUIContent("Build", "Build new version")))
                 {
-                    UnityEngine.Debug.Log("Bulding the player");
+                    UnityEngine.Debug.Log("Building the player");
                     errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
 
                     _buildExecuted = true;

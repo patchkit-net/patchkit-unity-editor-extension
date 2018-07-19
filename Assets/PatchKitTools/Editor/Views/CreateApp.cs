@@ -14,7 +14,7 @@ namespace PatchKit.Tools.Integration.Views
 
         private List<Views.App> _appViews;
 
-        private string newAppName = "NewApp";
+        private string _newAppName = "NewApp";
 
         public CreateApp(ApiUtils api)
         {
@@ -23,12 +23,8 @@ namespace PatchKit.Tools.Integration.Views
 
         private bool FindDuplicateApp(string name)
         {
-            var api = _api.GetApps();
-            for (int i = 0; i < api.Count; i++)
-            {
-                if (api[i].Name == name) return true;
-            }
-            return false;
+            List<AppData> api = _api.GetApps();
+            return api.Any(app => app.Name == name);
         }
         public void Show()
         {
@@ -45,7 +41,7 @@ namespace PatchKit.Tools.Integration.Views
             }
             EditorGUILayout.EndHorizontal();
 
-            newAppName = EditorGUILayout.TextField("Name: ", newAppName);
+            _newAppName = EditorGUILayout.TextField("Name: ", _newAppName);
             EditorGUILayout.BeginHorizontal();
             {
                 var buildTargetName = EditorUserBuildSettings.activeBuildTarget;
@@ -61,13 +57,13 @@ namespace PatchKit.Tools.Integration.Views
             }
             EditorGUILayout.EndHorizontal();
 
-            if (string.IsNullOrEmpty(newAppName))
+            if (string.IsNullOrEmpty(_newAppName))
             {
                 EditorGUILayout.HelpBox("Application name cannot be empty.", MessageType.Error);
             }
             else
             {
-                if (!TextValidation.DoesStringContainOnlyAllowedCharacters(newAppName))
+                if (!TextValidation.DoesStringContainOnlyAllowedCharacters(_newAppName))
                 {
                     EditorGUILayout.HelpBox("Name only allows english characters and ':', '_' or '-'", MessageType.Error);
                 }
@@ -78,13 +74,13 @@ namespace PatchKit.Tools.Integration.Views
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Add", GUILayout.Width(100)))
                         {
-                            if (FindDuplicateApp(newAppName))
+                            if (FindDuplicateApp(_newAppName))
                             {
                                 EditorUtility.DisplayDialog("Warning", "Application name is already taken.\nChange it and try again.", "Ok");
                             }
                             else
                             {
-                                var newApp = _api.CreateNewApp(newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
+                                var newApp = _api.CreateNewApp(_newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
                                 if (OnAppSelected != null) OnAppSelected(newApp);
                             }
 

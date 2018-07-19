@@ -6,11 +6,11 @@ namespace PatchKit.Tools.Integration.Views
 {
     public class Publish : IView
     {
-        private Api.Models.Main.App? _selectedApp;
+        private Api.Models.Main.App _selectedApp;
 
         private readonly ApiKey _apiKey;
 
-        private readonly string _appSecret;
+       // private readonly string _appSecret;
         private readonly string _buildDir;
 
         private string _label = "";
@@ -20,10 +20,10 @@ namespace PatchKit.Tools.Integration.Views
 
         private bool _publishHasBeenExecuted;
 
-        public Publish(ApiKey apiKey, string appSecret, string buildDir, Api.Models.Main.App? selectedApp)
+        public Publish(ApiKey apiKey, string appSecret, string buildDir, Api.Models.Main.App selectedApp)
         {
             _apiKey = apiKey;
-            _appSecret = appSecret;
+        //    _appSecret = appSecret;
             _buildDir = buildDir;
             _selectedApp = selectedApp;
            
@@ -31,11 +31,12 @@ namespace PatchKit.Tools.Integration.Views
 
         public void Show()
         {
-            GUILayout.Label(_selectedApp.Value.Name, EditorStyles.centeredGreyMiniLabel);
+            GUILayout.Label(_selectedApp.Name, EditorStyles.centeredGreyMiniLabel);
             if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
             {
                 if (OnChangeApp != null) OnChangeApp();
             }
+
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
@@ -78,7 +79,7 @@ namespace PatchKit.Tools.Integration.Views
                 EditorGUILayout.BeginHorizontal();
                 {
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Send version",GUILayout.Width(150)))
+                    if (GUILayout.Button("Send version", GUILayout.Width(150)))
                     {
                         if (!TextValidation.DoesStringContainOnlyAllowedCharacters(_changelog) || !TextValidation.DoesStringContainOnlyAllowedCharacters(_label))
                         {
@@ -88,7 +89,7 @@ namespace PatchKit.Tools.Integration.Views
                             {
                             
                                 //Application.OpenURL("https://panel.patchkit.net/apps/" + _selectedApp.Value.Id);
-                                Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Value.Id+ "/versions");
+                                Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Id+ "/versions");
                             }
                         }
                         else
@@ -118,7 +119,7 @@ namespace PatchKit.Tools.Integration.Views
             {
                 BuildAndPublish.messagesView.AddMessage("Making version...", UnityEditor.MessageType.Info);
                 UnityEngine.Debug.Log("Making version...");
-                tools.MakeVersion(_apiKey.Key, _appSecret, _label, _changelog, _buildDir, _autoPublishAfterUpload, _forceOverrideDraft);
+                tools.MakeVersion(_apiKey.Key, _selectedApp.Secret, _label, _changelog, _buildDir, _autoPublishAfterUpload, _forceOverrideDraft);
 
                 if (OnPublish != null) OnPublish();
             }

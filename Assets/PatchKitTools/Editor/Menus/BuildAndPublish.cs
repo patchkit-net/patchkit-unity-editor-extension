@@ -8,7 +8,7 @@ namespace PatchKit.Tools.Integration
     {
         private ApiKey _apiKey;
         private ApiUtils _api = null;
-        private App? _selectedApp = null;
+        private App _selectedApp;
         private AppCache _appCache;
 
         private bool _reimportLock = false;
@@ -16,13 +16,13 @@ namespace PatchKit.Tools.Integration
         private Views.IView _currentView;
         public static Views.MessagesView messagesView = new Views.MessagesView();
 
-        [MenuItem("Tools/PatchKit/Build And Publish %&#b",false, 51)]
+        [MenuItem("Tools/PatchKit/Build And Publish %&#b", false, 51)]
         public static void ShowWindow()
         {
 
             EditorWindow window = EditorWindow.GetWindow(typeof(BuildAndPublish), false, "Build & Publish");
             window.maxSize = new UnityEngine.Vector2(410, 2000);
-            messagesView.messages.Clear();
+            messagesView.ClearList();
 
         }
 
@@ -70,14 +70,7 @@ namespace PatchKit.Tools.Integration
 
             _selectedApp = _api.GetAppInfo(_appCache.AppByPlatform(EditorUserBuildSettings.activeBuildTarget));
 
-            if (_selectedApp.HasValue)
-            {
-                BeginBuildView();
-            }
-            else
-            {
-                BeginSelectAppView();
-            }
+            BeginSelectAppView();
         }
 
         private void OnAppSelected(Api.Models.Main.App app)
@@ -98,7 +91,7 @@ namespace PatchKit.Tools.Integration
 
             _currentView = build;
 
-            messagesView.messages.Clear();
+            messagesView.ClearList();
         }
 
         private void BeginSelectAppView() // *** 1 view *** //
@@ -138,7 +131,7 @@ namespace PatchKit.Tools.Integration
 
         private void OnBuildSuccess() // *** 4 view *** //
         {
-            var publishApp = new Views.Publish(_apiKey, _selectedApp.Value.Secret, ResolveBuildDir(), _selectedApp);
+            var publishApp = new Views.Publish(_apiKey, _selectedApp.Secret, ResolveBuildDir(), _selectedApp);
 
             publishApp.OnPublishStart += OnPublishStart;
             publishApp.OnChangeApp += OnBuildChangeApp;
