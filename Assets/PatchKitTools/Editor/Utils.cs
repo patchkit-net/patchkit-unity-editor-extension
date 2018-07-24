@@ -28,7 +28,6 @@ namespace PatchKit.Tools.Integration
 
 #if UNITY_2017_1_OR_NEWER
                 case BuildTarget.StandaloneOSXIntel:
-                    //case BuildTarget.StandaloneOSX:  //tak bylo
 #else
                 case BuildTarget.StandaloneOSXIntel64:
 #endif
@@ -42,7 +41,6 @@ namespace PatchKit.Tools.Integration
         public static string ToolsExtractLocation()
         {
             const string postfix = "pk-tools";
-           // string basePath = null;
             
             Assert.IsFalse(string.IsNullOrEmpty(Config.ToolsExtractLocation));
 

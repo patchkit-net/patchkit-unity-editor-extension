@@ -131,7 +131,7 @@ namespace PatchKit.Tools.Integration
 
         private void OnBuildSuccess() // *** 4 view *** //
         {
-            Views.Publish publishApp = new Views.Publish(_apiKey, _selectedApp.Secret, ResolveBuildDir(), _selectedApp);
+            Views.Publish publishApp = new Views.Publish(_apiKey, ResolveBuildDir(), _selectedApp);
 
             publishApp.OnPublishStart += OnPublishStart;
             publishApp.OnChangeApp += OnBuildChangeApp;

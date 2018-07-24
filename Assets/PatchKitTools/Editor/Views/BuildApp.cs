@@ -12,9 +12,9 @@ namespace PatchKit.Tools.Integration.Views
         
         private Api.Models.Main.App? _selectedApp; 
 
-        public BuildApp(Api.Models.Main.App? selectedApp1)
+        public BuildApp(Api.Models.Main.App? selectedApp)
         {
-            _selectedApp = selectedApp1;
+            _selectedApp = selectedApp;
         }
 
         private bool _buildExecuted = false;
@@ -47,7 +47,10 @@ namespace PatchKit.Tools.Integration.Views
 
             if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
             {
-                if (OnChangeApp != null) OnChangeApp();
+                if (OnChangeApp != null)
+                {
+                    OnChangeApp();
+                }
             }
             EditorGUILayout.BeginHorizontal();
             { 

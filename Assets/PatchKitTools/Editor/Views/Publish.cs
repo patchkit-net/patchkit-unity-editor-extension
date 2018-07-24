@@ -16,10 +16,9 @@ namespace PatchKit.Tools.Integration.Views
         private string _changelog = "";
         private bool _autoPublishAfterUpload = true;
         private bool _forceOverrideDraft = true;
-
         private bool _publishHasBeenExecuted;
 
-        public Publish(ApiKey apiKey, string appSecret, string buildDir, Api.Models.Main.App selectedApp)
+        public Publish(ApiKey apiKey, string buildDir, Api.Models.Main.App selectedApp)
         {
             _apiKey = apiKey;
             _buildDir = buildDir;
