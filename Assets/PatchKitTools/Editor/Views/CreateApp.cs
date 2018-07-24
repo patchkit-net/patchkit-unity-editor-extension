@@ -12,7 +12,7 @@ namespace PatchKit.Tools.Integration.Views
     {
         private readonly ApiUtils _api;
 
-        private List<Views.App> _appViews;
+        private List<Views.App> _appViews = new List<Views.App>();
 
         private string _newAppName = "NewApp";
 
@@ -30,7 +30,10 @@ namespace PatchKit.Tools.Integration.Views
         {
             if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
             {
-                if (OnChangeApp != null) OnChangeApp();
+                if (OnChangeApp != null)
+                {
+                    OnChangeApp();
+                }
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -48,8 +51,8 @@ namespace PatchKit.Tools.Integration.Views
                 EditorGUILayout.LabelField(new GUIContent("Build target platform:      " + buildTargetName.ToString(), "PatchKit application target platform is unambiguous with current active project build platform."));
                 if (GUILayout.Button(new GUIContent("Change", "Change PatchKit application target platform"), GUILayout.Width(60)))
                 {
-                    if (EditorUtility.DisplayDialog("Warning", "To change application platform, You need to switch project platform. \n\nRemember, PatchKit support only: Windows, Mac, Linux platforms.",
-                           "Change project platform", "Cancel"))
+                    if (EditorUtility.DisplayDialog("Warning", "To change application platform, you need to switch the project platform. \n\nRemember, PatchKit support only: Windows, Mac, Linux platforms.",
+                           "Change the project platform", "Cancel"))
                     {
                         EditorWindow.GetWindow(System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
                     }
@@ -65,7 +68,7 @@ namespace PatchKit.Tools.Integration.Views
             {
                 if (!TextValidation.DoesStringContainOnlyAllowedCharacters(_newAppName))
                 {
-                    EditorGUILayout.HelpBox("Name only allows english characters and ':', '_' or '-'", MessageType.Error);
+                    EditorGUILayout.HelpBox("Name only allows English characters and ':', '_' or '-'", MessageType.Error);
                 }
                 else
                 {
@@ -81,7 +84,10 @@ namespace PatchKit.Tools.Integration.Views
                             else
                             {
                                 var newApp = _api.CreateNewApp(_newAppName, EditorUserBuildSettings.activeBuildTarget.ToPatchKitString());
-                                if (OnAppSelected != null) OnAppSelected(newApp);
+                                if (OnAppSelected != null)
+                                {
+                                    OnAppSelected(newApp);
+                                }
                             }
 
                         }

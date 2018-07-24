@@ -10,7 +10,6 @@ namespace PatchKit.Tools.Integration.Views
     {
         public void Show()
         {
-
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
@@ -25,12 +24,18 @@ namespace PatchKit.Tools.Integration.Views
                 if (GUILayout.Button(new GUIContent("Choose Existing App", 
                     "Select a PatchKit application from the list of existing applications."), GUILayout.Width(150)))
                 {
-                    if (OnSelectApp != null) OnSelectApp();
+                    if (OnSelectApp != null)
+                    {
+                        OnSelectApp();
+                    }
                 }
 
                 if (GUILayout.Button(new GUIContent("Create New App", "Create new PatchKit application."), GUILayout.Width(150)))
                 {
-                    if (OnCreateApp != null) OnCreateApp();
+                    if (OnCreateApp != null)
+                    {
+                        OnCreateApp();
+                    }
                 }
                 GUILayout.FlexibleSpace();
             }

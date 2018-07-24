@@ -87,7 +87,7 @@ namespace PatchKit.Tools.Integration.Views
             EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
             {
-                if (!_buildExecuted && GUILayout.Button(new GUIContent("Build", "Build new version")))
+                if (!_buildExecuted && GUILayout.Button(new GUIContent("Build", "Build a new version")))
                 {
                     UnityEngine.Debug.Log("Building the player");
                     errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
@@ -96,17 +96,27 @@ namespace PatchKit.Tools.Integration.Views
 
                     if (!string.IsNullOrEmpty(errorMessage))
                     {
-                        if (OnFailure != null) OnFailure(errorMessage);
+                        if (OnFailure != null)
+                        {
+                            OnFailure(errorMessage);
+                        }
                     }
                     else
                     {
-                        if (OnSuccess != null) OnSuccess();
+                        if (OnSuccess != null)
+                        {
+                            OnSuccess();
+                        }
+                       
                     }
                 }
 
-                if (buildDirectoryExists && buildExists && GUILayout.Button(new GUIContent("Skip", "Use last build")))
+                if (buildDirectoryExists && buildExists && GUILayout.Button(new GUIContent("Skip", "Use the last build")))
                 {
-                    if (OnSuccess != null) OnSuccess();
+                    if (OnSuccess != null)
+                    {
+                        OnSuccess();
+                    }
                 }
             }
             EditorGUILayout.EndHorizontal();

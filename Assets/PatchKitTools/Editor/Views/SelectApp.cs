@@ -60,13 +60,16 @@ namespace PatchKit.Tools.Integration.Views
             
             if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
             {
-                if (OnChangeApp != null) OnChangeApp();
+                if (OnChangeApp != null)
+                {
+                    OnChangeApp();
+                }
             }
 
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("\n Choose target PatchKit application from list below. \n", EditorStyles.boldLabel);
+                GUILayout.Label("\n Choose target PatchKit application from the list below. \n", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
@@ -92,7 +95,10 @@ namespace PatchKit.Tools.Integration.Views
                         
                         if (GUILayout.Button("Select", GUILayout.Width(100)))
                         {
-                            if (OnAppSelected != null) OnAppSelected(app.Data);
+                            if (OnAppSelected != null)
+                            {
+                                OnAppSelected(app.Data);
+                            }
                         }
                         
                         EditorGUILayout.EndHorizontal();
@@ -101,7 +107,7 @@ namespace PatchKit.Tools.Integration.Views
                 }
                 else
                 {
-                    EditorGUILayout.HelpBox("Failed to load any apps, maybe your api key is invalid.", MessageType.Warning);
+                    EditorGUILayout.HelpBox("Failed to load any apps, your api key might be invalid.", MessageType.Warning);
                 }
 
                 EditorGUILayout.EndScrollView();

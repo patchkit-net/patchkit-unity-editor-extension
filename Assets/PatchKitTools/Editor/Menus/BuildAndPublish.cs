@@ -83,7 +83,7 @@ namespace PatchKit.Tools.Integration
 
         private void BeginBuildView() // *** 3 view *** //
         {
-            var build = new Views.BuildApp(_selectedApp);
+            Views.BuildApp build = new Views.BuildApp(_selectedApp);
 
             build.OnSuccess += OnBuildSuccess;
             build.OnFailure += OnBuildFailed;
@@ -96,7 +96,7 @@ namespace PatchKit.Tools.Integration
 
         private void BeginSelectAppView() // *** 1 view *** //
         {
-            var chooseApp = new Views.ChooseApp();
+            Views.ChooseApp chooseApp = new Views.ChooseApp();
 
             chooseApp.OnCreateApp += OnCreateApp;
             chooseApp.OnSelectApp += OnSelectApp;
@@ -106,7 +106,7 @@ namespace PatchKit.Tools.Integration
 
         private void OnSelectApp() // *** 2.1 view *** //
         {
-            var selectApp = new Views.SelectApp(_api);
+            Views.SelectApp selectApp = new Views.SelectApp(_api);
 
             selectApp.OnAppSelected += OnAppSelected;
             selectApp.OnChangeApp += BeginSelectAppView;
@@ -116,7 +116,7 @@ namespace PatchKit.Tools.Integration
 
         private void OnCreateApp() // *** 2.2 view *** //
         {
-            var createApp = new Views.CreateApp(_api);
+            Views.CreateApp createApp = new Views.CreateApp(_api);
 
             createApp.OnAppSelected += OnAppSelected;
             createApp.OnChangeApp += BeginSelectAppView;
@@ -131,7 +131,7 @@ namespace PatchKit.Tools.Integration
 
         private void OnBuildSuccess() // *** 4 view *** //
         {
-            var publishApp = new Views.Publish(_apiKey, _selectedApp.Secret, ResolveBuildDir(), _selectedApp);
+            Views.Publish publishApp = new Views.Publish(_apiKey, _selectedApp.Secret, ResolveBuildDir(), _selectedApp);
 
             publishApp.OnPublishStart += OnPublishStart;
             publishApp.OnChangeApp += OnBuildChangeApp;

@@ -88,7 +88,7 @@ namespace PatchKit.Tools.Integration
             
             if (_type == Type.Cmd)
             {
-                args = "/K " + argumentsString; // /C wyłącza okno, /K zostawia okno
+                args = "/K " + argumentsString; // /C to close window, /K to hold
             }
             else if (_type == Type.GnomeTerminal)
             {

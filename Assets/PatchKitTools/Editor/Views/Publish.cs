@@ -10,7 +10,6 @@ namespace PatchKit.Tools.Integration.Views
 
         private readonly ApiKey _apiKey;
 
-       // private readonly string _appSecret;
         private readonly string _buildDir;
 
         private string _label = "";
@@ -23,7 +22,6 @@ namespace PatchKit.Tools.Integration.Views
         public Publish(ApiKey apiKey, string appSecret, string buildDir, Api.Models.Main.App selectedApp)
         {
             _apiKey = apiKey;
-        //    _appSecret = appSecret;
             _buildDir = buildDir;
             _selectedApp = selectedApp;
            
@@ -34,14 +32,17 @@ namespace PatchKit.Tools.Integration.Views
             GUILayout.Label(_selectedApp.Name, EditorStyles.centeredGreyMiniLabel);
             if (GUILayout.Button(new GUIContent("←", "Change application"), GUILayout.Width(40)))
             {
-                if (OnChangeApp != null) OnChangeApp();
+                if (OnChangeApp != null)
+                {
+                    OnChangeApp();
+                }
             }
 
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("\n                                 * Publishing *\n" +
-                    " The version will be sent with the following informations. \n", EditorStyles.boldLabel);
+                    " The version will be sent with the following information. \n", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
@@ -63,7 +64,7 @@ namespace PatchKit.Tools.Integration.Views
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField("Override draft version if exists");
+                EditorGUILayout.LabelField("Override draft version if it exists");
                 _forceOverrideDraft = EditorGUILayout.Toggle(_forceOverrideDraft);
             }
             EditorGUILayout.EndHorizontal();
@@ -83,8 +84,8 @@ namespace PatchKit.Tools.Integration.Views
                     {
                         if (!TextValidation.DoesStringContainOnlyAllowedCharacters(_changelog) || !TextValidation.DoesStringContainOnlyAllowedCharacters(_label))
                         {
-                            if(EditorUtility.DisplayDialog("Warning", "Use only english characters and ':', '_' or '-' in label and changelog input.\n \n" +
-                                "Unfortunately PatchKit plugin does not support other languages encoding. If you need to write correct information, please loggin to your PatchKit Panel and set Version Properties for your application.",
+                            if(EditorUtility.DisplayDialog("Warning", "Use only English characters and ':', '_' or '-' in label and changelog input.\n \n" +
+                                "Unfortunately PatchKit plugin does not support other languages encoding. If you need to write correct information, please login to your PatchKit Panel and set Version Properties for your application.",
                                 "Set using Panel", "Ok"))
                             {
                             
@@ -94,7 +95,10 @@ namespace PatchKit.Tools.Integration.Views
                         }
                         else
                         {
-                            if (OnPublishStart != null) OnPublishStart();
+                            if (OnPublishStart != null)
+                            {
+                                OnPublishStart();
+                            }
 
                             MakeVersionHeadless();
                         }
@@ -121,7 +125,10 @@ namespace PatchKit.Tools.Integration.Views
                 UnityEngine.Debug.Log("Making version...");
                 tools.MakeVersion(_apiKey.Key, _selectedApp.Secret, _label, _changelog, _buildDir, _autoPublishAfterUpload, _forceOverrideDraft);
 
-                if (OnPublish != null) OnPublish();
+                if (OnPublish != null)
+                {
+                    OnPublish();
+                }
             }
         }
 
