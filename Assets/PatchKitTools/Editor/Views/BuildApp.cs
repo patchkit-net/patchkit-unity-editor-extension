@@ -90,7 +90,8 @@ namespace PatchKit.Tools.Integration.Views
             EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
             {
-                if (!_buildExecuted && GUILayout.Button(new GUIContent("Build", "Build a new version")))
+                GUILayout.FlexibleSpace();
+                if (!_buildExecuted && GUILayout.Button(new GUIContent("Build", "Build a new version"), GUILayout.Width(150)))
                 {
                     UnityEngine.Debug.Log("Building the player");
                     errorMessage = BuildPipeline.BuildPlayer(scenes, buildLocation, buildTarget, BuildOptions.None);
@@ -113,7 +114,8 @@ namespace PatchKit.Tools.Integration.Views
                        
                     }
                 }
-
+                GUILayout.FlexibleSpace();
+                /*
                 if (buildDirectoryExists && buildExists && GUILayout.Button(new GUIContent("Skip", "Use the last build")))
                 {
                     if (OnSuccess != null)
@@ -121,6 +123,7 @@ namespace PatchKit.Tools.Integration.Views
                         OnSuccess();
                     }
                 }
+                */
             }
             EditorGUILayout.EndHorizontal();
         }

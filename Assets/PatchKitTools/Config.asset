@@ -13,11 +13,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ConnectionSettings:
     MainServer:
-      Host: staging.patchkit.waw.pl
-      Port: 80
-      UseHttps: 0
-    CacheServers: []
+      Host: api2.patchkit.net
+      Port: 0
+      UseHttps: 1
+    CacheServers:
+    - Host: api-cache.patchkit.net
+      Port: 0
+      UseHttps: 1
   Cache:
-    _appsList:
-    - Target: 24
-      Secret: 8b7055bfa5cc9d28caa93e77376db6b9
+    _appsList: []

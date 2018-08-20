@@ -54,10 +54,10 @@ namespace PatchKit.Tools.Integration
                 else
                 {
                     _selectedApp = _api.GetAppInfo(selectedAppSecret);
-                    BeginBuildView();
+                    BeginSelectAppView();
                 }
             }
-            messagesView.OnChangeApp += OnBuildChangeApp;
+            messagesView.OnChangeApp += BeginBuildView;
         }
 
         private void OnKeyResolved(ApiKey key)

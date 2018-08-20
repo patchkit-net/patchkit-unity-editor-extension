@@ -88,8 +88,8 @@ namespace PatchKit.Tools.Integration.Views
                                 "Set using Panel", "Ok"))
                             {
                             
-                                //Application.OpenURL("https://panel.patchkit.net/apps/" + _selectedApp.Value.Id);
-                                Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Id+ "/versions");
+                                Application.OpenURL("https://panel.patchkit.net/apps/" + _selectedApp.Id); //production
+                                //Application.OpenURL("http://staging.patchkit.waw.pl/apps/" + _selectedApp.Id+ "/versions"); //staging
                             }
                         }
                         else

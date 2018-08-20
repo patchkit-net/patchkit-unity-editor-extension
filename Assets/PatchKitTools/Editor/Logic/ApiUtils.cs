@@ -17,9 +17,10 @@ namespace PatchKit.Tools.Integration
                 throw new ArgumentException("apiKey");
             }
             _apiKey = apiKey;
-            _api = new Api.MainApiConnection(
-                Config.Instance().ConnectionSettings
-            );
+            _api = new Api.MainApiConnection(Config.Instance().ConnectionSettings)
+            {
+                HttpClient = new PatchKit.Tools.Integration.WebRequestWraps.UnityHttpClient()
+            };
 
             if (_api == null)
             {
@@ -51,7 +52,7 @@ namespace PatchKit.Tools.Integration
             }
             catch(Exception e)
             {
-                UnityEngine.Debug.LogError(e);
+                UnityEngine.Debug.LogError("GetApps problem: "+ e);
                 return null;
             }
         }
