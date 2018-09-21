@@ -80,12 +80,13 @@ namespace PatchKit.Tools.Integration
                     UnityEngine.Debug.Log("Executing for windows...");
                     ExecuteWindows(tool, toolArguments);
                     break;
-                
+    #if UNITY_5_5_OR_NEWER
                 case RuntimePlatform.LinuxEditor:
                     BuildAndPublish.messagesView.AddMessage("Executing for linux...", UnityEditor.MessageType.Info);
                     UnityEngine.Debug.Log("Executing for linux...");
                     ExecuteLinux(tool, toolArguments);
                     break;
+    #endif
                 
                 case RuntimePlatform.OSXEditor:
                     throw new NotImplementedException();

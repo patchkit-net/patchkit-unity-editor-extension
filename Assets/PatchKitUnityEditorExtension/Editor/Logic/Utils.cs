@@ -41,7 +41,7 @@ namespace PatchKit.Tools.Integration
         public static string ToolsExtractLocation()
         {
             const string postfix = "pk-tools";
-            
+
             Assert.IsFalse(string.IsNullOrEmpty(Config.ToolsExtractLocation));
 
             return Path.Combine(Config.ToolsExtractLocation, postfix);
@@ -50,21 +50,23 @@ namespace PatchKit.Tools.Integration
         public static string PlatformToToolsSource(RuntimePlatform platform)
         {
             string basePath = null;
-            
+
             switch (platform)
             {
+#if UNITY_5_5_OR_NEWER
                 case RuntimePlatform.LinuxEditor:
                     basePath = Config.ToolsLocations.LinuxTools;
                     break;
-                
+    #endif
+
                 case RuntimePlatform.WindowsEditor:
                     basePath = Config.ToolsLocations.WindowsTools;
                     break;
-                    
+
                 case RuntimePlatform.OSXEditor:
                     basePath = Config.ToolsLocations.OsxTools;
                     break;
-                    
+
                 default:
                     throw new ArgumentException("Unsupported platform");
             }
@@ -75,7 +77,7 @@ namespace PatchKit.Tools.Integration
         public static void ExtractTools(string sourceZip, string target)
         {
             using (var zip = ZipFile.Read(sourceZip))
-            {                
+            {
                 zip.ExtractAll(target);
             }
         }
