@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Logic;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,18 +8,17 @@ namespace PatchKit.UnityEditorExtension.Menus
 {
 public class Applications : EditorWindow
 {
-    private Dictionary<AppPlatform, Views.EditableApp> _cachedAppsView;
+    private Dictionary<AppPlatform, Views.EditableApp> _savedAppsView;
 
     [MenuItem("Tools/PatchKit/Applications", false, 1)]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(Applications), false, "Applications");
+        GetWindow(typeof(Applications), false, "Applications");
     }
 
     private void Init()
     {
-        _cachedAppsView = Config.FindOrCreateInstance()
-            .GetSavedAppSecrets()
+        _savedAppsView = Config.GetSavedAppSecrets()
             .Where(x => x.Value.HasValue)
             .Select(
                 entry => new KeyValuePair<AppPlatform, Views.EditableApp>(
@@ -41,12 +39,12 @@ public class Applications : EditorWindow
 
     private void OnGUI()
     {
-        if (Config.FindOrCreateInstance().GetSavedApiKey() == null)
+        if (Config.GetSavedApiKey() == null)
         {
             Init();
         }
 
-        if (Config.FindOrCreateInstance().GetSavedApiKey() == null)
+        if (Config.GetSavedApiKey() == null)
         {
             EditorGUILayout.HelpBox(
                 "Please resolve the API key using the Account window.",
@@ -54,22 +52,19 @@ public class Applications : EditorWindow
         }
         else
         {
-            if (_cachedAppsView != null && _cachedAppsView.Count > 0)
+            if (_savedAppsView != null && _savedAppsView.Count > 0)
             {
                 GUILayout.Label(
                     "Currently cached app:",
                     EditorStyles.boldLabel);
 
-                foreach (var entry in _cachedAppsView)
+                foreach (var entry in _savedAppsView)
                 {
-                    GUILayout.Label(
-                        "For " + entry.Key.ToString(),
-                        EditorStyles.boldLabel);
+                    GUILayout.Label("For " + entry.Key, EditorStyles.boldLabel);
                     entry.Value.Show();
                     if (GUILayout.Button("Remove entry"))
                     {
-                        Config.FindOrCreateInstance()
-                            .ClearSavedAppSecret(entry.Key);
+                        Config.ClearSavedAppSecret(entry.Key);
                         Init();
                     }
 

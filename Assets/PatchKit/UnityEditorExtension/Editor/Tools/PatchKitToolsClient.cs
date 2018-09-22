@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Logic;
 using PatchKit.UnityEditorExtension.Menus;
 using UnityEngine.Assertions;
 using Environment = PatchKit.UnityEditorExtension.Core.Environment;

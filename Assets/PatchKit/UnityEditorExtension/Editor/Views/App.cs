@@ -18,16 +18,17 @@ public class App : IView
         _data = data;
     }
 
-    private bool _isCollapsed = true;
+    private bool _isCollapsed;
 
     public void Show()
     {
-        var displayName = _data.Name;
+        string displayName = _data.Name ?? string.Empty;
+
         EditorGUILayout.BeginVertical();
         {
             if (displayName.Length > 30)
             {
-                var shortName = displayName.Substring(0, 30);
+                string shortName = displayName.Substring(0, 30);
                 shortName += "...";
                 GUILayout.Label(
                     new GUIContent(shortName, displayName),

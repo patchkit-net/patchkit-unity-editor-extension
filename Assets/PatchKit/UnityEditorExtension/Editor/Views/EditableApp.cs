@@ -1,6 +1,5 @@
 ﻿using System;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Logic;
 using UnityEditor;
 using UnityEngine;
 
@@ -55,7 +54,7 @@ namespace PatchKit.UnityEditorExtension.Views
 
             if (_appData.HasValue)
             {
-                Config.FindOrCreateInstance().SetSavedAppSecret(new AppSecret(_appData.Value.Secret), _appPlatform);
+                Config.SetSavedAppSecret(new AppSecret(_appData.Value.Secret), _appPlatform);
                 _lastValidSecret = _secret;
             }
         }

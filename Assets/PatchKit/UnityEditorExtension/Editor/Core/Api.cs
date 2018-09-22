@@ -21,6 +21,8 @@ public static class Api
         public readonly List<App> List = new List<App>();
 
         public readonly ApiKey ApiKey;
+
+        public DateTime? LastFullUpdateDateTime;
     }
 
     [NotNull]
@@ -28,8 +30,7 @@ public static class Api
     {
         get
         {
-            return new MainApiConnection(
-                Config.FindOrCreateInstance().ApiConnectionSettings)
+            return new MainApiConnection(Config.ApiConnectionSettings)
             {
                 HttpClient = new UnityHttpClient()
             };
@@ -38,7 +39,7 @@ public static class Api
 
     private static ApiKey GetApiKey()
     {
-        ApiKey? savedApiKey = Config.FindOrCreateInstance().GetSavedApiKey();
+        ApiKey? savedApiKey = Config.GetSavedApiKey();
 
         Assert.IsTrue(savedApiKey.HasValue);
 
@@ -57,17 +58,42 @@ public static class Api
 
         _cachedApps = new CachedApps(apiKey);
         _cachedApps.List.AddRange(result);
+        _cachedApps.LastFullUpdateDateTime = DateTime.Now;
 
         return result;
+    }
+
+    private static bool ShouldGetAppsUseCache()
+    {
+        ApiKey apiKey = GetApiKey();
+
+        if (_cachedApps == null)
+        {
+            return false;
+        }
+
+        if (!_cachedApps.ApiKey.Equals(apiKey))
+        {
+            return false;
+        }
+
+        if (!_cachedApps.LastFullUpdateDateTime.HasValue)
+        {
+            return false;
+        }
+
+        TimeSpan timeSinceLastFullUpdate =
+            DateTime.Now - _cachedApps.LastFullUpdateDateTime.Value;
+
+        return timeSinceLastFullUpdate.TotalMinutes < 1.0;
     }
 
     [NotNull]
     public static App[] GetAppsCached()
     {
-        ApiKey apiKey = GetApiKey();
-
-        if (_cachedApps != null && _cachedApps.ApiKey.Equals(apiKey))
+        if (ShouldGetAppsUseCache())
         {
+            Assert.IsNotNull(_cachedApps);
             return _cachedApps.List.ToArray();
         }
 

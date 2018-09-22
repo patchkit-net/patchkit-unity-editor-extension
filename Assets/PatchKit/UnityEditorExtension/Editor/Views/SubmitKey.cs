@@ -1,6 +1,5 @@
 using System;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Logic;
 using UnityEditor;
 using UnityEngine;
 
@@ -42,8 +41,7 @@ public class SubmitKey : IView
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Submit", GUILayout.Width(100)))
                     {
-                        Config.FindOrCreateInstance()
-                            .SetSavedApiKey(apiKey.Value);
+                        Config.SetSavedApiKey(apiKey.Value);
 
                         if (OnKeyResolve != null)
                         {

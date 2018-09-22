@@ -65,7 +65,7 @@ public class Config : ScriptableObject
     }
 
     [NotNull]
-    public static Config FindOrCreateInstance()
+    private static Config FindOrCreateInstance()
     {
         Config instance = FindInstance();
 
@@ -87,14 +87,16 @@ public class Config : ScriptableObject
 
 #endif
 
-    public PatchKit.Api.ApiConnectionSettings ApiConnectionSettings
+    public static PatchKit.Api.ApiConnectionSettings ApiConnectionSettings
     {
         get
         {
+            Config instance = FindOrCreateInstance();
+
 #if PATCHKIT_UNITY_EDITOR_EXTENSION_DEV
-            if (_useOverrideApiConnectionSettings)
+            if (instance._useOverrideApiConnectionSettings)
             {
-                return _overrideApiConnectionSettings;
+                return instance._overrideApiConnectionSettings;
             }
 #endif
             return PatchKit.Api.MainApiConnection.GetDefaultSettings();
@@ -117,7 +119,7 @@ public class Config : ScriptableObject
     private string _savedMac64AppSecret;
 
     [NotNull]
-    public Dictionary<AppPlatform, AppSecret?> GetSavedAppSecrets()
+    public static Dictionary<AppPlatform, AppSecret?> GetSavedAppSecrets()
     {
         return new Dictionary<AppPlatform, AppSecret?>
         {
@@ -139,25 +141,27 @@ public class Config : ScriptableObject
         };
     }
 
-    public AppSecret? GetSavedAppSecret(AppPlatform platform)
+    public static AppSecret? GetSavedAppSecret(AppPlatform platform)
     {
+        Config instance = FindOrCreateInstance();
+
         string value;
         switch (platform)
         {
             case AppPlatform.Windows32:
-                value = _savedWindows32AppSecret;
+                value = instance._savedWindows32AppSecret;
                 break;
             case AppPlatform.Windows64:
-                value = _savedWindows64AppSecret;
+                value = instance._savedWindows64AppSecret;
                 break;
             case AppPlatform.Linux32:
-                value = _savedLinux32AppSecret;
+                value = instance._savedLinux32AppSecret;
                 break;
             case AppPlatform.Linux64:
-                value = _savedLinux64AppSecret;
+                value = instance._savedLinux64AppSecret;
                 break;
             case AppPlatform.Mac64:
-                value = _savedMac64AppSecret;
+                value = instance._savedMac64AppSecret;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -176,29 +180,33 @@ public class Config : ScriptableObject
         }
     }
 
-    public void SetSavedAppSecret(AppSecret appSecret, AppPlatform platform)
+    public static void SetSavedAppSecret(
+        AppSecret appSecret,
+        AppPlatform platform)
     {
         if (!appSecret.IsValid)
         {
             throw new InvalidArgumentException("appSecret");
         }
 
+        Config instance = FindOrCreateInstance();
+
         switch (platform)
         {
             case AppPlatform.Windows32:
-                _savedWindows32AppSecret = appSecret.Value;
+                instance._savedWindows32AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Windows64:
-                _savedWindows64AppSecret = appSecret.Value;
+                instance._savedWindows64AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Linux32:
-                _savedLinux32AppSecret = appSecret.Value;
+                instance._savedLinux32AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Linux64:
-                _savedLinux64AppSecret = appSecret.Value;
+                instance._savedLinux64AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Mac64:
-                _savedMac64AppSecret = appSecret.Value;
+                instance._savedMac64AppSecret = appSecret.Value;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -207,28 +215,30 @@ public class Config : ScriptableObject
                     null);
         }
 
-        EditorUtility.SetDirty(this);
+        EditorUtility.SetDirty(instance);
         AssetDatabase.SaveAssets();
     }
 
-    public void ClearSavedAppSecret(AppPlatform platform)
+    public static void ClearSavedAppSecret(AppPlatform platform)
     {
+        Config instance = FindOrCreateInstance();
+
         switch (platform)
         {
             case AppPlatform.Windows32:
-                _savedWindows32AppSecret = string.Empty;
+                instance._savedWindows32AppSecret = string.Empty;
                 break;
             case AppPlatform.Windows64:
-                _savedWindows64AppSecret = string.Empty;
+                instance._savedWindows64AppSecret = string.Empty;
                 break;
             case AppPlatform.Linux32:
-                _savedLinux32AppSecret = string.Empty;
+                instance._savedLinux32AppSecret = string.Empty;
                 break;
             case AppPlatform.Linux64:
-                _savedLinux64AppSecret = string.Empty;
+                instance._savedLinux64AppSecret = string.Empty;
                 break;
             case AppPlatform.Mac64:
-                _savedMac64AppSecret = string.Empty;
+                instance._savedMac64AppSecret = string.Empty;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -237,7 +247,7 @@ public class Config : ScriptableObject
                     null);
         }
 
-        EditorUtility.SetDirty(this);
+        EditorUtility.SetDirty(instance);
         AssetDatabase.SaveAssets();
     }
 
@@ -246,7 +256,7 @@ public class Config : ScriptableObject
 
     private const string ApiKeyEncryptionKey = "42";
 
-    public void SetSavedApiKey(ApiKey apiKey)
+    public static void SetSavedApiKey(ApiKey apiKey)
     {
         if (!apiKey.IsValid)
         {
@@ -263,7 +273,7 @@ public class Config : ScriptableObject
         PlayerPrefs.Save();
     }
 
-    public ApiKey? GetSavedApiKey()
+    public static ApiKey? GetSavedApiKey()
     {
         if (PlayerPrefs.HasKey(ApiKeyPlayerPrefsKey))
         {
@@ -291,7 +301,7 @@ public class Config : ScriptableObject
         return null;
     }
 
-    public void ClearSavedApiKey()
+    public static void ClearSavedApiKey()
     {
         PlayerPrefs.DeleteKey(ApiKeyPlayerPrefsKey);
         PlayerPrefs.Save();

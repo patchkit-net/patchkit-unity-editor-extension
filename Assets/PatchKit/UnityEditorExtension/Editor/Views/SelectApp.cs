@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Logic;
 using UnityEditor;
 using UnityEngine;
 using AppData = PatchKit.Api.Models.Main.App;
@@ -46,7 +45,7 @@ public class SelectApp : IView
         }
 
         var buildTargetName =
-            Environment.BuildPlatform.Value;
+            AppBuild.Platform.Value;
 
         _appViews = apps
             .Where(
@@ -79,7 +78,7 @@ public class SelectApp : IView
         EditorGUILayout.EndHorizontal();
 
         ShouldFilterByPlatform = EditorGUILayout.ToggleLeft(
-            string.Format("Show only PatchKit apps for current build target ({0})", Environment.BuildPlatform.Value.ToDisplayString()),
+            string.Format("Show only PatchKit apps for current build target ({0})", AppBuild.Platform.Value.ToDisplayString()),
             ShouldFilterByPlatform, GUILayout.ExpandWidth(true));
 
         //TODO: Maybe there's a way to detect it

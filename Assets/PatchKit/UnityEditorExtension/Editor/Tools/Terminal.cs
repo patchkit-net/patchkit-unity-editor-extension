@@ -13,9 +13,6 @@ public class Terminal
 {
     private readonly string _startCommand;
 
-    [NotNull]
-    private readonly Process _process;
-
     public Terminal(string startCommand)
     {
         _startCommand = startCommand;
@@ -37,8 +34,6 @@ public class Terminal
 
         Process process = Process.Start(processStartInfo);
         Assert.IsNotNull(process);
-
-        _process = process;
     }
 
     [NotNull]

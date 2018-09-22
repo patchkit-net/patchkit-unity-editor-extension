@@ -25,36 +25,5 @@ public static class Environment
             }
         }
     }
-
-    public static AppPlatform? BuildPlatform
-    {
-        get
-        {
-            switch (EditorUserBuildSettings.activeBuildTarget)
-            {
-                case BuildTarget.StandaloneWindows:
-                    return AppPlatform.Windows32;
-
-                case BuildTarget.StandaloneWindows64:
-                    return AppPlatform.Windows64;
-
-                case BuildTarget.StandaloneLinux:
-                    return AppPlatform.Linux32;
-
-                case BuildTarget.StandaloneLinux64:
-                    return AppPlatform.Linux64;
-
-#if UNITY_2017_1_OR_NEWER
-                case BuildTarget.StandaloneOSXIntel:
-#else
-                case BuildTarget.StandaloneOSXIntel64:
-#endif
-                    return AppPlatform.Mac64;
-
-                default:
-                    return null;
-            }
-        }
-    }
 }
 }
