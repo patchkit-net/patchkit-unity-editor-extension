@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine.Assertions;
 
 namespace PatchKit.UnityEditorExtension.Core
@@ -27,8 +28,8 @@ public static class AppBuild
                 case BuildTarget.StandaloneLinux64:
                     return AppPlatform.Linux64;
 
-#if UNITY_2017_1_OR_NEWER
-                case BuildTarget.StandaloneOSXIntel:
+#if UNITY_2017_3_OR_NEWER
+                case BuildTarget.StandaloneOSX:
 #else
                 case BuildTarget.StandaloneOSXIntel64:
 #endif
@@ -134,11 +135,25 @@ public static class AppBuild
 
     public static string Create()
     {
-        return BuildPipeline.BuildPlayer(
+#if UNITY_2018_1_OR_NEWER
+        BuildReport report = BuildPipeline.BuildPlayer(
             Scenes.ToArray(),
             Location,
             EditorUserBuildSettings.activeBuildTarget,
             BuildOptions.None);
+
+        Assert.IsNotNull(report);
+
+        return report.summary.result == BuildResult.Succeeded
+            ? null
+            : "Build has failed.";
+#else
+return BuildPipeline.BuildPlayer(
+            Scenes.ToArray(),
+            Location,
+            EditorUserBuildSettings.activeBuildTarget,
+            BuildOptions.None);
+        #endif
     }
 
     public static void OpenLocationDialog()
