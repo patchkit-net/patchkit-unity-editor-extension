@@ -18,7 +18,7 @@ public class Applications : EditorWindow
 
     private void Init()
     {
-        _savedAppsView = Config.GetSavedAppSecrets()
+        _savedAppsView = Config.GetLinkedAppSecrets()
             .Where(x => x.Value.HasValue)
             .Select(
                 entry => new KeyValuePair<AppPlatform, Views.EditableApp>(
@@ -64,7 +64,7 @@ public class Applications : EditorWindow
                     entry.Value.Show();
                     if (GUILayout.Button("Remove entry"))
                     {
-                        Config.ClearSavedAppSecret(entry.Key);
+                        Config.ClearLinkedAppSecret(entry.Key);
                         Init();
                     }
 

@@ -54,7 +54,7 @@ namespace PatchKit.UnityEditorExtension.Views
 
             if (_appData.HasValue)
             {
-                Config.SetSavedAppSecret(new AppSecret(_appData.Value.Secret), _appPlatform);
+                Config.SetLinkedAppSecret(new AppSecret(_appData.Value.Secret), _appPlatform);
                 _lastValidSecret = _secret;
             }
         }

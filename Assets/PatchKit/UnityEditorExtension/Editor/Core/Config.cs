@@ -104,44 +104,44 @@ public class Config : ScriptableObject
     }
 
     [SerializeField]
-    private string _savedWindows32AppSecret;
+    private string _linkedWindows32AppSecret;
 
     [SerializeField]
-    private string _savedWindows64AppSecret;
+    private string _linkedWindows64AppSecret;
 
     [SerializeField]
-    private string _savedLinux32AppSecret;
+    private string _linkedLinux32AppSecret;
 
     [SerializeField]
-    private string _savedLinux64AppSecret;
+    private string _linkedLinux64AppSecret;
 
     [SerializeField]
-    private string _savedMac64AppSecret;
+    private string _linkedMac64AppSecret;
 
     [NotNull]
-    public static Dictionary<AppPlatform, AppSecret?> GetSavedAppSecrets()
+    public static Dictionary<AppPlatform, AppSecret?> GetLinkedAppSecrets()
     {
         return new Dictionary<AppPlatform, AppSecret?>
         {
             {
-                AppPlatform.Windows32, GetSavedAppSecret(AppPlatform.Windows32)
+                AppPlatform.Windows32, GetLinkedAppSecret(AppPlatform.Windows32)
             },
             {
-                AppPlatform.Windows64, GetSavedAppSecret(AppPlatform.Windows64)
+                AppPlatform.Windows64, GetLinkedAppSecret(AppPlatform.Windows64)
             },
             {
-                AppPlatform.Linux32, GetSavedAppSecret(AppPlatform.Linux32)
+                AppPlatform.Linux32, GetLinkedAppSecret(AppPlatform.Linux32)
             },
             {
-                AppPlatform.Linux64, GetSavedAppSecret(AppPlatform.Linux64)
+                AppPlatform.Linux64, GetLinkedAppSecret(AppPlatform.Linux64)
             },
             {
-                AppPlatform.Mac64, GetSavedAppSecret(AppPlatform.Mac64)
+                AppPlatform.Mac64, GetLinkedAppSecret(AppPlatform.Mac64)
             }
         };
     }
 
-    public static AppSecret? GetSavedAppSecret(AppPlatform platform)
+    public static AppSecret? GetLinkedAppSecret(AppPlatform platform)
     {
         Config instance = FindOrCreateInstance();
 
@@ -149,19 +149,19 @@ public class Config : ScriptableObject
         switch (platform)
         {
             case AppPlatform.Windows32:
-                value = instance._savedWindows32AppSecret;
+                value = instance._linkedWindows32AppSecret;
                 break;
             case AppPlatform.Windows64:
-                value = instance._savedWindows64AppSecret;
+                value = instance._linkedWindows64AppSecret;
                 break;
             case AppPlatform.Linux32:
-                value = instance._savedLinux32AppSecret;
+                value = instance._linkedLinux32AppSecret;
                 break;
             case AppPlatform.Linux64:
-                value = instance._savedLinux64AppSecret;
+                value = instance._linkedLinux64AppSecret;
                 break;
             case AppPlatform.Mac64:
-                value = instance._savedMac64AppSecret;
+                value = instance._linkedMac64AppSecret;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -180,7 +180,7 @@ public class Config : ScriptableObject
         }
     }
 
-    public static void SetSavedAppSecret(
+    public static void SetLinkedAppSecret(
         AppSecret appSecret,
         AppPlatform platform)
     {
@@ -194,19 +194,19 @@ public class Config : ScriptableObject
         switch (platform)
         {
             case AppPlatform.Windows32:
-                instance._savedWindows32AppSecret = appSecret.Value;
+                instance._linkedWindows32AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Windows64:
-                instance._savedWindows64AppSecret = appSecret.Value;
+                instance._linkedWindows64AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Linux32:
-                instance._savedLinux32AppSecret = appSecret.Value;
+                instance._linkedLinux32AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Linux64:
-                instance._savedLinux64AppSecret = appSecret.Value;
+                instance._linkedLinux64AppSecret = appSecret.Value;
                 break;
             case AppPlatform.Mac64:
-                instance._savedMac64AppSecret = appSecret.Value;
+                instance._linkedMac64AppSecret = appSecret.Value;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -219,26 +219,26 @@ public class Config : ScriptableObject
         AssetDatabase.SaveAssets();
     }
 
-    public static void ClearSavedAppSecret(AppPlatform platform)
+    public static void ClearLinkedAppSecret(AppPlatform platform)
     {
         Config instance = FindOrCreateInstance();
 
         switch (platform)
         {
             case AppPlatform.Windows32:
-                instance._savedWindows32AppSecret = string.Empty;
+                instance._linkedWindows32AppSecret = string.Empty;
                 break;
             case AppPlatform.Windows64:
-                instance._savedWindows64AppSecret = string.Empty;
+                instance._linkedWindows64AppSecret = string.Empty;
                 break;
             case AppPlatform.Linux32:
-                instance._savedLinux32AppSecret = string.Empty;
+                instance._linkedLinux32AppSecret = string.Empty;
                 break;
             case AppPlatform.Linux64:
-                instance._savedLinux64AppSecret = string.Empty;
+                instance._linkedLinux64AppSecret = string.Empty;
                 break;
             case AppPlatform.Mac64:
-                instance._savedMac64AppSecret = string.Empty;
+                instance._linkedMac64AppSecret = string.Empty;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(

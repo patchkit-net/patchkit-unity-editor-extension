@@ -40,7 +40,7 @@ public class BuildAndPublish : EditorWindow
         else
         {
             AppSecret? selectedAppSecret =
-                Config.GetSavedAppSecret(AppBuild.Platform.Value);
+                Config.GetLinkedAppSecret(AppBuild.Platform.Value);
 
             if (!selectedAppSecret.HasValue)
             {
@@ -58,7 +58,7 @@ public class BuildAndPublish : EditorWindow
 
     private void OnKeyResolved()
     {
-        var appSecret = Config.GetSavedAppSecret(AppBuild.Platform.Value);
+        var appSecret = Config.GetLinkedAppSecret(AppBuild.Platform.Value);
 
         if (appSecret.HasValue)
         {
@@ -72,7 +72,7 @@ public class BuildAndPublish : EditorWindow
     {
         _selectedApp = app;
 
-        Config.SetSavedAppSecret(
+        Config.SetLinkedAppSecret(
             new AppSecret(app.Secret),
             AppBuild.Platform.Value);
 
