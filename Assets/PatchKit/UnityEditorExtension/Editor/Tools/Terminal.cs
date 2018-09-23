@@ -105,11 +105,26 @@ public class Terminal
     [NotNull]
     private ProcessStartInfo GetMacInfo()
     {
-        BuildAndPublish.messagesView.AddMessage(
-            "Unknown or unsupported terminal.",
-            UnityEditor.MessageType.Warning);
+        File.WriteAllText(OsxLaunchScriptPath, OsxLaunchScript);
 
-        throw new NotImplementedException();
+        FileSystem.AddFileExecutablePermissions(OsxLaunchScriptPath);
+
+        return new ProcessStartInfo("/bin/bash",
+            string.Format("-c \"sh {0} '{1}' '{2}'\"",
+                          OsxLaunchScriptPath,
+                          _startCommand,
+                          Directory.GetCurrentDirectory()));
     }
+
+    private const string OsxLaunchScriptPath = "Temp/osx_terminal.sh";
+
+    private const string OsxLaunchScript =
+        "#!/bin/bash\n"+
+        "cmd=\"$1\";\n"+
+        "dir=\"$2\";\n" +
+        "osascript <<EOF\n" +
+        "    tell application \"Terminal\" to do script \"cd $dir; $cmd\"\n" +
+        "EOF\n" +
+        "exit 0\n";
 }
 }

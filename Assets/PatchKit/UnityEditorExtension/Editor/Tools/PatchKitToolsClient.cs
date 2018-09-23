@@ -108,9 +108,10 @@ public class PatchKitToolsClient : IDisposable
                 break;
             case EnvironmentPlatform.Mac:
                 BuildAndPublish.messagesView.AddMessage(
-                    "Unsupported platform",
+                    "Executing for Mac...",
                     UnityEditor.MessageType.Info);
-                throw new NotImplementedException();
+                ExecuteMac(command);
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -124,6 +125,18 @@ public class PatchKitToolsClient : IDisposable
         PluginAssert.IsTrue(File.Exists(path));
 
         string executable = string.Format("bash -c '{0} {1}'", path, command);
+
+        new Terminal(executable);
+    }
+
+    private void ExecuteMac(string command)
+    {
+        string path =
+            Path.GetFullPath(Path.Combine(TempLocation, "patchkit-tools"));
+
+        PluginAssert.IsTrue(File.Exists(path));
+
+        string executable = string.Format("{0} {1}", path, command);
 
         new Terminal(executable);
     }

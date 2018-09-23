@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
+#if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build.Reporting;
+#endif
 using UnityEngine.Assertions;
 
 namespace PatchKit.UnityEditorExtension.Core
@@ -178,16 +180,19 @@ return BuildPipeline.BuildPlayer(
                 throw new ArgumentOutOfRangeException();
         }
 
-        string location = EditorUtility.SaveFilePanel(
-            "Select build location:",
-            "",
-            "",
-            extension);
-
-        if (!string.IsNullOrEmpty(location))
+        EditorApplication.delayCall += () =>
         {
-            Location = location;
-        }
+            string location = EditorUtility.SaveFilePanel(
+                "Select build location:",
+                "",
+                "",
+                extension);
+
+            if (!string.IsNullOrEmpty(location))
+            {
+                Location = location;
+            }
+        };
     }
 }
 }
