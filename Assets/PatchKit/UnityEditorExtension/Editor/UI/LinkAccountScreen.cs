@@ -1,81 +1,54 @@
-using System;
-using JetBrains.Annotations;
+using PatchKit.UnityEditorExtension.Core;
 using UnityEditor;
 using UnityEngine;
 
-namespace PatchKit.UnityEditorExtension.Views
+namespace PatchKit.UnityEditorExtension.UI
 {
 public class LinkAccountScreen : Screen
 {
-    [NotNull]
-    private readonly LinkAccountMediator _mediator;
-
-    [NotNull]
-    public Action<LinkAccountScreen> OnLinked { get; private set; }
-
-    [NotNull]
-    public Action<LinkAccountScreen> OnCanceled { get; private set; }
-
-    public LinkAccountScreen(
-        [NotNull] Action<LinkAccountScreen> onLinked,
-        [NotNull] Action<LinkAccountScreen> onCanceled,
-        [NotNull] Window window)
-        : base(window)
+    public class LinkedResult
     {
-        if (onLinked == null)
+        public readonly ApiKey ApiKey;
+
+        public LinkedResult(ApiKey apiKey)
         {
-            throw new ArgumentNullException("onLinked");
+            ApiKey = apiKey;
         }
-
-        if (onCanceled == null)
-        {
-            throw new ArgumentNullException("onCanceled");
-        }
-
-        OnLinked = onLinked;
-        OnCanceled = onCanceled;
-
-        _mediator = new LinkAccountMediator(this);
     }
+
+    #region GUI
 
     public override string Title
     {
         get { return "Link Account"; }
     }
 
-    public override Vector2 Size
+    public override Vector2? Size
     {
         get { return new Vector2(400f, 145f); }
     }
 
-    public override void Initialize()
+    public override void UpdateIfActive()
     {
-        _mediator.Initialize();
-    }
-
-    public override bool ShouldBePopped()
-    {
-        return false;
     }
 
     public override void Draw()
     {
         GUILayout.Label("Link your PatchKit account", EditorStyles.boldLabel);
-        _mediator.NewApiKey = EditorGUILayout.TextField(
-            "API Key:",
-            _mediator.NewApiKey);
+
+        _newApiKey = EditorGUILayout.TextField("API Key:", _newApiKey);
 
         if (GUILayout.Button("Find your API key", GUILayout.ExpandWidth(true)))
         {
-            Dispatch(() => _mediator.OpenProfileWebpage());
+            Dispatch(() => OpenProfileWebpage());
         }
 
-        if (!string.IsNullOrEmpty(_mediator.NewApiKey))
+        if (!string.IsNullOrEmpty(_newApiKey))
         {
-            if (_mediator.NewApiKeyValidationError != null)
+            if (NewApiKeyValidationError != null)
             {
                 EditorGUILayout.HelpBox(
-                    "Invalid key: " + _mediator.NewApiKeyValidationError,
+                    NewApiKeyValidationError,
                     MessageType.Error);
             }
             else
@@ -87,7 +60,7 @@ public class LinkAccountScreen : Screen
 
                     if (GUILayout.Button("Submit", GUILayout.Width(100)))
                     {
-                        Dispatch(() => _mediator.Link());
+                        Dispatch(() => Link());
                     }
 
                     GUILayout.FlexibleSpace();
@@ -109,12 +82,62 @@ public class LinkAccountScreen : Screen
 
             if (GUILayout.Button("Cancel", GUILayout.Width(100)))
             {
-                Dispatch(() => _mediator.Cancel());
+                Dispatch(() => Cancel());
             }
 
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
     }
+
+    #endregion
+
+    #region Data
+
+    [SerializeField]
+    private string _newApiKey;
+
+    #endregion
+
+    #region Logic
+
+    public void Initialize()
+    {
+        ApiKey? savedApiKey = Config.GetLinkedAccountApiKey();
+
+        _newApiKey = savedApiKey.HasValue
+            ? savedApiKey.Value.Value
+            : string.Empty;
+    }
+
+    public override void OnActivatedFromTop(object result)
+    {
+    }
+
+    private string NewApiKeyValidationError
+    {
+        get { return ApiKey.GetValidationError(_newApiKey); }
+    }
+
+    private void Link()
+    {
+        var apiKey = new ApiKey(_newApiKey);
+
+        Config.LinkAccount(apiKey);
+
+        Pop(new LinkedResult(apiKey));
+    }
+
+    private void OpenProfileWebpage()
+    {
+        Application.OpenURL("https://panel.patchkit.net/users/profile");
+    }
+
+    private void Cancel()
+    {
+        Pop(null);
+    }
+
+    #endregion
 }
 }

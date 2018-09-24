@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace PatchKit.UnityEditorExtension.Views
+namespace PatchKit.UnityEditorExtension.UI
 {
 public static class Style
 {

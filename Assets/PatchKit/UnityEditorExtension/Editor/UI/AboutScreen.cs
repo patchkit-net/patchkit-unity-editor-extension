@@ -1,27 +1,23 @@
-using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
-namespace PatchKit.UnityEditorExtension.Views
+namespace PatchKit.UnityEditorExtension.UI
 {
 public class AboutScreen : Screen
 {
-    public AboutScreen([NotNull] Window window)
-        : base(window)
-    {
-    }
+    #region GUI
 
     public override string Title
     {
         get { return "About"; }
     }
 
-    public override Vector2 Size
+    public override Vector2? Size
     {
         get { return new Vector2(400, 400); }
     }
 
-    public override void Initialize()
+    public override void UpdateIfActive()
     {
     }
 
@@ -73,9 +69,18 @@ public class AboutScreen : Screen
         GUILayout.Label("\nVersion 1.0.0", EditorStyles.centeredGreyMiniLabel);
     }
 
-    public override bool ShouldBePopped()
+    #endregion
+
+    #region Logic
+
+    public void Initialize()
     {
-        return false;
     }
+
+    public override void OnActivatedFromTop(object result)
+    {
+    }
+
+    #endregion
 }
 }

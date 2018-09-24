@@ -11,8 +11,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b372914c5139948a2de54ffc2f96b3, type: 3}
   m_Name: Config
   m_EditorClassIdentifier: 
-  _linkedWindows32AppSecret: 
-  _linkedWindows64AppSecret: 
+  _useOverrideApiConnectionSettings: 0
+  _overrideApiConnectionSettings:
+    MainServer:
+      Host: api2.patchkit.net
+      Port: 0
+      UseHttps: 1
+    CacheServers:
+    - Host: api-cache.patchkit.net
+      Port: 0
+      UseHttps: 1
   _linkedLinux32AppSecret: 
   _linkedLinux64AppSecret: 
   _linkedMac64AppSecret: 

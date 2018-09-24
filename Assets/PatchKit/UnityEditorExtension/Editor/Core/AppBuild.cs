@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -63,70 +64,22 @@ public static class AppBuild
             string value = EditorUserBuildSettings.GetBuildLocation(
                 EditorUserBuildSettings.activeBuildTarget);
 
-            if (string.IsNullOrEmpty(value))
+            string validationError = GetLocationValidationError(value);
+
+            if (validationError == null)
             {
-                return null;
-            }
-
-            switch (Platform)
-            {
-                case AppPlatform.Windows32:
-                case AppPlatform.Windows64:
-                    if (value.EndsWith(".exe"))
-                    {
-                        return value;
-                    }
-
-                    break;
-                case AppPlatform.Linux32:
-                case AppPlatform.Linux64:
-                    return value;
-                case AppPlatform.Mac64:
-                    if (value.EndsWith(".app"))
-                    {
-                        return value;
-                    }
-
-                    break;
-                case null:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                return value;
             }
 
             return null;
         }
         set
         {
-            if (string.IsNullOrEmpty(value))
+            string validationError = GetLocationValidationError(value);
+
+            if (validationError != null)
             {
-                throw new ArgumentException();
-            }
-
-            switch (Platform)
-            {
-                case AppPlatform.Windows32:
-                case AppPlatform.Windows64:
-                    if (!value.EndsWith(".exe"))
-                    {
-                        throw new ArgumentException();
-                    }
-
-                    break;
-                case AppPlatform.Linux32:
-                case AppPlatform.Linux64:
-                    break;
-                case AppPlatform.Mac64:
-                    if (!value.EndsWith(".app"))
-                    {
-                        throw new ArgumentException();
-                    }
-
-                    break;
-                case null:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                throw new ValidationException(validationError);
             }
 
             EditorUserBuildSettings.SetBuildLocation(
@@ -135,8 +88,98 @@ public static class AppBuild
         }
     }
 
-    public static string Create()
+    private static bool AreThereOnlyBuildEntries(
+        [NotNull] string location,
+        params string[] buildFiles)
     {
+        if (location == null)
+        {
+            throw new ArgumentNullException("location");
+        }
+
+        if (buildFiles == null)
+        {
+            throw new ArgumentNullException("buildFiles");
+        }
+
+        string parentDirPath = Path.GetDirectoryName(location);
+
+        Assert.IsNotNull(parentDirPath);
+
+        string[] entries = Directory.GetFileSystemEntries(parentDirPath, "*");
+
+        return entries.All(
+            x => Path.GetDirectoryName(x) != parentDirPath ||
+                buildFiles.Contains(Path.GetFileName(x)));
+    }
+
+    private static string GetLocationValidationError(string location)
+    {
+        if (location == null)
+        {
+            return "Build location cannot be null.";
+        }
+
+        if (string.IsNullOrEmpty(location))
+        {
+            return "Build location cannot be empty.";
+        }
+
+        switch (Platform)
+        {
+            case AppPlatform.Windows32:
+            case AppPlatform.Windows64:
+                if (!location.EndsWith(".exe"))
+                {
+                    return
+                        "Invalid build location file extension. Should be .exe.";
+                }
+
+                string winBuildFileName = Path.GetFileName(location);
+                string winBuildDirName =
+                    winBuildFileName.Replace(".exe", "_Data");
+
+                if (!AreThereOnlyBuildEntries(
+                    location,
+                    winBuildFileName,
+                    winBuildDirName,
+                    "player_win_x86.pdb",
+                    "player_win_x86_s.pdb"))
+                {
+                    return "Build location must be an empty directory.";
+                }
+
+                break;
+            case AppPlatform.Linux32:
+            case AppPlatform.Linux64:
+                break;
+            case AppPlatform.Mac64:
+                if (!location.EndsWith(".app"))
+                {
+                    return
+                        "Invalid build location file extension. Should be .app.";
+                }
+
+                string macBuildFileName = Path.GetFileName(location);
+
+                if (!AreThereOnlyBuildEntries(location, macBuildFileName))
+                {
+                    return "Build location must be an empty directory.";
+                }
+
+                break;
+            case null:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        return null;
+    }
+
+    public static bool TryCreate()
+    {
+        bool success;
 #if UNITY_2018_1_OR_NEWER
         BuildReport report = BuildPipeline.BuildPlayer(
             Scenes.ToArray(),
@@ -146,16 +189,63 @@ public static class AppBuild
 
         Assert.IsNotNull(report);
 
-        return report.summary.result == BuildResult.Succeeded
-            ? null
-            : "Build has failed.";
+        success = report.summary.result == BuildResult.Succeeded;
 #else
-return BuildPipeline.BuildPlayer(
-            Scenes.ToArray(),
-            Location,
-            EditorUserBuildSettings.activeBuildTarget,
-            BuildOptions.None);
-        #endif
+        success = string.IsNullOrEmpty(
+            BuildPipeline.BuildPlayer(
+                Scenes.ToArray(),
+                Location,
+                EditorUserBuildSettings.activeBuildTarget,
+                BuildOptions.None));
+#endif
+
+        if (success)
+        {
+            RemovePdbFiles();
+        }
+
+        return success;
+    }
+
+    private static void RemovePdbFiles()
+    {
+        switch (Platform)
+        {
+            case AppPlatform.Windows32:
+            case AppPlatform.Windows64:
+                string parentDirPath = Path.GetDirectoryName(Location);
+                Assert.IsNotNull(parentDirPath);
+
+                string pdbFile = Path.Combine(
+                    parentDirPath,
+                    "player_win_x86.pdb");
+
+                string pdbsFile = Path.Combine(
+                    parentDirPath,
+                    "player_win_x86.pdb");
+
+                if (File.Exists(pdbFile))
+                {
+                    File.Delete(pdbFile);
+                }
+
+                if (File.Exists(pdbsFile))
+                {
+                    File.Delete(pdbsFile);
+                }
+
+                break;
+            case AppPlatform.Linux32:
+                break;
+            case AppPlatform.Linux64:
+                break;
+            case AppPlatform.Mac64:
+                break;
+            case null:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     public static void OpenLocationDialog()
@@ -180,8 +270,12 @@ return BuildPipeline.BuildPlayer(
                 throw new ArgumentOutOfRangeException();
         }
 
-        EditorApplication.delayCall += () =>
+        bool retry;
+
+        do
         {
+            retry = false;
+
             string location = EditorUtility.SaveFilePanel(
                 "Select build location:",
                 "",
@@ -190,9 +284,19 @@ return BuildPipeline.BuildPlayer(
 
             if (!string.IsNullOrEmpty(location))
             {
-                Location = location;
+                string validationError = GetLocationValidationError(location);
+
+                if (validationError == null)
+                {
+                    Location = location;
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Error", validationError, "Ok");
+                    retry = true;
+                }
             }
-        };
+        } while (retry);
     }
 }
 }

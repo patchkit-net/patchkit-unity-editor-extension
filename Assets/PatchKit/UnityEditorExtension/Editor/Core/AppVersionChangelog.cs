@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -39,7 +40,8 @@ public struct AppVersionChangelog
                 char.IsPunctuation(c) ||
                 char.IsDigit(c)))
         {
-            return "Application version changelog contains forbidden characters.\n" +
+            return
+                "Application version changelog contains forbidden characters.\n" +
                 "Use only English characters and ':', '_' or '-'.\n\n" +
                 "Unfortunately PatchKit Unity Editor Extensions doesn't support other languages " +
                 "encoding. If you need to write correct information, please login to your PatchKit Panel " +

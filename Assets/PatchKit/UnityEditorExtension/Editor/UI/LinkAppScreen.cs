@@ -1,73 +1,43 @@
-using System;
+using System.Linq;
 using JetBrains.Annotations;
+using PatchKit.Api.Models.Main;
 using PatchKit.UnityEditorExtension.Core;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace PatchKit.UnityEditorExtension.Views
+namespace PatchKit.UnityEditorExtension.UI
 {
 public class LinkAppScreen : Screen
 {
-    public AppPlatform Platform { get; private set; }
-
-    [NotNull]
-    public Action<LinkAppScreen, Api.Models.Main.App> OnLinked
+    public class LinkedResult
     {
-        get;
-        private set;
+        public readonly App App;
+
+        public LinkedResult(App app)
+        {
+            App = app;
+        }
     }
 
-    [NotNull]
-    public Action<LinkAppScreen> OnCanceled { get; private set; }
-
-    [NotNull]
-    private readonly LinkAppMediator _mediator;
-
-    private Vector2 _scrollViewVector;
-
-    public LinkAppScreen(
-        AppPlatform platform,
-        [NotNull] Action<LinkAppScreen, Api.Models.Main.App> onLinked,
-        [NotNull] Action<LinkAppScreen> onCanceled,
-        [NotNull] Window window)
-        : base(window)
-    {
-        if (onLinked == null)
-        {
-            throw new ArgumentNullException("onLinked");
-        }
-
-        if (onCanceled == null)
-        {
-            throw new ArgumentNullException("onCanceled");
-        }
-
-        Platform = platform;
-        OnLinked = onLinked;
-        OnCanceled = onCanceled;
-
-        _mediator = new LinkAppMediator(this);
-    }
+    #region GUI
 
     public override string Title
     {
         get { return "Link App"; }
     }
 
-    public override Vector2 Size
+    public override Vector2? Size
     {
         get { return new Vector2(400f, 400f); }
     }
 
-    public override void Initialize()
+    public override void UpdateIfActive()
     {
-        _mediator.Initialize();
-    }
-
-    public override bool ShouldBePopped()
-    {
-        return _mediator.ShouldBePopped();
+        if (!Config.GetLinkedAccountApiKey().HasValue)
+        {
+            Push<NotLinkedAccountScreen>().Initialize();
+        }
     }
 
     public override void Draw()
@@ -75,7 +45,7 @@ public class LinkAppScreen : Screen
         GUILayout.Label(
             string.Format(
                 "Link your PatchKit application for {0}.",
-                Platform.ToDisplayString()),
+                _platform.ToDisplayString()),
             EditorStyles.boldLabel);
 
         EditorGUILayout.Space();
@@ -84,7 +54,7 @@ public class LinkAppScreen : Screen
             _scrollViewVector,
             EditorStyles.helpBox);
 
-        foreach (Api.Models.Main.App app in _mediator.Apps)
+        foreach (App app in Apps)
         {
             DrawApp(app);
         }
@@ -95,23 +65,23 @@ public class LinkAppScreen : Screen
 
         if (GUILayout.Button("Create new app", GUILayout.ExpandWidth(true)))
         {
-            Dispatch(() => _mediator.CreateNew());
+            Dispatch(() => CreateNew());
         }
 
         EditorGUILayout.Space();
 
         if (GUILayout.Button("Cancel", GUILayout.ExpandWidth(true)))
         {
-            Dispatch(() => _mediator.Cancel());
+            Dispatch(() => Cancel());
         }
     }
 
-    private void DrawApp(Api.Models.Main.App app)
+    private void DrawApp(App app)
     {
         Assert.IsNotNull(app.Name);
         Assert.IsNotNull(app.Platform);
 
-        bool isLinked = app.Secret == _mediator.LinkedAppSecret;
+        bool isLinked = app.Secret == _linkedAppSecret;
 
         using (Style.ColorifyBackground(
             isLinked ? Color.green : new Color(0.8f, 0.8f, 0.8f)))
@@ -135,7 +105,7 @@ public class LinkAppScreen : Screen
 
                 GUILayout.Label(app.Secret, EditorStyles.miniBoldLabel);
 
-                if (app.Secret == _mediator.LinkedAppSecret)
+                if (isLinked)
                 {
                     GUILayout.Label(
                         "Currently selected app",
@@ -149,7 +119,7 @@ public class LinkAppScreen : Screen
                             "Select",
                             GUILayout.ExpandWidth(true)))
                         {
-                            Dispatch(() => _mediator.Link(app));
+                            Dispatch(() => Link(app));
                         }
                     }
                 }
@@ -167,5 +137,86 @@ public class LinkAppScreen : Screen
 
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
     }
+
+    #endregion
+
+    #region Data
+
+    [SerializeField]
+    private AppPlatform _platform;
+
+    [SerializeField]
+    private Vector2 _scrollViewVector;
+
+    [SerializeField]
+    private string _linkedAppSecret;
+
+    #endregion
+
+    #region Logic
+
+    public void Initialize(AppPlatform platform)
+    {
+        _platform = platform;
+
+        AppSecret? appSecret = Config.GetLinkedAppSecret(platform);
+
+        if (appSecret.HasValue)
+        {
+            _linkedAppSecret = appSecret.Value.Value;
+        }
+        else
+        {
+            _linkedAppSecret = null;
+        }
+    }
+
+    public override void OnActivatedFromTop(object result)
+    {
+        if (result is CreateAppScreen.CreatedResult)
+        {
+            App app = ((CreateAppScreen.CreatedResult) result).App;
+
+            Config.LinkApp(new AppSecret(app.Secret), _platform);
+
+            Pop(new LinkedResult(app));
+        }
+    }
+
+    private App[] _apps;
+
+    [NotNull]
+    private App[] Apps
+    {
+        get
+        {
+            return _apps ??
+                (_apps = Core.Api.GetApps()
+                    .Where(x => x.Platform == _platform.ToApiString())
+                    .ToArray());
+        }
+    }
+
+    private void Link(App app)
+    {
+        Assert.AreEqual(_platform.ToApiString(), app.Platform);
+        Assert.IsTrue(Apps.Contains(app));
+
+        Config.LinkApp(new AppSecret(app.Secret), _platform);
+
+        Pop(new LinkedResult(app));
+    }
+
+    private void CreateNew()
+    {
+        Push<CreateAppScreen>().Initialize(_platform);
+    }
+
+    private void Cancel()
+    {
+        Pop(null);
+    }
+
+    #endregion
 }
 }
