@@ -12,26 +12,38 @@ public struct ApiKey
 
     public ApiKey(string value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ValidationException("Value cannot be null or empty.");
-        }
+        string validationError = GetValidationError(value);
 
-        if (!value.All(char.IsLetterOrDigit))
+        if (validationError != null)
         {
-            throw new ValidationException(
-                "Value cannot have other characters than letters and digits.");
-        }
-
-        if (value.Length != 32)
-        {
-            throw new ValidationException(
-                "Value must be 32 characters length.");
+            throw new ValidationException(validationError);
         }
 
         Value = value;
 
         IsValid = true;
+    }
+
+    [ContractAnnotation("null => notNull")]
+    public static string GetValidationError(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "Value cannot be null or empty.";
+        }
+
+        if (!value.All(char.IsLetterOrDigit))
+        {
+            return
+                "Value cannot have other characters than letters and digits.";
+        }
+
+        if (value.Length != 32)
+        {
+            return "Value must be 32 characters length.";
+        }
+
+        return null;
     }
 }
 }

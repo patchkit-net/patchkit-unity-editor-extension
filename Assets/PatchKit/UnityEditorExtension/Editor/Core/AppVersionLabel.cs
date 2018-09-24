@@ -12,24 +12,42 @@ public struct AppVersionLabel
 
     public AppVersionLabel(string value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ValidationException("Value cannot be null or empty.");
-        }
+        string validationError = GetValidationError(value);
 
-        if (!value.All(
-            c => c >= 'a' && c <= 'z' ||
-                char.IsWhiteSpace(c) ||
-                char.IsPunctuation(c) ||
-                char.IsDigit(c)))
+        if (validationError != null)
         {
-            throw new ValidationException(
-                "Value contains forbidden characters.");
+            throw new ValidationException(validationError);
         }
 
         Value = value;
 
         IsValid = true;
+    }
+
+    [ContractAnnotation("null => notNull")]
+    public static string GetValidationError(string value)
+    {
+        if (value == null)
+        {
+            return "Value cannot be null.";
+        }
+
+        if (string.IsNullOrEmpty(value))
+        {
+            return "Value cannot be empty.";
+        }
+
+        if (!value.All(
+            c => c >= 'a' && c <= 'z' ||
+                c >= 'A' && c <= 'Z' ||
+                char.IsWhiteSpace(c) ||
+                char.IsPunctuation(c) ||
+                char.IsDigit(c)))
+        {
+            return "Value contains forbidden characters.";
+        }
+
+        return null;
     }
 }
 }

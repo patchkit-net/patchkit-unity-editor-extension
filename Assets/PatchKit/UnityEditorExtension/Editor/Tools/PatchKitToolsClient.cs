@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Menus;
 using UnityEngine.Assertions;
 using Environment = PatchKit.UnityEditorExtension.Core.Environment;
 
@@ -93,23 +92,12 @@ public class PatchKitToolsClient : IDisposable
         switch (Environment.Platform)
         {
             case EnvironmentPlatform.Windows:
-                BuildAndPublish.messagesView.AddMessage(
-                    "Executing for windows...",
-                    UnityEditor.MessageType.Info);
-                UnityEngine.Debug.Log("Executing for windows...");
                 ExecuteWindows(command);
                 break;
             case EnvironmentPlatform.Linux:
-                BuildAndPublish.messagesView.AddMessage(
-                    "Executing for linux...",
-                    UnityEditor.MessageType.Info);
-                UnityEngine.Debug.Log("Executing for linux...");
                 ExecuteLinux(command);
                 break;
             case EnvironmentPlatform.Mac:
-                BuildAndPublish.messagesView.AddMessage(
-                    "Executing for Mac...",
-                    UnityEditor.MessageType.Info);
                 ExecuteMac(command);
                 break;
             default:

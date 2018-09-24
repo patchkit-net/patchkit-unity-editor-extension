@@ -180,9 +180,7 @@ public class Config : ScriptableObject
         }
     }
 
-    public static void SetLinkedAppSecret(
-        AppSecret appSecret,
-        AppPlatform platform)
+    public static void LinkApp(AppSecret appSecret, AppPlatform platform)
     {
         if (!appSecret.IsValid)
         {
@@ -219,7 +217,7 @@ public class Config : ScriptableObject
         AssetDatabase.SaveAssets();
     }
 
-    public static void ClearLinkedAppSecret(AppPlatform platform)
+    public static void UnlinkApp(AppPlatform platform)
     {
         Config instance = FindOrCreateInstance();
 
@@ -256,7 +254,7 @@ public class Config : ScriptableObject
 
     private const string ApiKeyEncryptionKey = "42";
 
-    public static void SetSavedApiKey(ApiKey apiKey)
+    public static void LinkAccount(ApiKey apiKey)
     {
         if (!apiKey.IsValid)
         {
@@ -273,7 +271,7 @@ public class Config : ScriptableObject
         PlayerPrefs.Save();
     }
 
-    public static ApiKey? GetSavedApiKey()
+    public static ApiKey? GetLinkedAccountApiKey()
     {
         if (PlayerPrefs.HasKey(ApiKeyPlayerPrefsKey))
         {
@@ -301,7 +299,7 @@ public class Config : ScriptableObject
         return null;
     }
 
-    public static void ClearSavedApiKey()
+    public static void UnlinkAccount()
     {
         PlayerPrefs.DeleteKey(ApiKeyPlayerPrefsKey);
         PlayerPrefs.Save();

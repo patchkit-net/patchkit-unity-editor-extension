@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using JetBrains.Annotations;
 using PatchKit.UnityEditorExtension.Core;
-using PatchKit.UnityEditorExtension.Menus;
 using UnityEngine.Assertions;
 using Environment = PatchKit.UnityEditorExtension.Core.Environment;
 
@@ -24,13 +23,6 @@ public class Terminal
                 "Launching {0} {1}",
                 processStartInfo.FileName,
                 processStartInfo.Arguments));
-
-        BuildAndPublish.messagesView.AddMessage(
-            string.Format(
-                "Launching {0} {1}",
-                processStartInfo.FileName,
-                processStartInfo.Arguments),
-            UnityEditor.MessageType.Info);
 
         Process process = Process.Start(processStartInfo);
         Assert.IsNotNull(process);
@@ -76,10 +68,6 @@ public class Terminal
         {
             return GetKonsoleTerminalInfo();
         }
-
-        BuildAndPublish.messagesView.AddMessage(
-            "Unknown or unsupported terminal.",
-            UnityEditor.MessageType.Warning);
 
         throw new InvalidOperationException();
     }

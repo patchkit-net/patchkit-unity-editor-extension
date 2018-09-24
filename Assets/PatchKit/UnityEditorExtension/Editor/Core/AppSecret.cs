@@ -1,3 +1,4 @@
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace PatchKit.UnityEditorExtension.Core
@@ -11,14 +12,32 @@ public struct AppSecret
 
     public AppSecret(string value)
     {
-        if (string.IsNullOrEmpty(value))
+        string validationError = GetValidationError(value);
+
+        if (validationError != null)
         {
-            throw new ValidationException("Value cannot be null or empty.");
+            throw new ValidationException(validationError);
         }
 
         Value = value;
 
         IsValid = true;
+    }
+
+    [ContractAnnotation("null => notNull")]
+    public static string GetValidationError(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "Value cannot be null or empty.";
+        }
+
+        if (!value.All(c => char.IsLetterOrDigit(c)))
+        {
+            return "Value contains forbidden characters.";
+        }
+
+        return null;
     }
 }
 }

@@ -39,7 +39,7 @@ public static class Api
 
     private static ApiKey GetApiKey()
     {
-        ApiKey? savedApiKey = Config.GetSavedApiKey();
+        ApiKey? savedApiKey = Config.GetLinkedAccountApiKey();
 
         Assert.IsTrue(savedApiKey.HasValue);
 
@@ -144,18 +144,18 @@ public static class Api
         return GetAppInfo(secret);
     }
 
-    public static App CreateNewApp([NotNull] string name, AppPlatform platform)
+    public static App CreateNewApp(AppName name, AppPlatform platform)
     {
-        if (name == null)
+        if (!name.IsValid)
         {
-            throw new ArgumentNullException("name");
+            throw new InvalidArgumentException("name");
         }
 
         ApiKey apiKey = GetApiKey();
 
         App app = ApiConnection.PostUserApplication(
             apiKey.Value,
-            name,
+            name.Value,
             platform.ToApiString());
 
         if (_cachedApps == null || !_cachedApps.ApiKey.Equals(apiKey))
