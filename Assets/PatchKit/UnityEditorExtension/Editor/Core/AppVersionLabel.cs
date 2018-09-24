@@ -29,12 +29,12 @@ public struct AppVersionLabel
     {
         if (value == null)
         {
-            return "Value cannot be null.";
+            return "Application version label cannot be null.";
         }
 
         if (string.IsNullOrEmpty(value))
         {
-            return "Value cannot be empty.";
+            return "Application version label cannot be empty.";
         }
 
         if (!value.All(
@@ -44,7 +44,11 @@ public struct AppVersionLabel
                 char.IsPunctuation(c) ||
                 char.IsDigit(c)))
         {
-            return "Value contains forbidden characters.";
+            return "Application version label contains forbidden characters.\n" +
+                "Use only English characters and ':', '_' or '-'.\n\n" +
+                "Unfortunately PatchKit Unity Editor Extensions doesn't support other languages " +
+                "encoding. If you need to write correct information, please login to your PatchKit Panel " +
+                "and set Version Properties for your application.";
         }
 
         return null;

@@ -27,20 +27,25 @@ public struct ApiKey
     [ContractAnnotation("null => notNull")]
     public static string GetValidationError(string value)
     {
+        if (value == null)
+        {
+            return "API key cannot be null.";
+        }
+
         if (string.IsNullOrEmpty(value))
         {
-            return "Value cannot be null or empty.";
+            return "API key cannot be empty.";
         }
 
         if (!value.All(char.IsLetterOrDigit))
         {
             return
-                "Value cannot have other characters than letters and digits.";
+                "API key cannot have other characters than letters and digits.";
         }
 
         if (value.Length != 32)
         {
-            return "Value must be 32 characters length.";
+            return "API key must be 32 characters length.";
         }
 
         return null;

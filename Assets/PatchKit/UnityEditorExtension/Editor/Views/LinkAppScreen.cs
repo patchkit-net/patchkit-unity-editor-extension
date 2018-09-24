@@ -12,7 +12,11 @@ public class LinkAppScreen : Screen
     public AppPlatform Platform { get; private set; }
 
     [NotNull]
-    public Action<LinkAppScreen, Api.Models.Main.App> OnLinked { get; private set; }
+    public Action<LinkAppScreen, Api.Models.Main.App> OnLinked
+    {
+        get;
+        private set;
+    }
 
     [NotNull]
     public Action<LinkAppScreen> OnCanceled { get; private set; }
@@ -70,13 +74,15 @@ public class LinkAppScreen : Screen
     {
         GUILayout.Label(
             string.Format(
-                "Link your PatchKit app for {0}",
+                "Link your PatchKit application for {0}.",
                 Platform.ToDisplayString()),
             EditorStyles.boldLabel);
 
         EditorGUILayout.Space();
 
-        _scrollViewVector = EditorGUILayout.BeginScrollView(_scrollViewVector);
+        _scrollViewVector = EditorGUILayout.BeginScrollView(
+            _scrollViewVector,
+            EditorStyles.helpBox);
 
         foreach (Api.Models.Main.App app in _mediator.Apps)
         {
@@ -105,41 +111,57 @@ public class LinkAppScreen : Screen
         Assert.IsNotNull(app.Name);
         Assert.IsNotNull(app.Platform);
 
-        EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+        bool isLinked = app.Secret == _mediator.LinkedAppSecret;
 
-        EditorGUILayout.BeginVertical();
+        using (Style.ColorifyBackground(
+            isLinked ? Color.green : new Color(0.8f, 0.8f, 0.8f)))
         {
-            if (app.Name.Length > 30)
-            {
-                string shortName = app.Name.Substring(0, 30);
-                shortName += "...";
-                GUILayout.Label(
-                    new GUIContent(shortName, app.Name),
-                    EditorStyles.boldLabel);
-            }
-            else
-            {
-                GUILayout.Label(app.Name, EditorStyles.largeLabel);
-            }
+            EditorGUILayout.BeginHorizontal(EditorStyles.textArea);
 
-            if (app.Secret == _mediator.LinkedAppSecret)
+            EditorGUILayout.BeginVertical();
             {
-                GUILayout.Label("Currently linked app", EditorStyles.miniLabel);
-            }
-            else
-            {
-                if (GUILayout.Button("Select", GUILayout.ExpandWidth(true)))
+                if (app.Name.Length > 30)
                 {
-                    Dispatch(() => _mediator.Link(app));
+                    string shortName = app.Name.Substring(0, 30);
+                    shortName += "...";
+                    GUILayout.Label(
+                        new GUIContent(shortName, app.Name),
+                        EditorStyles.boldLabel);
                 }
+                else
+                {
+                    GUILayout.Label(app.Name, EditorStyles.largeLabel);
+                }
+
+                GUILayout.Label(app.Secret, EditorStyles.miniBoldLabel);
+
+                if (app.Secret == _mediator.LinkedAppSecret)
+                {
+                    GUILayout.Label(
+                        "Currently selected app",
+                        EditorStyles.miniLabel);
+                }
+                else
+                {
+                    using (Style.ColorifyBackground(Color.cyan))
+                    {
+                        if (GUILayout.Button(
+                            "Select",
+                            GUILayout.ExpandWidth(true)))
+                        {
+                            Dispatch(() => _mediator.Link(app));
+                        }
+                    }
+                }
+
+                EditorGUILayout.Space();
             }
 
-            EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal();
         }
 
-        EditorGUILayout.EndVertical();
-
-        EditorGUILayout.EndHorizontal();
 
         Assert.IsNotNull(GUI.skin);
 

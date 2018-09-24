@@ -90,7 +90,7 @@ public class CreateAppScreen : Screen
             if (_mediator.NameValidationError != null)
             {
                 EditorGUILayout.HelpBox(
-                    "Name: " + _mediator.NameValidationError,
+                    _mediator.NameValidationError,
                     MessageType.Error);
             }
             else
@@ -99,9 +99,12 @@ public class CreateAppScreen : Screen
                 {
                     GUILayout.FlexibleSpace();
 
-                    if (GUILayout.Button("Create", GUILayout.Width(100)))
+                    using (Style.Colorify(Color.green))
                     {
-                        Dispatch(() => _mediator.Create());
+                        if (GUILayout.Button("Create", GUILayout.Width(100)))
+                        {
+                            Dispatch(() => _mediator.Create());
+                        }
                     }
 
                     GUILayout.FlexibleSpace();

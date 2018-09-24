@@ -130,7 +130,9 @@ public class SafeBuildAndUploadView : View
                 GUILayout.FlexibleSpace();
 
                 GUILayout.Label(
-                    _mediator.BuildLocation,
+                    new GUIContent(
+                        _mediator.BuildLocation,
+                        _mediator.BuildLocation),
                     EditorStyles.miniLabel,
                     GUILayout.ExpandWidth(true));
             }
@@ -207,7 +209,7 @@ public class SafeBuildAndUploadView : View
 
         EditorGUILayout.BeginHorizontal();
         {
-            EditorGUILayout.LabelField("Override draft version if it exists");
+            EditorGUILayout.LabelField("Overwrite draft version if it exists");
             _mediator.OverwriteDraftVersion =
                 EditorGUILayout.Toggle(_mediator.OverwriteDraftVersion);
         }
@@ -229,22 +231,25 @@ public class SafeBuildAndUploadView : View
         else if (_mediator.VersionLabelValidationError != null)
         {
             EditorGUILayout.HelpBox(
-                "Label: " + _mediator.VersionLabelValidationError,
+                _mediator.VersionLabelValidationError,
                 MessageType.Error);
         }
         else if (_mediator.VersionChangelogValidationError != null)
         {
             EditorGUILayout.HelpBox(
-                "Changelog: " + _mediator.VersionChangelogValidationError,
+                _mediator.VersionChangelogValidationError,
                 MessageType.Error);
         }
         else
         {
-            if (GUILayout.Button(
-                new GUIContent("Build & Upload", "Build a new version"),
-                GUILayout.ExpandWidth(true)))
+            using (Style.Colorify(Color.green))
             {
-                Dispatch(() => _mediator.BuildAndUpload());
+                if (GUILayout.Button(
+                    new GUIContent("Build & Upload", "Build a new version"),
+                    GUILayout.ExpandWidth(true)))
+                {
+                    Dispatch(() => _mediator.BuildAndUpload());
+                }
             }
         }
 

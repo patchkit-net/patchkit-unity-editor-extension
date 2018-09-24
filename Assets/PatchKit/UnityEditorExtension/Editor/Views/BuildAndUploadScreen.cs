@@ -40,7 +40,7 @@ public class BuildAndUploadScreen : Screen
 
     public override Vector2 Size
     {
-        get { return new Vector2(400f, 400f); }
+        get { return new Vector2(600f, 400f); }
     }
 
     public override void Initialize()

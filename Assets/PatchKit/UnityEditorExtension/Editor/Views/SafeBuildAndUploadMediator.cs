@@ -142,31 +142,43 @@ public class SafeBuildAndUploadMediator
 
         if (string.IsNullOrEmpty(AppBuild.Create()))
         {
-            using (var tools = new Tools.PatchKitToolsClient())
+            ApiKey? apiKey = Config.GetLinkedAccountApiKey();
+            Assert.IsTrue(apiKey.HasValue);
+
+            EditorUtility.DisplayProgressBar(
+                "Preparing upload...",
+                "",
+                0.0f);
+
+            EditorApplication.delayCall += () =>
             {
-                ApiKey? apiKey = Config.GetLinkedAccountApiKey();
-                Assert.IsTrue(apiKey.HasValue);
+                try
+                {
+                    using (var tools = new Tools.PatchKitToolsClient())
+                    {
+                        tools.MakeVersion(
+                            apiKey.Value.Value,
+                            LinkedAppSecret,
+                            VersionLabel,
+                            VersionChangelog,
+                            Path.GetDirectoryName(BuildLocation),
+                            PublishOnUpload,
+                            OverwriteDraftVersion);
+                    }
+                }
+                finally
+                {
+                    EditorUtility.ClearProgressBar();
+                }
 
-                EditorUtility.DisplayProgressBar(
-                    "Preparing upload...",
-                    "PatchKit Unity Editor Extension is preparing your version to be uploaded.",
-                    0.0f);
-
-                tools.MakeVersion(
-                    apiKey.Value.Value,
-                    LinkedAppSecret,
-                    VersionLabel,
-                    VersionChangelog,
-                    Path.GetDirectoryName(BuildLocation),
-                    PublishOnUpload,
-                    OverwriteDraftVersion);
-
-                EditorUtility.ClearProgressBar();
-
-                UploadingInProgressWindow.ShowWindow();
+                EditorUtility.DisplayDialog(
+                    "Uploading",
+                    "Your game has been successfully built and is being uploaded right now.\n\n" +
+                    "You can track the progress in console window.",
+                    "OK");
 
                 _view.Window.Close();
-            }
+            };
         }
     }
 }

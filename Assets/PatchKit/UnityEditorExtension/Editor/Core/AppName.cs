@@ -27,9 +27,14 @@ public struct AppName
     [ContractAnnotation("null => notNull")]
     public static string GetValidationError(string value)
     {
+        if (value == null)
+        {
+            return "Application name cannot be null.";
+        }
+
         if (string.IsNullOrEmpty(value))
         {
-            return "Value cannot be null or empty.";
+            return "Application name cannot be empty.";
         }
 
         if (!value.All(
@@ -39,7 +44,7 @@ public struct AppName
                 char.IsPunctuation(c) ||
                 char.IsDigit(c)))
         {
-            return "Value contains forbidden characters.";
+            return "Application name only allows English characters and ':', '_' or '-'.";
         }
 
         return null;
