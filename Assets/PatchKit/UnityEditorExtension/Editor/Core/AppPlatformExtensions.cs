@@ -29,9 +29,9 @@ public static class AppPlatformExtensions
     }
 
     [NotNull]
-    public static string ToDisplayString(this AppPlatform appPlatform)
+    public static string ToDisplayString(this AppPlatform @this)
     {
-        switch (appPlatform)
+        switch (@this)
         {
             case AppPlatform.Windows32:
                 return "Windows 32-bit";
@@ -44,10 +44,39 @@ public static class AppPlatformExtensions
             case AppPlatform.Mac64:
                 return "Mac OSX 64-bit";
             default:
-                throw new ArgumentOutOfRangeException(
-                    "appPlatform",
-                    appPlatform,
-                    null);
+                throw new ArgumentOutOfRangeException("this", @this, null);
+        }
+    }
+
+    public static bool IsWindows(this AppPlatform @this)
+    {
+        switch (@this)
+        {
+            case AppPlatform.Windows32:
+            case AppPlatform.Windows64:
+                return true;
+            case AppPlatform.Linux32:
+            case AppPlatform.Linux64:
+            case AppPlatform.Mac64:
+                return false;
+            default:
+                throw new ArgumentOutOfRangeException("this", @this, null);
+        }
+    }
+
+    public static bool IsWindows(this AppPlatform? @this)
+    {
+        switch (@this)
+        {
+            case AppPlatform.Windows32:
+            case AppPlatform.Windows64:
+                return true;
+            case AppPlatform.Linux32:
+            case AppPlatform.Linux64:
+            case AppPlatform.Mac64:
+                return false;
+            default:
+                throw new ArgumentOutOfRangeException("this", @this, null);
         }
     }
 }

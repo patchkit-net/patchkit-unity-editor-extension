@@ -423,7 +423,7 @@ public class SafeBuildAndUploadScreen : Screen
                     "You can track the progress in console window.",
                     "OK");
 
-                Pop(null);
+                Close();
             };
         }
     }

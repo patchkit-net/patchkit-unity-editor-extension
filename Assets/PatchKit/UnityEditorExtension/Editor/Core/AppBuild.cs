@@ -57,6 +57,15 @@ public static class AppBuild
         }
     }
 
+    [NotNull]
+    private static readonly string[] WindowsPdbFiles =
+    {
+        "player_win_x86.pdb",
+        "player_win_x86_s.pdb",
+        "player_win_x64.pdb",
+        "player_win_x64_s.pdb"
+    };
+
     public static string Location
     {
         get
@@ -109,8 +118,27 @@ public static class AppBuild
         string[] entries = Directory.GetFileSystemEntries(parentDirPath, "*");
 
         return entries.All(
-            x => Path.GetDirectoryName(x) != parentDirPath ||
-                buildFiles.Contains(Path.GetFileName(x)));
+            x =>
+            {
+                string fileName = Path.GetFileName(x);
+
+                if (Path.GetDirectoryName(x) != parentDirPath)
+                {
+                    return true;
+                }
+
+                if (buildFiles.Contains(fileName))
+                {
+                    return true;
+                }
+
+                if (Platform.IsWindows() && WindowsPdbFiles.Contains(fileName))
+                {
+                    return true;
+                }
+
+                return false;
+            });
     }
 
     private static string GetLocationValidationError(string location)
@@ -142,9 +170,7 @@ public static class AppBuild
                 if (!AreThereOnlyBuildEntries(
                     location,
                     winBuildFileName,
-                    winBuildDirName,
-                    "player_win_x86.pdb",
-                    "player_win_x86_s.pdb"))
+                    winBuildDirName))
                 {
                     return "Build location must be an empty directory.";
                 }
@@ -216,22 +242,14 @@ public static class AppBuild
                 string parentDirPath = Path.GetDirectoryName(Location);
                 Assert.IsNotNull(parentDirPath);
 
-                string pdbFile = Path.Combine(
-                    parentDirPath,
-                    "player_win_x86.pdb");
-
-                string pdbsFile = Path.Combine(
-                    parentDirPath,
-                    "player_win_x86.pdb");
-
-                if (File.Exists(pdbFile))
+                foreach (string pdbFile in WindowsPdbFiles)
                 {
-                    File.Delete(pdbFile);
-                }
+                    string pdbFilePath = Path.Combine(parentDirPath, pdbFile);
 
-                if (File.Exists(pdbsFile))
-                {
-                    File.Delete(pdbsFile);
+                    if (File.Exists(pdbFilePath))
+                    {
+                        File.Delete(pdbFilePath);
+                    }
                 }
 
                 break;
