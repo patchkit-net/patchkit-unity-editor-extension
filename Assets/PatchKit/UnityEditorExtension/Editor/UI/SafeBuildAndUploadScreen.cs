@@ -26,6 +26,12 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override void UpdateIfActive()
     {
+        if (_platform != AppBuild.Platform)
+        {
+            Pop(null);
+            return;
+        }
+
         AppSecret? linkedAppSecret = Config.GetLinkedAppSecret(_platform);
         if (!linkedAppSecret.HasValue ||
             linkedAppSecret.Value.Value != _appSecret)

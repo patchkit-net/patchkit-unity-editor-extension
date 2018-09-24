@@ -14,44 +14,32 @@ public class BuildAndUploadWindow : Window
     }
 
     [SerializeField]
-    private AppPlatform _lastPlatform;
-
-    [SerializeField]
-    private bool _hasPlatform;
+    private AppPlatform? _lastPlatform;
 
     [UsedImplicitly]
     private void Awake()
     {
-        ResetView();
+        ResetView(AppBuild.Platform);
     }
 
     private void Update()
     {
-        if (AppBuild.Platform.HasValue)
+        if (AppBuild.Platform != _lastPlatform)
         {
-            if (!_hasPlatform || _lastPlatform != AppBuild.Platform.Value)
-            {
-                ResetView();
-            }
-
-            _hasPlatform = true;
-        }
-        else
-        {
-            _hasPlatform = false;
+            ResetView(AppBuild.Platform);
         }
     }
 
-    private void ResetView()
+    private void ResetView(AppPlatform? platform)
     {
-        if (!AppBuild.Platform.HasValue)
+        _lastPlatform = platform;
+
+        if (!platform.HasValue)
         {
             return;
         }
 
-        _lastPlatform = AppBuild.Platform.Value;
-
-        ClearAndPush<BuildAndUploadScreen>().Initialize(_lastPlatform);
+        ClearAndPush<BuildAndUploadScreen>().Initialize(platform.Value);
     }
 }
 }
