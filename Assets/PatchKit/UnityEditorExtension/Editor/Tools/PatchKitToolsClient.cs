@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PatchKit.UnityEditorExtension.Core;
+using UnityEngine;
 using UnityEngine.Assertions;
 using Environment = PatchKit.UnityEditorExtension.Core.Environment;
 
@@ -14,13 +15,7 @@ public class PatchKitToolsClient : IDisposable
 
     public PatchKitToolsClient()
     {
-        Clear();
-
-        Zip.Unarchive(
-            PatchKitToolsPackages.GetPath(Environment.Platform),
-            TempLocation);
-
-        FileSystem.AddDirExecutablePermissionsRecursive(TempLocation);
+        UnpackTools();
     }
 
     public void MakeVersion(
@@ -63,45 +58,61 @@ public class PatchKitToolsClient : IDisposable
         string[] argumentsArray = arguments.ToArray();
 
         Execute("make-version", argumentsArray);
-
-        UnityEngine.Debug.Log(
-            "make-version " + string.Join(" ", argumentsArray));
     }
 
     public void Execute(string tool, string[] args)
     {
-        string command = tool;
+        Execute(tool, args, true);
+    }
 
-        if (args != null)
+    public void Execute(string tool, string[] args, bool unpackIfFailure)
+    {
+        try
         {
-            command += " ";
-            foreach (string arg in args)
+            string command = tool;
+
+            if (args != null)
             {
-                Assert.IsNotNull(arg);
-                if (arg.Contains(' '))
+                command += " ";
+                foreach (string arg in args)
                 {
-                    command += "\"" + arg + "\" ";
-                }
-                else
-                {
-                    command += arg + " ";
+                    Assert.IsNotNull(arg);
+                    if (arg.Contains(' '))
+                    {
+                        command += "\"" + arg + "\" ";
+                    }
+                    else
+                    {
+                        command += arg + " ";
+                    }
                 }
             }
-        }
 
-        switch (Environment.Platform)
+            switch (Environment.Platform)
+            {
+                case EnvironmentPlatform.Windows:
+                    ExecuteWindows(command);
+                    break;
+                case EnvironmentPlatform.Linux:
+                    ExecuteLinux(command);
+                    break;
+                case EnvironmentPlatform.Mac:
+                    ExecuteMac(command);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        catch (Exception e)
         {
-            case EnvironmentPlatform.Windows:
-                ExecuteWindows(command);
-                break;
-            case EnvironmentPlatform.Linux:
-                ExecuteLinux(command);
-                break;
-            case EnvironmentPlatform.Mac:
-                ExecuteMac(command);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            if (!unpackIfFailure)
+            {
+                throw;
+            }
+
+            Debug.LogWarning(e);
+            ForceUnpackTools();
+            Execute(tool, args, false);
         }
     }
 
@@ -141,12 +152,28 @@ public class PatchKitToolsClient : IDisposable
         new Terminal(executable);
     }
 
-    private void Clear()
+    private void UnpackTools()
+    {
+        if (Directory.Exists(TempLocation))
+        {
+            return;
+        }
+
+        ForceUnpackTools();
+    }
+
+    private void ForceUnpackTools()
     {
         if (Directory.Exists(TempLocation))
         {
             Directory.Delete(TempLocation, true);
         }
+
+        Zip.Unarchive(
+            PatchKitToolsPackages.GetPath(Environment.Platform),
+            TempLocation);
+
+        FileSystem.AddDirExecutablePermissionsRecursive(TempLocation);
     }
 
     public void Dispose()
