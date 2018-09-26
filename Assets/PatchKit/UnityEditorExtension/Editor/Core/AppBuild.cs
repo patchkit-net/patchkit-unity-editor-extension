@@ -170,7 +170,12 @@ public static class AppBuild
                 if (!AreThereOnlyBuildEntries(
                     location,
                     winBuildFileName,
-                    winBuildDirName))
+                    winBuildDirName,
+                    "MonoBleedingEdge",
+                    "UnityCrashHandler32.exe",
+                    "UnityCrashHandler64.exe",
+                    "UnityPlayer.dll",
+                    "WinPixEventRuntime.dll"))
                 {
                     return "Build location must be an empty directory.";
                 }
