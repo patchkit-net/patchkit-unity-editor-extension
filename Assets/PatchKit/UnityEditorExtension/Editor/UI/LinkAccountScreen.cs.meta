@@ -1,3 +1,15 @@
-﻿fileFormatVersion: 2
+fileFormatVersion: 2
 guid: 74325996626f4e65ac605f0bef8f838d
-timeCreated: 1537746541
+timeCreated: 1538222643
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - _window: {instanceID: 0}
+  - searchIcon: {fileID: 2800000, guid: 839fc7651deadda46a713b2515b0d448, type: 3}
+  - arrowIcon: {fileID: 2800000, guid: d761fcd92eb5c1b4ab0b0ebff3c213b4, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

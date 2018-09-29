@@ -34,14 +34,35 @@ public class LinkAccountScreen : Screen
 
     public override void Draw()
     {
-        GUILayout.Label("Link your PatchKit account", EditorStyles.boldLabel);
-
-        _newApiKey = EditorGUILayout.TextField("API Key:", _newApiKey);
-
-        if (GUILayout.Button("Find your API key", GUILayout.ExpandWidth(true)))
+        if (GUILayout.Button(new GUIContent(_arrowIcon, "Change application"), GUILayout.Width(35), GUILayout.Height(20)))
         {
-            Dispatch(() => OpenProfileWebpage());
+            Dispatch(() => Cancel());
         }
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                "Link your PatchKit account",
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+      
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.Label("API Key:");
+            _newApiKey = EditorGUILayout.TextField( _newApiKey);
+
+            if (GUILayout.Button(
+                new GUIContent(_searchIcon, "Find your API key"),
+                GUILayout.Width(20),
+                GUILayout.Height(20)))
+            {
+                Dispatch(() => OpenProfileWebpage());
+            }
+        }
+        EditorGUILayout.EndHorizontal();
 
         if (!string.IsNullOrEmpty(_newApiKey))
         {
@@ -76,18 +97,6 @@ public class LinkAccountScreen : Screen
         }
 
         EditorGUILayout.Separator();
-        EditorGUILayout.BeginHorizontal();
-        {
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Cancel", GUILayout.Width(100)))
-            {
-                Dispatch(() => Cancel());
-            }
-
-            GUILayout.FlexibleSpace();
-        }
-        EditorGUILayout.EndHorizontal();
     }
 
     #endregion
@@ -96,6 +105,12 @@ public class LinkAccountScreen : Screen
 
     [SerializeField]
     private string _newApiKey;
+
+    [SerializeField]
+    private Texture2D _searchIcon;
+    
+    [SerializeField]
+    private Texture2D _arrowIcon;
 
     #endregion
 

@@ -21,7 +21,7 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override Vector2? Size
     {
-        get { return null; }
+        get { return new Vector2(400f, 600f);}
     }
 
     public override void UpdateIfActive()
@@ -52,17 +52,35 @@ public class SafeBuildAndUploadScreen : Screen
     private void DrawContent()
     {
         Assert.IsNotNull(GUI.skin);
-
+        
+        if (GUILayout.Button(
+            new GUIContent(_arrowIcon, "Change application"),
+            GUILayout.Width(35),
+            GUILayout.Height(20)))
+        {
+            Dispatch(() => SwitchLinkedApp());
+        }
+        
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                "The project will be built and upload to PatchKit\n\twith the following settings.\n",
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+       
+        // *** App *** //
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("App", EditorStyles.boldLabel);
+                GUILayout.Label("Selected Application", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Name:");
@@ -75,24 +93,6 @@ public class SafeBuildAndUploadScreen : Screen
                     GUILayout.ExpandWidth(true));
             }
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-            EditorGUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Secret:");
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Label(
-                    _appSecret,
-                    EditorStyles.miniLabel,
-                    GUILayout.ExpandWidth(true));
-            }
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Platform:");
@@ -105,27 +105,23 @@ public class SafeBuildAndUploadScreen : Screen
                     GUILayout.ExpandWidth(true));
             }
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-            if (GUILayout.Button(
-                new GUIContent("Switch app"),
-                GUILayout.ExpandWidth(true)))
+            EditorGUILayout.BeginHorizontal();
             {
-                Dispatch(() => SwitchLinkedApp());
+                GUILayout.Label("Secret:");
+                GUILayout.FlexibleSpace();
+                
+                GUILayout.Label(
+                    _appSecret,
+                    EditorStyles.miniLabel,
+                    GUILayout.ExpandWidth(true));
             }
-
-            if (GUILayout.Button(
-                new GUIContent("Switch platform"),
-                GUILayout.ExpandWidth(true)))
-            {
-                Dispatch(() => SwitchPlatform());
-            }
+            EditorGUILayout.EndHorizontal();
         }
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
-
+        
+        // *** Build Settings *** //
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
@@ -135,9 +131,19 @@ public class SafeBuildAndUploadScreen : Screen
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space();
-
+            EditorGUILayout.BeginHorizontal();
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(
+                    new GUIContent(
+                        "Change location",
+                        "Button open Build Settings window."),
+                    GUILayout.Width(110)))
+                {
+                    Dispatch(() => ChangeBuildLocation());
+                }
+            }
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Location:");
@@ -147,10 +153,10 @@ public class SafeBuildAndUploadScreen : Screen
                 GUILayout.Label(
                     new GUIContent(BuildLocation, BuildLocation),
                     EditorStyles.miniLabel,
-                    GUILayout.ExpandWidth(true));
+                    GUILayout.Width(110));
             }
             EditorGUILayout.EndHorizontal();
-
+            EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Scenes: ", EditorStyles.boldLabel);
@@ -158,7 +164,7 @@ public class SafeBuildAndUploadScreen : Screen
                     new GUIContent(
                         "Edit Scenes",
                         "Button open Build Settings window."),
-                    GUILayout.Width(120)))
+                    GUILayout.Width(110)))
                 {
                     Dispatch(() => SwitchScenes());
                 }
@@ -171,53 +177,41 @@ public class SafeBuildAndUploadScreen : Screen
             {
                 GUILayout.Label(i + ". " + scenes[i]);
             }
-
-            if (GUILayout.Button(
-                new GUIContent("Change location"),
-                GUILayout.ExpandWidth(true)))
-            {
-                Dispatch(() => ChangeBuildLocation());
-            }
         }
         EditorGUILayout.EndVertical();
-
         EditorGUILayout.Space();
-
+        
+        // *** Version Details *** //
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
                 GUILayout.Label(
-                    "Version Configuration",
+                    "Version Details",
                     EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.Space();
 
             GUILayout.Label("*Label: ");
             _versionLabel = GUILayout.TextField(_versionLabel);
 
             EditorGUILayout.Space();
-
             GUILayout.Label("Changelog: ");
             _versionChangelog = GUILayout.TextArea(
                 _versionChangelog,
                 GUILayout.MinHeight(200));
         }
         EditorGUILayout.EndVertical();
-
         EditorGUILayout.Space();
-
         EditorGUILayout.BeginHorizontal();
         {
             EditorGUILayout.LabelField("Automatically publish after upload");
             _publishOnUpload = EditorGUILayout.Toggle(_publishOnUpload);
         }
         EditorGUILayout.EndHorizontal();
-
         EditorGUILayout.BeginHorizontal();
         {
             EditorGUILayout.LabelField("Overwrite draft version if it exists");
@@ -253,7 +247,7 @@ public class SafeBuildAndUploadScreen : Screen
         }
         else
         {
-            using (Style.Colorify(Color.green))
+            using (Style.Colorify(new Color(0.502f, 0.839f, 0.031f)))
             {
                 if (GUILayout.Button(
                     new GUIContent("Build & Upload", "Build a new version"),
@@ -270,7 +264,10 @@ public class SafeBuildAndUploadScreen : Screen
     #endregion
 
     #region Data
-
+        
+    [SerializeField]
+    private Texture2D _arrowIcon;
+    
     [SerializeField]
     private Vector2 _scrollViewVector;
 
@@ -360,13 +357,7 @@ public class SafeBuildAndUploadScreen : Screen
             return AppVersionChangelog.GetValidationError(_versionChangelog);
         }
     }
-
-    private void SwitchPlatform()
-    {
-        EditorWindow.GetWindow(
-            Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
-    }
-
+    
     private void SwitchScenes()
     {
         EditorWindow.GetWindow(

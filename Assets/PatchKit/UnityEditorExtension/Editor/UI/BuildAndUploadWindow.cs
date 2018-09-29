@@ -10,7 +10,7 @@ public class BuildAndUploadWindow : Window
     [MenuItem("Tools/PatchKit/Build and Upload %&#b", false, 51)]
     public static void ShowWindow()
     {
-        GetWindow(typeof(BuildAndUploadWindow), true, "Build & Upload");
+        GetWindow(typeof(BuildAndUploadWindow), false, "Build & Upload");
     }
 
     [SerializeField]

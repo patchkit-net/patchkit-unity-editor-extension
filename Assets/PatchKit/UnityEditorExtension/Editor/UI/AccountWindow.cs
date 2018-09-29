@@ -10,7 +10,7 @@ public class AccountWindow : Window
     {
         var window = (AccountWindow) GetWindow(
             typeof(AccountWindow),
-            true,
+            false,
             "Account");
 
         Assert.IsNotNull(window);

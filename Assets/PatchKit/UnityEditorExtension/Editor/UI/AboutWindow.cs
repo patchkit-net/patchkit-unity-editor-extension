@@ -10,7 +10,7 @@ public class AboutWindow : Window
     {
         var window = (AboutWindow) GetWindow(
             typeof(AboutWindow),
-            true,
+            false,
             "About");
 
         Assert.IsNotNull(window);

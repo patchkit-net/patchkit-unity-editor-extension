@@ -15,7 +15,7 @@ public class AccountScreen : Screen
 
     public override Vector2? Size
     {
-        get { return new Vector2(400, 145); }
+        get { return new Vector2(400, 115); }
     }
 
     public override void UpdateIfActive()
@@ -39,20 +39,6 @@ public class AccountScreen : Screen
         {
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Change", GUILayout.Width(100)))
-            {
-                Dispatch(() => OpenLinkDialog());
-            }
-
-            GUILayout.FlexibleSpace();
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.Separator();
-
-        EditorGUILayout.BeginHorizontal();
-        {
-            GUILayout.FlexibleSpace();
-
             if (GUILayout.Button("Unlink", GUILayout.Width(100)))
             {
                 Dispatch(() => Unlink());
@@ -65,7 +51,7 @@ public class AccountScreen : Screen
     }
 
     #endregion
-
+ 
     #region Logic
 
     public void Initialize()
