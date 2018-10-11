@@ -21,7 +21,7 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override Vector2? Size
     {
-        get { return new Vector2(400f, 600f);}
+        get { return new Vector2(400f, 800f);}
     }
 
     public override void UpdateIfActive()
@@ -49,38 +49,10 @@ public class SafeBuildAndUploadScreen : Screen
         EditorGUILayout.EndScrollView();
     }
 
-    private void DrawContent()
+    void DrawApp()
     {
-        Assert.IsNotNull(GUI.skin);
-        
-        if (GUILayout.Button(
-            new GUIContent(_arrowIcon, "Change application"),
-            GUILayout.Width(35),
-            GUILayout.Height(20)))
+        EditorGUILayout.BeginVertical();
         {
-            Dispatch(() => SwitchLinkedApp());
-        }
-        
-        EditorGUILayout.BeginHorizontal();
-        {
-            GUILayout.FlexibleSpace();
-            GUILayout.Label(
-                "The project will be built and upload to PatchKit\n\twith the following settings.\n",
-                EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-        }
-        EditorGUILayout.EndHorizontal();
-       
-        // *** App *** //
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        {
-            EditorGUILayout.BeginHorizontal();
-            {
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("Selected Application", EditorStyles.boldLabel);
-                GUILayout.FlexibleSpace();
-            }
-            EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Name:");
@@ -109,25 +81,58 @@ public class SafeBuildAndUploadScreen : Screen
             {
                 GUILayout.Label("Secret:");
                 GUILayout.FlexibleSpace();
-                
+
                 GUILayout.Label(
                     _appSecret,
                     EditorStyles.miniLabel,
                     GUILayout.ExpandWidth(true));
             }
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.BeginHorizontal();
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(
+                    new GUIContent("Change application", "Change application"),
+                    GUILayout.Width(120)))
+                {
+                    Dispatch(() => SwitchLinkedApp());
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+            using (Style.ColorifyBackground(Color.blue))
+            {
+                var style = new GUIStyle(GUI.skin.label);
+                style.normal.textColor = Color.blue;
+           
+                if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
+                {
+                    EditorUtility.DisplayDialog(
+                        "Need to change platform?",
+                        "PatchKit application target platform is unambiguous with current active project build platform.\n\n" +
+                        "To change it, you have to switch project platform in Build Settings window.",
+                        "OK");
+                }
+            
+                Rect lastRect = GUILayoutUtility.GetLastRect();
+                lastRect.y += lastRect.height - 2;
+                lastRect.height = 2;
+                GUI.Box(lastRect, "");
+            }
         }
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
-        
-        // *** Build Settings *** //
+    }
+
+    void DrawBuild()
+    {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("Build Settings", EditorStyles.boldLabel);
+                GUILayout.Label("Build Summary", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
@@ -146,14 +151,18 @@ public class SafeBuildAndUploadScreen : Screen
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
             {
+                string shortPath = BuildLocation;
+                if (BuildLocation.Length > 50)
+                {
+                    shortPath = BuildLocation.Substring(0,20) + "./.../." + 
+                        BuildLocation.Substring(BuildLocation.Length - 20, 20);
+                }
+                
                 GUILayout.Label("Location:");
-
                 GUILayout.FlexibleSpace();
-
                 GUILayout.Label(
-                    new GUIContent(BuildLocation, BuildLocation),
-                    EditorStyles.miniLabel,
-                    GUILayout.Width(110));
+                    new GUIContent(shortPath, BuildLocation),
+                    EditorStyles.miniLabel);
             }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Separator();
@@ -180,8 +189,10 @@ public class SafeBuildAndUploadScreen : Screen
         }
         EditorGUILayout.EndVertical();
         EditorGUILayout.Space();
-        
-        // *** Version Details *** //
+    }
+
+    void DrawVersion()
+    {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
@@ -219,7 +230,8 @@ public class SafeBuildAndUploadScreen : Screen
                 EditorGUILayout.Toggle(_overwriteDraftVersion);
         }
         EditorGUILayout.EndHorizontal();
-
+        
+        bool isUploadPermitted = false;
         if (!_overwriteDraftVersion)
         {
             EditorGUILayout.HelpBox(
@@ -247,18 +259,49 @@ public class SafeBuildAndUploadScreen : Screen
         }
         else
         {
-            using (Style.Colorify(new Color(0.502f, 0.839f, 0.031f)))
+            isUploadPermitted = true;
+        }
+       
+        GUI.enabled = isUploadPermitted;
+        
+        using (Style.Colorify(Style.greenOlive))
+        {
+            if (GUILayout.Button(
+                new GUIContent("Build & Upload", "Build a new version"),
+                GUILayout.ExpandWidth(true)))
             {
-                if (GUILayout.Button(
-                    new GUIContent("Build & Upload", "Build a new version"),
-                    GUILayout.ExpandWidth(true)))
+                if(EditorUtility.DisplayDialog(
+                    "Warning",
+                    "Are you sure? ",
+                    "Yes",
+                    "No"))
                 {
-                    Dispatch(() => BuildAndUpload());
-                }
+                    Dispatch(() => BuildAndUpload()); 
+                } 
             }
         }
-
+        
         EditorGUILayout.Space();
+    }
+    
+    private void DrawContent()
+    {
+        Assert.IsNotNull(GUI.skin);
+        
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                _appName,
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        DrawApp();
+        DrawBuild();
+        DrawVersion();
     }
 
     #endregion
@@ -326,9 +369,9 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override void OnActivatedFromTop(object result)
     {
-        if (result is LinkAppScreen.LinkedResult)
+        if (result is ConnectAppScreen.LinkedResult)
         {
-            App app = ((LinkAppScreen.LinkedResult) result).App;
+            App app = ((ConnectAppScreen.LinkedResult) result).App;
 
             _appSecret = app.Secret;
             _appName = app.Name;
@@ -371,7 +414,7 @@ public class SafeBuildAndUploadScreen : Screen
 
     private void SwitchLinkedApp()
     {
-        Push<LinkAppScreen>().Initialize(_platform);
+        Push<ConnectAppScreen>().Initialize(_platform);
     }
 
     private void BuildAndUpload()

@@ -138,7 +138,7 @@ public class Window : EditorWindow
                 currentScreen.Draw();
             }
             catch (ArgumentException)
-            {
+            { 
             }
         }
     }

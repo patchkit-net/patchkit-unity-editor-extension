@@ -30,7 +30,7 @@ public class BuildAndUploadScreen : Screen
         }
         else if (!IsAppLinked)
         {
-            Push<NotLinkedAppScreen>().Initialize(_platform);
+            Push<NotConnectedAppScreen>().Initialize(_platform);
         }
         else
         {

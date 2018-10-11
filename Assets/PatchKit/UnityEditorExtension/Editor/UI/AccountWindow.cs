@@ -15,7 +15,7 @@ public class AccountWindow : Window
 
         Assert.IsNotNull(window);
 
-        window.Push<AccountScreen>().Initialize();
+        window.Push<LinkedAccountScreen>().Initialize();
     }
 }
 }

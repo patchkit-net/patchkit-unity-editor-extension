@@ -25,7 +25,7 @@ public class LinkAccountScreen : Screen
 
     public override Vector2? Size
     {
-        get { return new Vector2(400f, 145f); }
+        get { return new Vector2(400f, 125f); }
     }
 
     public override void UpdateIfActive()
@@ -34,11 +34,6 @@ public class LinkAccountScreen : Screen
 
     public override void Draw()
     {
-        if (GUILayout.Button(new GUIContent(_arrowIcon, "Change application"), GUILayout.Width(35), GUILayout.Height(20)))
-        {
-            Dispatch(() => Cancel());
-        }
-
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.FlexibleSpace();
@@ -55,7 +50,7 @@ public class LinkAccountScreen : Screen
             _newApiKey = EditorGUILayout.TextField( _newApiKey);
 
             if (GUILayout.Button(
-                new GUIContent(_searchIcon, "Find your API key"),
+                new GUIContent((Texture) EditorGUIUtility.Load("searchIcon.png"), "Find your API key"),
                 GUILayout.Width(20),
                 GUILayout.Height(20)))
             {
@@ -105,12 +100,6 @@ public class LinkAccountScreen : Screen
 
     [SerializeField]
     private string _newApiKey;
-
-    [SerializeField]
-    private Texture2D _searchIcon;
-    
-    [SerializeField]
-    private Texture2D _arrowIcon;
 
     #endregion
 

@@ -29,7 +29,7 @@ public class CreateAppScreen : Screen
 
     public override Vector2? Size
     {
-        get { return new Vector2(400f, 135f); }
+        get { return new Vector2(400f, 155f); }
     }
 
     public override void UpdateIfActive()
@@ -42,7 +42,8 @@ public class CreateAppScreen : Screen
 
     public override void Draw()
     {
-        if (GUILayout.Button(new GUIContent(_arrowIcon, "Change application"), GUILayout.Width(35), GUILayout.Height(20)))
+        if (GUILayout.Button(new GUIContent((Texture) EditorGUIUtility.Load("arrowIcon.png"), "Return"),
+                             GUILayout.Width(35), GUILayout.Height(20)))
         {
             Dispatch(() => Cancel());
         }
@@ -69,22 +70,31 @@ public class CreateAppScreen : Screen
         GUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         {
-            GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget,"PatchKit application target platform is unambiguous with current active project build platform."));
+            GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget, 
+                                           "PatchKit application target platform is unambiguous with current active project build platform."));
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(
-                new GUIContent(
-                    "Switch Platform",
-                    "Change PatchKit application target platform."),
-                GUILayout.Width(110)))
-            {
-                if (EditorUtility.DisplayDialog("Warning", "To change application platform, you need to switch the project platform. \n\nRemember, PatchKit support only: Windows, Mac, Linux platforms.",
-                                                "Change the project platform", "Cancel"))
-                {
-                    Dispatch(() => SwitchPlatform());
-                }
-            }
         }
         EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Separator();
+        using (Style.ColorifyBackground(Color.blue))
+        {
+            var style = new GUIStyle(GUI.skin.label);
+            style.normal.textColor = Color.blue;
+           
+            if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
+            {
+                EditorUtility.DisplayDialog(
+                    "Need to change platform?",
+                    "PatchKit application target platform is unambiguous with current active project build platform.\n\n" +
+                    "To change it, you have to switch project platform in Build Settings window.",
+                    "OK");
+            }
+            
+            Rect lastRect = GUILayoutUtility.GetLastRect();
+            lastRect.y += lastRect.height - 2;
+            lastRect.height = 2;
+            GUI.Box(lastRect, "");
+        }
         
         if (string.IsNullOrEmpty(_name))
         {
@@ -104,7 +114,7 @@ public class CreateAppScreen : Screen
                 {
                     GUILayout.FlexibleSpace();
 
-                    using (Style.Colorify(new Color(0.502f, 0.839f, 0.839f)))
+                    using (Style.Colorify(Style.greenPastel))
                     {
                         if (GUILayout.Button("Create", GUILayout.Width(100)))
                         {
@@ -130,9 +140,6 @@ public class CreateAppScreen : Screen
 
     [SerializeField]
     private string _name;
-    
-    [SerializeField]
-    private Texture2D _arrowIcon;
 
     #endregion
 
