@@ -97,20 +97,20 @@ namespace PatchKit.UnityEditorExtension.UI
             EditorGUILayout.EndScrollView();
         }
 
-        private void DrawApp(App app, int i)
+        private void DrawApp(App app, int appIndexToColorize)
         {
             Assert.IsNotNull(app.Name);
             Assert.IsNotNull(app.Platform);
 
-            bool isLinked = app.Secret == _linkedAppSecret;
+            bool isConnected = app.Secret == _connectedAppSecret;
 
-            Color backgroundColor = (i == 0)
+            Color backgroundColor = (appIndexToColorize == 0)
                 ? new Color(1f, 1f, 1f)
                 : new Color(0.9f, 0.9f, 0.9f);
 
 
-            using (Style.ColorifyBackground(
-                isLinked ? new Color(0.502f, 0.839f, 0.031f) : backgroundColor))
+            using (Style.ColorizeBackground(
+                isConnected ? new Color(0.502f, 0.839f, 0.031f) : backgroundColor))
             {
                 EditorGUILayout.BeginHorizontal(EditorStyles.textArea);
 
@@ -141,7 +141,7 @@ namespace PatchKit.UnityEditorExtension.UI
                             "Secret: " + app.Secret,
                             EditorStyles.miniBoldLabel);
 
-                        if (isLinked)
+                        if (isConnected)
                         {
                             GUILayout.Label(
                                 "Currently\nselected",
@@ -151,21 +151,21 @@ namespace PatchKit.UnityEditorExtension.UI
                         {
                             if (app.Platform == _platform.ToApiString())
                             {
-                                using (Style.ColorifyBackground(
-                                    Style.greenPastel))
+                                using (Style.ColorizeBackground(
+                                    Style.GreenPastel))
                                 {
                                     if (GUILayout.Button(
                                         "Select",
                                         GUILayout.Width(80)))
                                     {
-                                        Dispatch(() => Link(app));
+                                        Dispatch(() => Connect(app));
                                     }
                                 }
                             }
                             else
                             {
-                                using (Style.ColorifyBackground(
-                                    Style.redPastel))
+                                using (Style.ColorizeBackground(
+                                    Style.RedPastel))
                                 {
                                     if (GUILayout.Button(
                                         "Select",
@@ -205,7 +205,7 @@ namespace PatchKit.UnityEditorExtension.UI
 
         [SerializeField] private Vector2 _scrollViewVector;
 
-        [SerializeField] private string _linkedAppSecret;
+        [SerializeField] private string _connectedAppSecret;
 
         #endregion
 
@@ -215,15 +215,15 @@ namespace PatchKit.UnityEditorExtension.UI
         {
             _platform = platform;
 
-            AppSecret? appSecret = Config.GetLinkedAppSecret(platform);
+            AppSecret? appSecret = Config.GetConnectedAppSecret(platform);
 
             if (appSecret.HasValue)
             {
-                _linkedAppSecret = appSecret.Value.Value;
+                _connectedAppSecret = appSecret.Value.Value;
             }
             else
             {
-                _linkedAppSecret = null;
+                _connectedAppSecret = null;
             }
         }
 
@@ -233,7 +233,7 @@ namespace PatchKit.UnityEditorExtension.UI
             {
                 App app = ((CreateAppScreen.CreatedResult) result).App;
 
-                Config.LinkApp(new AppSecret(app.Secret), _platform);
+                Config.ConnectApp(new AppSecret(app.Secret), _platform);
 
                 Pop(new LinkedResult(app));
             }
@@ -274,12 +274,12 @@ namespace PatchKit.UnityEditorExtension.UI
             }
         }
 
-        private void Link(App app)
+        private void Connect(App app)
         {
             Assert.AreEqual(_platform.ToApiString(), app.Platform);
             Assert.IsTrue(Apps.Contains(app));
 
-            Config.LinkApp(new AppSecret(app.Secret), _platform);
+            Config.ConnectApp(new AppSecret(app.Secret), _platform);
 
             Pop(new LinkedResult(app));
         }

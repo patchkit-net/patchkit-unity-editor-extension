@@ -32,9 +32,9 @@ public class SafeBuildAndUploadScreen : Screen
             return;
         }
 
-        AppSecret? linkedAppSecret = Config.GetLinkedAppSecret(_platform);
-        if (!linkedAppSecret.HasValue ||
-            linkedAppSecret.Value.Value != _appSecret)
+        AppSecret? connectedAppSecret = Config.GetConnectedAppSecret(_platform);
+        if (!connectedAppSecret.HasValue ||
+            connectedAppSecret.Value.Value != _appSecret)
         {
             Pop(null);
         }
@@ -96,11 +96,11 @@ public class SafeBuildAndUploadScreen : Screen
                     new GUIContent("Change application", "Change application"),
                     GUILayout.Width(120)))
                 {
-                    Dispatch(() => SwitchLinkedApp());
+                    Dispatch(() => SwitchConnectedApp());
                 }
             }
             EditorGUILayout.EndHorizontal();
-            using (Style.ColorifyBackground(Color.blue))
+            using (Style.ColorizeBackground(Color.blue))
             {
                 var style = new GUIStyle(GUI.skin.label);
                 style.normal.textColor = Color.blue;
@@ -109,7 +109,7 @@ public class SafeBuildAndUploadScreen : Screen
                 {
                     EditorUtility.DisplayDialog(
                         "Need to change platform?",
-                        "PatchKit application target platform is unambiguous with current active project build platform.\n\n" +
+                        "While uploading application from Unity, PatchKit target platform is determined by current active project build platform.\n\n" +
                         "To change it, you have to switch project platform in Build Settings window.",
                         "OK");
                 }
@@ -154,7 +154,7 @@ public class SafeBuildAndUploadScreen : Screen
                 string shortPath = BuildLocation;
                 if (BuildLocation.Length > 50)
                 {
-                    shortPath = BuildLocation.Substring(0,20) + "./.../." + 
+                    shortPath = BuildLocation.Substring(0,20) + ".../" + 
                         BuildLocation.Substring(BuildLocation.Length - 20, 20);
                 }
                 
@@ -231,7 +231,7 @@ public class SafeBuildAndUploadScreen : Screen
         }
         EditorGUILayout.EndHorizontal();
         
-        bool isUploadPermitted = false;
+        bool canUpload = false;
         if (!_overwriteDraftVersion)
         {
             EditorGUILayout.HelpBox(
@@ -259,12 +259,12 @@ public class SafeBuildAndUploadScreen : Screen
         }
         else
         {
-            isUploadPermitted = true;
+            canUpload = true;
         }
        
-        GUI.enabled = isUploadPermitted;
+        GUI.enabled = canUpload;
         
-        using (Style.Colorify(Style.greenOlive))
+        using (Style.Colorize(Style.GreenOlive))
         {
             if (GUILayout.Button(
                 new GUIContent("Build & Upload", "Build a new version"),
@@ -288,7 +288,6 @@ public class SafeBuildAndUploadScreen : Screen
     {
         Assert.IsNotNull(GUI.skin);
         
-
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.FlexibleSpace();
@@ -412,7 +411,7 @@ public class SafeBuildAndUploadScreen : Screen
         AppBuild.OpenLocationDialog();
     }
 
-    private void SwitchLinkedApp()
+    private void SwitchConnectedApp()
     {
         Push<ConnectAppScreen>().Initialize(_platform);
     }

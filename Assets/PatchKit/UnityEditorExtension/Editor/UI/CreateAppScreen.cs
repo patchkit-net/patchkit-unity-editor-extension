@@ -71,12 +71,13 @@ public class CreateAppScreen : Screen
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget, 
-                                           "PatchKit application target platform is unambiguous with current active project build platform."));
+                                           "While uploading application from Unity, PatchKit target platform is determined" +
+                                           " by current active project build platform."));
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Separator();
-        using (Style.ColorifyBackground(Color.blue))
+        using (Style.ColorizeBackground(Color.blue))
         {
             var style = new GUIStyle(GUI.skin.label);
             style.normal.textColor = Color.blue;
@@ -85,7 +86,7 @@ public class CreateAppScreen : Screen
             {
                 EditorUtility.DisplayDialog(
                     "Need to change platform?",
-                    "PatchKit application target platform is unambiguous with current active project build platform.\n\n" +
+                    "While uploading application from Unity, PatchKit target platform is determined by current active project build platform.\n\n" +
                     "To change it, you have to switch project platform in Build Settings window.",
                     "OK");
             }
@@ -110,11 +111,12 @@ public class CreateAppScreen : Screen
             }
             else
             {
+                EditorGUILayout.Separator();
                 GUILayout.BeginHorizontal();
                 {
                     GUILayout.FlexibleSpace();
 
-                    using (Style.Colorify(Style.greenPastel))
+                    using (Style.Colorize(Style.GreenPastel))
                     {
                         if (GUILayout.Button("Create", GUILayout.Width(100)))
                         {

@@ -124,24 +124,24 @@ public class Config : ScriptableObject
         return new Dictionary<AppPlatform, AppSecret?>
         {
             {
-                AppPlatform.Windows32, GetLinkedAppSecret(AppPlatform.Windows32)
+                AppPlatform.Windows32, GetConnectedAppSecret(AppPlatform.Windows32)
             },
             {
-                AppPlatform.Windows64, GetLinkedAppSecret(AppPlatform.Windows64)
+                AppPlatform.Windows64, GetConnectedAppSecret(AppPlatform.Windows64)
             },
             {
-                AppPlatform.Linux32, GetLinkedAppSecret(AppPlatform.Linux32)
+                AppPlatform.Linux32, GetConnectedAppSecret(AppPlatform.Linux32)
             },
             {
-                AppPlatform.Linux64, GetLinkedAppSecret(AppPlatform.Linux64)
+                AppPlatform.Linux64, GetConnectedAppSecret(AppPlatform.Linux64)
             },
             {
-                AppPlatform.Mac64, GetLinkedAppSecret(AppPlatform.Mac64)
+                AppPlatform.Mac64, GetConnectedAppSecret(AppPlatform.Mac64)
             }
         };
     }
 
-    public static AppSecret? GetLinkedAppSecret(AppPlatform platform)
+    public static AppSecret? GetConnectedAppSecret(AppPlatform platform)
     {
         Config instance = FindOrCreateInstance();
 
@@ -180,7 +180,7 @@ public class Config : ScriptableObject
         }
     }
 
-    public static void LinkApp(AppSecret appSecret, AppPlatform platform)
+    public static void ConnectApp(AppSecret appSecret, AppPlatform platform)
     {
         if (!appSecret.IsValid)
         {

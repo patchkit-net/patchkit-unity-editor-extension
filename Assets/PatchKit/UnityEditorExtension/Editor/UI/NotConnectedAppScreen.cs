@@ -15,7 +15,7 @@ public class NotConnectedAppScreen : Screen
 
     public override Vector2? Size
     {
-        get { return null; }
+        get { return new Vector2(400f, 105f); }
     }
 
     public override void UpdateIfActive()
@@ -26,7 +26,7 @@ public class NotConnectedAppScreen : Screen
             return;
         }
 
-        if (Config.GetLinkedAppSecret(_platform).HasValue)
+        if (Config.GetConnectedAppSecret(_platform).HasValue)
         {
             Pop(null);
         }
@@ -38,8 +38,8 @@ public class NotConnectedAppScreen : Screen
         {
             GUILayout.FlexibleSpace();
             GUILayout.Label(
-                "You haven't linked any PatchKit app for " +
-                _platform.ToDisplayString(),
+                "\nYou haven't connected any PatchKit app \nfor " +
+                _platform.ToDisplayString() + "\n",
                 EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
         }

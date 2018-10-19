@@ -28,13 +28,13 @@ public class BuildAndUploadScreen : Screen
         {
             Push<NotLinkedAccountScreen>().Initialize();
         }
-        else if (!IsAppLinked)
+        else if (!IsAppConnected)
         {
             Push<NotConnectedAppScreen>().Initialize(_platform);
         }
         else
         {
-            AppSecret? appSecret = Config.GetLinkedAppSecret(_platform);
+            AppSecret? appSecret = Config.GetConnectedAppSecret(_platform);
             Assert.IsTrue(appSecret.HasValue);
             Push<SafeBuildAndUploadScreen>()
                 .Initialize(_platform, appSecret.Value);
@@ -71,9 +71,9 @@ public class BuildAndUploadScreen : Screen
         get { return Config.GetLinkedAccountApiKey().HasValue; }
     }
 
-    private bool IsAppLinked
+    private bool IsAppConnected
     {
-        get { return Config.GetLinkedAppSecret(_platform).HasValue; }
+        get { return Config.GetConnectedAppSecret(_platform).HasValue; }
     }
 
     #endregion
