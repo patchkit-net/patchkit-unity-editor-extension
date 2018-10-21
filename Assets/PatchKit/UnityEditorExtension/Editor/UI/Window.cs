@@ -126,13 +126,15 @@ public class Window : EditorWindow
 
             currentScreen.UpdateIfActive();
 
-            // TODO: More elegant solution
             try
             {
                 currentScreen.Draw();
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
+#if PATCHKIT_UNITY_EDITOR_EXTENSION_DEV
+                Debug.LogException(e);
+#endif
             }
         }
     }
