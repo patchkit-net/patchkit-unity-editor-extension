@@ -78,6 +78,10 @@ public class Config : ScriptableObject
     }
 
 #if PATCHKIT_UNITY_EDITOR_EXTENSION_DEV
+
+// Disable warning in Unity console about not assigning private value
+#pragma warning disable CS0649
+
     [SerializeField]
     private bool _useOverrideApiConnectionSettings;
 
@@ -85,7 +89,10 @@ public class Config : ScriptableObject
     private PatchKit.Api.ApiConnectionSettings _overrideApiConnectionSettings =
         PatchKit.Api.MainApiConnection.GetDefaultSettings();
 
+#pragma warning restore CS0649
+
 #endif
+
 
     public static PatchKit.Api.ApiConnectionSettings ApiConnectionSettings
     {

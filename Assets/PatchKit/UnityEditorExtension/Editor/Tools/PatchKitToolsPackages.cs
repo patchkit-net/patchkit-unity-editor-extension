@@ -39,6 +39,9 @@ public class PatchKitToolsPackages : ScriptableObject
         return instances[0];
     }
 
+// Disable warning in Unity console about not assigning private value
+#pragma warning disable CS0649
+
 #if PATCHKIT_UNITY_EDITOR_EXTENSION_DEV
 #else
     [HideInInspector]
@@ -73,6 +76,8 @@ public class PatchKitToolsPackages : ScriptableObject
 #endif
     [SerializeField]
     private Object _mac64;
+
+#pragma warning restore CS0649
 
     [NotNull]
     public static string GetPath(EnvironmentPlatform platform)
