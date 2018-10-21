@@ -74,9 +74,6 @@ public static class FileSystem
             Assert.IsNotNull(process);
 
             process.WaitForExit();
-
-            Debug.Log(process.StandardError.ReadToEnd());
-            Debug.Log(process.StandardOutput.ReadToEnd());
         }
     }
 }
