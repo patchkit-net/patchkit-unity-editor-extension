@@ -14,29 +14,24 @@ public class Window : EditorWindow
     [NotNull]
     private List<Screen> _screens = new List<Screen>();
 
+    [NotNull]
+    private IEnumerable<Screen> Screens
+    {
+        get { return _screens.Where(x => x != null); }
+    }
+
     public Screen CurrentScreen
     {
-        get
-        {
-            if (_screens.Count > 0)
-            {
-                Screen screen = _screens.Last();
-                Assert.IsNotNull(screen);
-                return screen;
-            }
-
-            return null;
-        }
+        get { return Screens.LastOrDefault(); }
     }
 
     private Vector2? GetCurrentSize()
     {
-        for (int i = _screens.Count - 1; i >= 0; i--)
+        foreach (Screen screen in Screens.Reverse())
         {
-            Assert.IsNotNull(_screens[i]);
-            if (_screens[i].Size.HasValue)
+            if (screen.Size.HasValue)
             {
-                return _screens[i].Size.Value;
+                return screen.Size.Value;
             }
         }
 
@@ -45,12 +40,11 @@ public class Window : EditorWindow
 
     private string GetCurrentTitle()
     {
-        for (int i = _screens.Count - 1; i >= 0; i--)
+        foreach (Screen screen in Screens.Reverse())
         {
-            Assert.IsNotNull(_screens[i]);
-            if (_screens[i].Title != null)
+            if (screen.Title != null)
             {
-                return _screens[i].Title;
+                return screen.Title;
             }
         }
 
