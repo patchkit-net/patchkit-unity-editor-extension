@@ -108,9 +108,7 @@ public class SafeBuildAndUploadScreen : Screen
                 if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
                 {
                     EditorUtility.DisplayDialog(
-                        "Need to change platform?",
-                        "While uploading application from Unity, PatchKit target platform is determined by current active project build platform.\n\n" +
-                        "To change it, you have to switch project platform in Build Settings window.",
+                        "Need to change platform?", Descriptions.needToPlatformChange,
                         "OK");
                 }
             
@@ -152,11 +150,19 @@ public class SafeBuildAndUploadScreen : Screen
             EditorGUILayout.BeginHorizontal();
             {
                 string shortPath = BuildLocation;
-                if (BuildLocation.Length > 50)
+                if (BuildLocation == null)
                 {
-                    shortPath = BuildLocation.Substring(0,20) + ".../" + 
-                        BuildLocation.Substring(BuildLocation.Length - 20, 20);
+                    shortPath = "(not set)";
                 }
+                else
+                {
+                    if (BuildLocation.Length > 50)
+                    {
+                        shortPath = BuildLocation.Substring(0, 20) + "..." + 
+                            BuildLocation.Substring(BuildLocation.Length - 20, 20);
+                    }
+                }
+            
                 
                 GUILayout.Label("Location:");
                 GUILayout.FlexibleSpace();
@@ -231,6 +237,7 @@ public class SafeBuildAndUploadScreen : Screen
         }
         EditorGUILayout.EndHorizontal();
         
+        bool previousGuiEnabled = GUI.enabled;
         bool canUpload = false;
         if (!_overwriteDraftVersion)
         {
@@ -259,10 +266,11 @@ public class SafeBuildAndUploadScreen : Screen
         }
         else
         {
-            canUpload = true;
+            canUpload = previousGuiEnabled;
         }
-       
+      
         GUI.enabled = canUpload;
+        
         
         using (Style.Colorize(Style.GreenOlive))
         {
@@ -368,9 +376,9 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override void OnActivatedFromTop(object result)
     {
-        if (result is ConnectAppScreen.LinkedResult)
+        if (result is ConnectAppScreen.ConnectedResult)
         {
-            App app = ((ConnectAppScreen.LinkedResult) result).App;
+            App app = ((ConnectAppScreen.ConnectedResult) result).App;
 
             _appSecret = app.Secret;
             _appName = app.Name;

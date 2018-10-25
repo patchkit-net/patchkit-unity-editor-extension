@@ -70,9 +70,7 @@ public class CreateAppScreen : Screen
         GUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         {
-            GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget, 
-                                           "While uploading application from Unity, PatchKit target platform is determined" +
-                                           " by current active project build platform."));
+            GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget, Descriptions.platformChangeInfo));
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
@@ -85,9 +83,7 @@ public class CreateAppScreen : Screen
             if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
             {
                 EditorUtility.DisplayDialog(
-                    "Need to change platform?",
-                    "While uploading application from Unity, PatchKit target platform is determined by current active project build platform.\n\n" +
-                    "To change it, you have to switch project platform in Build Settings window.",
+                    "Need to change platform?", Descriptions.needToPlatformChange,
                     "OK");
             }
             

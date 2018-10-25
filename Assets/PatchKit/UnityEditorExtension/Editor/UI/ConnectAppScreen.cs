@@ -12,11 +12,11 @@ namespace PatchKit.UnityEditorExtension.UI
 {
     public class ConnectAppScreen : Screen
     {
-        public class LinkedResult
+        public class ConnectedResult
         {
             public readonly App App;
 
-            public LinkedResult(App app)
+            public ConnectedResult(App app)
             {
                 App = app;
             }
@@ -97,14 +97,14 @@ namespace PatchKit.UnityEditorExtension.UI
             EditorGUILayout.EndScrollView();
         }
 
-        private void DrawApp(App app, int appIndexToColorize)
+        private void DrawApp(App app, int useAltColor)
         {
             Assert.IsNotNull(app.Name);
             Assert.IsNotNull(app.Platform);
 
             bool isConnected = app.Secret == _connectedAppSecret;
 
-            Color backgroundColor = (appIndexToColorize == 0)
+            Color backgroundColor = (useAltColor == 0)
                 ? new Color(1f, 1f, 1f)
                 : new Color(0.9f, 0.9f, 0.9f);
 
@@ -173,7 +173,7 @@ namespace PatchKit.UnityEditorExtension.UI
                                     {
                                         EditorUtility.DisplayDialog(
                                             "Warning",
-                                            "You tried to choose an application with wrong platform.\n\n" +
+                                            "You tried to connect an application with wrong platform.\n\n" +
                                             " Connect your PatchKit application for " +
                                             _platform.ToString() +
                                             " platform",
@@ -235,12 +235,11 @@ namespace PatchKit.UnityEditorExtension.UI
 
                 Config.ConnectApp(new AppSecret(app.Secret), _platform);
 
-                Pop(new LinkedResult(app));
+                Pop(new ConnectedResult(app));
             }
         }
 
         private bool _shouldFilterByPlatform = true;
-        private bool _isFilterToogleChanged = false;
 
         public bool ShouldFilterByPlatform
         {
@@ -251,7 +250,6 @@ namespace PatchKit.UnityEditorExtension.UI
                 if (value != _shouldFilterByPlatform)
                 {
                     _shouldFilterByPlatform = value;
-                    _isFilterToogleChanged = true;
                 }
             }
         }
@@ -281,7 +279,7 @@ namespace PatchKit.UnityEditorExtension.UI
 
             Config.ConnectApp(new AppSecret(app.Secret), _platform);
 
-            Pop(new LinkedResult(app));
+            Pop(new ConnectedResult(app));
         }
 
         private void CreateNew()
