@@ -21,7 +21,7 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override Vector2? Size
     {
-        get { return null; }
+        get { return new Vector2(400f, 800f);}
     }
 
     public override void UpdateIfActive()
@@ -32,9 +32,9 @@ public class SafeBuildAndUploadScreen : Screen
             return;
         }
 
-        AppSecret? linkedAppSecret = Config.GetLinkedAppSecret(_platform);
-        if (!linkedAppSecret.HasValue ||
-            linkedAppSecret.Value.Value != _appSecret)
+        AppSecret? connectedAppSecret = Config.GetConnectedAppSecret(_platform);
+        if (!connectedAppSecret.HasValue ||
+            connectedAppSecret.Value.Value != _appSecret)
         {
             Pop(null);
         }
@@ -49,20 +49,10 @@ public class SafeBuildAndUploadScreen : Screen
         EditorGUILayout.EndScrollView();
     }
 
-    private void DrawContent()
+    void DrawApp()
     {
-        Assert.IsNotNull(GUI.skin);
-
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.BeginVertical();
         {
-            EditorGUILayout.BeginHorizontal();
-            {
-                GUILayout.FlexibleSpace();
-                GUILayout.Label("App", EditorStyles.boldLabel);
-                GUILayout.FlexibleSpace();
-            }
-            EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Name:");
@@ -75,24 +65,6 @@ public class SafeBuildAndUploadScreen : Screen
                     GUILayout.ExpandWidth(true));
             }
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-            EditorGUILayout.BeginHorizontal();
-            {
-                GUILayout.Label("Secret:");
-
-                GUILayout.FlexibleSpace();
-
-                GUILayout.Label(
-                    _appSecret,
-                    EditorStyles.miniLabel,
-                    GUILayout.ExpandWidth(true));
-            }
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Platform:");
@@ -105,52 +77,101 @@ public class SafeBuildAndUploadScreen : Screen
                     GUILayout.ExpandWidth(true));
             }
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-            if (GUILayout.Button(
-                new GUIContent("Switch app"),
-                GUILayout.ExpandWidth(true)))
+            EditorGUILayout.BeginHorizontal();
             {
-                Dispatch(() => SwitchLinkedApp());
+                GUILayout.Label("Secret:");
+                GUILayout.FlexibleSpace();
+
+                GUILayout.Label(
+                    _appSecret,
+                    EditorStyles.miniLabel,
+                    GUILayout.ExpandWidth(true));
             }
-
-            if (GUILayout.Button(
-                new GUIContent("Switch platform"),
-                GUILayout.ExpandWidth(true)))
+            EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.BeginHorizontal();
             {
-                Dispatch(() => SwitchPlatform());
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(
+                    new GUIContent("Change application", "Change application"),
+                    GUILayout.Width(120)))
+                {
+                    Dispatch(() => SwitchConnectedApp());
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+            using (Style.ColorizeBackground(Color.blue))
+            {
+                var style = new GUIStyle(GUI.skin.label);
+                style.normal.textColor = Color.blue;
+           
+                if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
+                {
+                    EditorUtility.DisplayDialog(
+                        "Need to change platform?", Descriptions.needToPlatformChange,
+                        "OK");
+                }
+            
+                Rect lastRect = GUILayoutUtility.GetLastRect();
+                lastRect.y += lastRect.height - 2;
+                lastRect.height = 2;
+                GUI.Box(lastRect, "");
             }
         }
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
+    }
 
+    void DrawBuild()
+    {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("Build Settings", EditorStyles.boldLabel);
+                GUILayout.Label("Build Summary", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space();
-
             EditorGUILayout.BeginHorizontal();
             {
-                GUILayout.Label("Location:");
-
                 GUILayout.FlexibleSpace();
-
-                GUILayout.Label(
-                    new GUIContent(BuildLocation, BuildLocation),
-                    EditorStyles.miniLabel,
-                    GUILayout.ExpandWidth(true));
+                if (GUILayout.Button(
+                    new GUIContent(
+                        "Change location",
+                        "Button open Build Settings window."),
+                    GUILayout.Width(110)))
+                {
+                    Dispatch(() => ChangeBuildLocation());
+                }
             }
             EditorGUILayout.EndHorizontal();
-
+            EditorGUILayout.BeginHorizontal();
+            {
+                string shortPath = BuildLocation;
+                if (BuildLocation == null)
+                {
+                    shortPath = "(not set)";
+                }
+                else
+                {
+                    if (BuildLocation.Length > 50)
+                    {
+                        shortPath = BuildLocation.Substring(0, 20) + "..." + 
+                            BuildLocation.Substring(BuildLocation.Length - 20, 20);
+                    }
+                }
+            
+                
+                GUILayout.Label("Location:");
+                GUILayout.FlexibleSpace();
+                GUILayout.Label(
+                    new GUIContent(shortPath, BuildLocation),
+                    EditorStyles.miniLabel);
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.Label("Scenes: ", EditorStyles.boldLabel);
@@ -158,7 +179,7 @@ public class SafeBuildAndUploadScreen : Screen
                     new GUIContent(
                         "Edit Scenes",
                         "Button open Build Settings window."),
-                    GUILayout.Width(120)))
+                    GUILayout.Width(110)))
                 {
                     Dispatch(() => SwitchScenes());
                 }
@@ -171,53 +192,43 @@ public class SafeBuildAndUploadScreen : Screen
             {
                 GUILayout.Label(i + ". " + scenes[i]);
             }
-
-            if (GUILayout.Button(
-                new GUIContent("Change location"),
-                GUILayout.ExpandWidth(true)))
-            {
-                Dispatch(() => ChangeBuildLocation());
-            }
         }
         EditorGUILayout.EndVertical();
-
         EditorGUILayout.Space();
+    }
 
+    void DrawVersion()
+    {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
             EditorGUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
                 GUILayout.Label(
-                    "Version Configuration",
+                    "Version Details",
                     EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
-
             EditorGUILayout.Space();
 
             GUILayout.Label("*Label: ");
             _versionLabel = GUILayout.TextField(_versionLabel);
 
             EditorGUILayout.Space();
-
             GUILayout.Label("Changelog: ");
             _versionChangelog = GUILayout.TextArea(
                 _versionChangelog,
                 GUILayout.MinHeight(200));
         }
         EditorGUILayout.EndVertical();
-
         EditorGUILayout.Space();
-
         EditorGUILayout.BeginHorizontal();
         {
             EditorGUILayout.LabelField("Automatically publish after upload");
             _publishOnUpload = EditorGUILayout.Toggle(_publishOnUpload);
         }
         EditorGUILayout.EndHorizontal();
-
         EditorGUILayout.BeginHorizontal();
         {
             EditorGUILayout.LabelField("Overwrite draft version if it exists");
@@ -225,7 +236,9 @@ public class SafeBuildAndUploadScreen : Screen
                 EditorGUILayout.Toggle(_overwriteDraftVersion);
         }
         EditorGUILayout.EndHorizontal();
-
+        
+        bool previousGuiEnabled = GUI.enabled;
+        bool canUpload = false;
         if (!_overwriteDraftVersion)
         {
             EditorGUILayout.HelpBox(
@@ -253,24 +266,58 @@ public class SafeBuildAndUploadScreen : Screen
         }
         else
         {
-            using (Style.Colorify(Color.green))
+            canUpload = previousGuiEnabled;
+        }
+      
+        GUI.enabled = canUpload;
+        
+        
+        using (Style.Colorize(Style.GreenOlive))
+        {
+            if (GUILayout.Button(
+                new GUIContent("Build & Upload", "Build a new version"),
+                GUILayout.ExpandWidth(true)))
             {
-                if (GUILayout.Button(
-                    new GUIContent("Build & Upload", "Build a new version"),
-                    GUILayout.ExpandWidth(true)))
+                if(EditorUtility.DisplayDialog(
+                    "Warning",
+                    "Are you sure? ",
+                    "Yes",
+                    "No"))
                 {
-                    Dispatch(() => BuildAndUpload());
-                }
+                    Dispatch(() => BuildAndUpload()); 
+                } 
             }
         }
-
+        
         EditorGUILayout.Space();
+    }
+    
+    private void DrawContent()
+    {
+        Assert.IsNotNull(GUI.skin);
+        
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                _appName,
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        DrawApp();
+        DrawBuild();
+        DrawVersion();
     }
 
     #endregion
 
     #region Data
-
+        
+    [SerializeField]
+    private Texture2D _arrowIcon;
+    
     [SerializeField]
     private Vector2 _scrollViewVector;
 
@@ -329,9 +376,9 @@ public class SafeBuildAndUploadScreen : Screen
 
     public override void OnActivatedFromTop(object result)
     {
-        if (result is LinkAppScreen.LinkedResult)
+        if (result is ConnectAppScreen.ConnectedResult)
         {
-            App app = ((LinkAppScreen.LinkedResult) result).App;
+            App app = ((ConnectAppScreen.ConnectedResult) result).App;
 
             _appSecret = app.Secret;
             _appName = app.Name;
@@ -360,13 +407,7 @@ public class SafeBuildAndUploadScreen : Screen
             return AppVersionChangelog.GetValidationError(_versionChangelog);
         }
     }
-
-    private void SwitchPlatform()
-    {
-        EditorWindow.GetWindow(
-            Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
-    }
-
+    
     private void SwitchScenes()
     {
         EditorWindow.GetWindow(
@@ -378,9 +419,9 @@ public class SafeBuildAndUploadScreen : Screen
         AppBuild.OpenLocationDialog();
     }
 
-    private void SwitchLinkedApp()
+    private void SwitchConnectedApp()
     {
-        Push<LinkAppScreen>().Initialize(_platform);
+        Push<ConnectAppScreen>().Initialize(_platform);
     }
 
     private void BuildAndUpload()

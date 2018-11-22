@@ -24,12 +24,12 @@ public class CreateAppScreen : Screen
 
     public override string Title
     {
-        get { return "Create app"; }
+        get { return "Create App"; }
     }
 
     public override Vector2? Size
     {
-        get { return new Vector2(400f, 150f); }
+        get { return new Vector2(400f, 155f); }
     }
 
     public override void UpdateIfActive()
@@ -42,16 +42,57 @@ public class CreateAppScreen : Screen
 
     public override void Draw()
     {
-        GUILayout.Label(
-            string.Format(
-                "Create new PatchKit app for {0}",
-                _platform.ToDisplayString()),
-            EditorStyles.boldLabel);
+        if (GUILayout.Button(new GUIContent((Texture) EditorGUIUtility.Load("arrowIcon.png"), "Return"),
+                             GUILayout.Width(35), GUILayout.Height(20)))
+        {
+            Dispatch(() => Cancel());
+        }
 
-        _name = EditorGUILayout.TextField("Name: ", _name);
-
-        EditorGUILayout.Space();
-
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                string.Format(
+                    "Create new PatchKit app for {0}",
+                    _platform.ToDisplayString()),
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+        
+        
+        
+        GUILayout.BeginHorizontal();
+        {
+            GUILayout.Label("Name:");
+            _name = EditorGUILayout.TextField(_name);
+        }
+        GUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget, Descriptions.platformChangeInfo));
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Separator();
+        using (Style.ColorizeBackground(Color.blue))
+        {
+            var style = new GUIStyle(GUI.skin.label);
+            style.normal.textColor = Color.blue;
+           
+            if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
+            {
+                EditorUtility.DisplayDialog(
+                    "Need to change platform?", Descriptions.needToPlatformChange,
+                    "OK");
+            }
+            
+            Rect lastRect = GUILayoutUtility.GetLastRect();
+            lastRect.y += lastRect.height - 2;
+            lastRect.height = 2;
+            GUI.Box(lastRect, "");
+        }
+        
         if (string.IsNullOrEmpty(_name))
         {
             EditorGUILayout.HelpBox(
@@ -66,11 +107,12 @@ public class CreateAppScreen : Screen
             }
             else
             {
+                EditorGUILayout.Separator();
                 GUILayout.BeginHorizontal();
                 {
                     GUILayout.FlexibleSpace();
 
-                    using (Style.Colorify(Color.green))
+                    using (Style.Colorize(Style.GreenPastel))
                     {
                         if (GUILayout.Button("Create", GUILayout.Width(100)))
                         {
@@ -85,19 +127,6 @@ public class CreateAppScreen : Screen
         }
 
         EditorGUILayout.Space();
-
-        GUILayout.BeginHorizontal();
-        {
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Cancel", GUILayout.Width(100)))
-            {
-                Dispatch(() => Cancel());
-            }
-
-            GUILayout.FlexibleSpace();
-        }
-        GUILayout.EndHorizontal();
     }
 
     #endregion
@@ -120,7 +149,13 @@ public class CreateAppScreen : Screen
 
         _name = string.Empty;
     }
-
+    
+    private void SwitchPlatform()
+    {
+        EditorWindow.GetWindow(
+            System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
+    }
+    
     public override void OnActivatedFromTop(object result)
     {
     }

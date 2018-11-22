@@ -25,7 +25,7 @@ public class LinkAccountScreen : Screen
 
     public override Vector2? Size
     {
-        get { return new Vector2(400f, 145f); }
+        get { return new Vector2(400f, 125f); }
     }
 
     public override void UpdateIfActive()
@@ -34,14 +34,30 @@ public class LinkAccountScreen : Screen
 
     public override void Draw()
     {
-        GUILayout.Label("Link your PatchKit account", EditorStyles.boldLabel);
-
-        _newApiKey = EditorGUILayout.TextField("API Key:", _newApiKey);
-
-        if (GUILayout.Button("Find your API key", GUILayout.ExpandWidth(true)))
+        EditorGUILayout.BeginHorizontal();
         {
-            Dispatch(() => OpenProfileWebpage());
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                "Link your PatchKit account",
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
         }
+        EditorGUILayout.EndHorizontal();
+      
+        EditorGUILayout.BeginHorizontal();
+        {
+            GUILayout.Label("API Key:");
+            _newApiKey = EditorGUILayout.TextField( _newApiKey);
+
+            if (GUILayout.Button(
+                new GUIContent((Texture) EditorGUIUtility.Load("searchIcon.png"), "Find your API key"),
+                GUILayout.Width(20),
+                GUILayout.Height(20)))
+            {
+                Dispatch(() => OpenProfileWebpage());
+            }
+        }
+        EditorGUILayout.EndHorizontal();
 
         if (!string.IsNullOrEmpty(_newApiKey))
         {
@@ -76,18 +92,6 @@ public class LinkAccountScreen : Screen
         }
 
         EditorGUILayout.Separator();
-        EditorGUILayout.BeginHorizontal();
-        {
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Cancel", GUILayout.Width(100)))
-            {
-                Dispatch(() => Cancel());
-            }
-
-            GUILayout.FlexibleSpace();
-        }
-        EditorGUILayout.EndHorizontal();
     }
 
     #endregion

@@ -5,6 +5,10 @@ namespace PatchKit.UnityEditorExtension.UI
 {
 public static class Style
 {
+    public static readonly Color GreenPastel = new Color(0.502f, 0.839f, 0.839f);
+    public static readonly Color GreenOlive = new Color(0.502f, 0.839f, 0.031f);
+    public static readonly Color RedPastel = new Color(0.839f, 0.502f, 0.502f); 
+    
     private class Disposable : IDisposable
     {
         private Action _action;
@@ -26,7 +30,7 @@ public static class Style
         }
     }
 
-    public static IDisposable Colorify(Color color)
+    public static IDisposable Colorize(Color color)
     {
         Color previousColor = GUI.color;
 
@@ -35,7 +39,7 @@ public static class Style
         return new Disposable(() => GUI.color = previousColor);
     }
 
-    public static IDisposable ColorifyBackground(Color color)
+    public static IDisposable ColorizeBackground(Color color)
     {
         Color previousColor = GUI.backgroundColor;
 

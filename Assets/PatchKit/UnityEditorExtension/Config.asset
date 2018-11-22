@@ -21,6 +21,8 @@ MonoBehaviour:
     - Host: api-cache.patchkit.net
       Port: 0
       UseHttps: 1
+  _linkedWindows32AppSecret: 
+  _linkedWindows64AppSecret: f567c6f34d27ad62f8567df717c3e65b
   _linkedLinux32AppSecret: 
   _linkedLinux64AppSecret: 
   _linkedMac64AppSecret: 

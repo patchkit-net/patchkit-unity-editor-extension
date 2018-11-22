@@ -37,7 +37,9 @@ public class NotLinkedAccountScreen : Screen
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
-
+        
+        EditorGUILayout.Separator();
+        
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.FlexibleSpace();
