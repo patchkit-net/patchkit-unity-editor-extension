@@ -36,10 +36,12 @@ public class BuildAndUploadWindow : Window
 
         if (!platform.HasValue)
         {
-            return;
+            ClearAndPush<UnsupportedPlatformScreen>().Initialize();
         }
-
-        ClearAndPush<BuildAndUploadScreen>().Initialize(platform.Value);
+        else
+        {
+            ClearAndPush<BuildAndUploadScreen>().Initialize(platform.Value);
+        }
     }
 }
 }
