@@ -10,82 +10,78 @@ namespace PatchKit.UnityEditorExtension.Tools
 {
 public class Terminal
 {
-    private readonly string _startCommand;
-
-    public Terminal(string startCommand)
+    public static void Start(string command)
     {
-        _startCommand = startCommand;
-
-        ProcessStartInfo processStartInfo = GetInfo();
+        ProcessStartInfo processStartInfo = GetInfo(command);
 
         Process process = Process.Start(processStartInfo);
         Assert.IsNotNull(process);
     }
 
     [NotNull]
-    private ProcessStartInfo GetInfo()
+    private static ProcessStartInfo GetInfo(string command)
     {
         switch (Environment.Platform)
         {
             case EnvironmentPlatform.Windows:
-                return GetWindowsInfo();
+                return GetWindowsInfo(command);
             case EnvironmentPlatform.Linux:
-                return GetLinuxInfo();
+                return GetLinuxInfo(command);
             case EnvironmentPlatform.Mac:
-                return GetMacInfo();
+                return GetMacInfo(command);
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
     [NotNull]
-    private ProcessStartInfo GetWindowsInfo()
+    private static ProcessStartInfo GetWindowsInfo(string command)
     {
         // /K - Carries out the command specified by String and continues.
-        return new ProcessStartInfo("cmd.exe", "/K " + _startCommand);
+        return new ProcessStartInfo("cmd.exe", "/K " + command);
     }
 
     [NotNull]
-    private ProcessStartInfo GetLinuxInfo()
+    private static ProcessStartInfo GetLinuxInfo(string command)
     {
         if (File.Exists("/usr/bin/gnome-terminal"))
         {
-            return GetGnomeTerminalInfo();
+            return GetGnomeTerminalInfo(command);
         }
 
         if (File.Exists("/usr/bin/xterm"))
         {
-            return GetXTermTerminalInfo();
+            return GetXTermTerminalInfo(command);
         }
 
         if (File.Exists("/usr/bin/konsole"))
         {
-            return GetKonsoleTerminalInfo();
+            return GetKonsoleTerminalInfo(command);
         }
 
         throw new InvalidOperationException();
     }
 
     [NotNull]
-    private ProcessStartInfo GetGnomeTerminalInfo()
+    private static ProcessStartInfo GetGnomeTerminalInfo(string command)
     {
-        return new ProcessStartInfo("gnome-terminal", "-x " + _startCommand);
+        return new ProcessStartInfo("gnome-terminal", "-x " + command);
     }
 
     [NotNull]
-    private ProcessStartInfo GetXTermTerminalInfo()
+    private static ProcessStartInfo GetXTermTerminalInfo(string command)
     {
-        return new ProcessStartInfo("xterm", "-e " + _startCommand);
+        return new ProcessStartInfo("xterm", "-e " + command);
     }
 
     [NotNull]
-    private ProcessStartInfo GetKonsoleTerminalInfo()
+    private static ProcessStartInfo GetKonsoleTerminalInfo(string command)
     {
-        return new ProcessStartInfo("konsole", "-e " + _startCommand);
+        return new ProcessStartInfo("konsole", "-e " + command);
     }
 
     [NotNull]
-    private ProcessStartInfo GetMacInfo()
+    private static ProcessStartInfo GetMacInfo(string command)
     {
         File.WriteAllText(OsxLaunchScriptPath, OsxLaunchScript);
 
@@ -96,7 +92,7 @@ public class Terminal
             string.Format(
                 "-c \"sh {0} '{1}' '{2}'\"",
                 OsxLaunchScriptPath,
-                _startCommand,
+                command,
                 Directory.GetCurrentDirectory()));
     }
 

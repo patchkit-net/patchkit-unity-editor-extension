@@ -43,14 +43,16 @@ public class LinkAccountScreen : Screen
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
-      
+
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.Label("API Key:");
-            _newApiKey = EditorGUILayout.TextField( _newApiKey);
+            _newApiKey = EditorGUILayout.TextField(_newApiKey);
 
             if (GUILayout.Button(
-                new GUIContent((Texture) EditorGUIUtility.Load("searchIcon.png"), "Find your API key"),
+                new GUIContent(
+                    (Texture) EditorGUIUtility.Load("searchIcon.png"),
+                    "Find your API key"),
                 GUILayout.Width(20),
                 GUILayout.Height(20)))
             {
@@ -135,11 +137,6 @@ public class LinkAccountScreen : Screen
     private void OpenProfileWebpage()
     {
         Application.OpenURL("https://panel.patchkit.net/users/profile");
-    }
-
-    private void Cancel()
-    {
-        Pop(null);
     }
 
     #endregion

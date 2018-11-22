@@ -39,7 +39,8 @@ public class NotConnectedAppScreen : Screen
             GUILayout.FlexibleSpace();
             GUILayout.Label(
                 "\nYou haven't connected any PatchKit app \nfor " +
-                _platform.ToDisplayString() + "\n",
+                _platform.ToDisplayString() +
+                "\n",
                 EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
         }

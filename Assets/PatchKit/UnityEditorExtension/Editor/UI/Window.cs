@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace PatchKit.UnityEditorExtension.UI
 {

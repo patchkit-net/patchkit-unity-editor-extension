@@ -51,7 +51,6 @@ public class BuildAndUploadScreen : Screen
 
     [SerializeField]
     private AppPlatform _platform;
-    
 
     #endregion
 

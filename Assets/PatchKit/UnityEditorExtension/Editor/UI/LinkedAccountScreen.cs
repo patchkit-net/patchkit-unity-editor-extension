@@ -1,4 +1,4 @@
-using System;
+using JetBrains.Annotations;
 using PatchKit.UnityEditorExtension.Core;
 using UnityEditor;
 using UnityEngine;
@@ -34,7 +34,9 @@ public class LinkedAccountScreen : Screen
             EditorStyles.boldLabel);
 
         GUILayout.Label("API key:");
-        string safeKey = ApiKey.Substring(0, 8) + "**************" + ApiKey.Substring(ApiKey.Length -8, 8);
+        string safeKey = ApiKey.Substring(0, 8) +
+            "**************" +
+            ApiKey.Substring(ApiKey.Length - 8, 8);
         EditorGUILayout.SelectableLabel(safeKey, EditorStyles.helpBox);
 
         EditorGUILayout.BeginHorizontal();
@@ -53,7 +55,7 @@ public class LinkedAccountScreen : Screen
     }
 
     #endregion
- 
+
     #region Logic
 
     public void Initialize()
@@ -64,6 +66,7 @@ public class LinkedAccountScreen : Screen
     {
     }
 
+    [NotNull]
     private string ApiKey
     {
         get
@@ -77,12 +80,6 @@ public class LinkedAccountScreen : Screen
     private bool IsAccountLinked
     {
         get { return Config.GetLinkedAccountApiKey().HasValue; }
-    }
-
-    private void OpenLinkDialog()
-    {
-        var screen = Push<LinkAccountScreen>();
-        screen.Initialize();
     }
 
     private void Unlink()

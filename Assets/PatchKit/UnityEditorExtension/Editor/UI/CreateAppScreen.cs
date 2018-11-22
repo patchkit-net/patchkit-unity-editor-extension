@@ -42,8 +42,12 @@ public class CreateAppScreen : Screen
 
     public override void Draw()
     {
-        if (GUILayout.Button(new GUIContent((Texture) EditorGUIUtility.Load("arrowIcon.png"), "Return"),
-                             GUILayout.Width(35), GUILayout.Height(20)))
+        if (GUILayout.Button(
+            new GUIContent(
+                (Texture) EditorGUIUtility.Load("arrowIcon.png"),
+                "Return"),
+            GUILayout.Width(35),
+            GUILayout.Height(20)))
         {
             Dispatch(() => Cancel());
         }
@@ -59,9 +63,8 @@ public class CreateAppScreen : Screen
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
-        
-        
-        
+
+
         GUILayout.BeginHorizontal();
         {
             GUILayout.Label("Name:");
@@ -70,29 +73,43 @@ public class CreateAppScreen : Screen
         GUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         {
-            GUILayout.Label(new GUIContent("Target platform:     " + EditorUserBuildSettings.activeBuildTarget, Descriptions.platformChangeInfo));
+            GUILayout.Label(
+                new GUIContent(
+                    "Target platform:     " +
+                    EditorUserBuildSettings.activeBuildTarget,
+                    Descriptions.PlatformChangeInfo));
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Separator();
         using (Style.ColorizeBackground(Color.blue))
         {
-            var style = new GUIStyle(GUI.skin.label);
-            style.normal.textColor = Color.blue;
-           
-            if (GUILayout.Button("Need to change platform?", style, GUILayout.ExpandWidth(false)))
+            Assert.IsNotNull(GUI.skin);
+            var style = new GUIStyle(GUI.skin.label)
+            {
+                normal =
+                {
+                    textColor = Color.blue
+                }
+            };
+
+            if (GUILayout.Button(
+                "Need to change platform?",
+                style,
+                GUILayout.ExpandWidth(false)))
             {
                 EditorUtility.DisplayDialog(
-                    "Need to change platform?", Descriptions.needToPlatformChange,
+                    "Need to change platform?",
+                    Descriptions.NeedToPlatformChange,
                     "OK");
             }
-            
+
             Rect lastRect = GUILayoutUtility.GetLastRect();
             lastRect.y += lastRect.height - 2;
             lastRect.height = 2;
             GUI.Box(lastRect, "");
         }
-        
+
         if (string.IsNullOrEmpty(_name))
         {
             EditorGUILayout.HelpBox(
@@ -149,13 +166,7 @@ public class CreateAppScreen : Screen
 
         _name = string.Empty;
     }
-    
-    private void SwitchPlatform()
-    {
-        EditorWindow.GetWindow(
-            System.Type.GetType("UnityEditor.BuildPlayerWindow,UnityEditor"));
-    }
-    
+
     public override void OnActivatedFromTop(object result)
     {
     }

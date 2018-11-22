@@ -125,7 +125,7 @@ public class PatchKitToolsClient : IDisposable
 
         string executable = string.Format("bash -c '{0} {1}'", path, command);
 
-        new Terminal(executable);
+        Terminal.Start(executable);
     }
 
     private void ExecuteMac(string command)
@@ -137,7 +137,7 @@ public class PatchKitToolsClient : IDisposable
 
         string executable = string.Format("{0} {1}", path, command);
 
-        new Terminal(executable);
+        Terminal.Start(executable);
     }
 
     private void ExecuteWindows(string command)
@@ -149,7 +149,7 @@ public class PatchKitToolsClient : IDisposable
 
         string executable = path + " " + command;
 
-        new Terminal(executable);
+        Terminal.Start(executable);
     }
 
     private void UnpackTools()

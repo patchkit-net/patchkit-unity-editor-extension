@@ -4,294 +4,289 @@ using PatchKit.Api.Models.Main;
 using PatchKit.UnityEditorExtension.Core;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.Assertions;
 using System.Collections.Generic;
 
 namespace PatchKit.UnityEditorExtension.UI
 {
-    public class ConnectAppScreen : Screen
+public class ConnectAppScreen : Screen
+{
+    public class ConnectedResult
     {
-        public class ConnectedResult
-        {
-            public readonly App App;
+        public readonly App App;
 
-            public ConnectedResult(App app)
+        public ConnectedResult(App app)
+        {
+            App = app;
+        }
+    }
+
+    #region GUI
+
+    public override string Title
+    {
+        get { return "Connect App"; }
+    }
+
+    public override Vector2? Size
+    {
+        get { return new Vector2(400f, 600f); }
+    }
+
+    public override void UpdateIfActive()
+    {
+        if (!Config.GetLinkedAccountApiKey().HasValue)
+        {
+            Push<NotLinkedAccountScreen>().Initialize();
+        }
+    }
+
+    public override void Draw()
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            if (GUILayout.Button(
+                new GUIContent(
+                    (Texture) EditorGUIUtility.Load("arrowIcon.png"),
+                    "Return"),
+                GUILayout.Width(35),
+                GUILayout.Height(20)))
             {
-                App = app;
+                Dispatch(() => Cancel());
+            }
+
+            GUILayout.Space(220);
+            if (GUILayout.Button(
+                "Create new app",
+                GUILayout.Width(130),
+                GUILayout.Height(20)))
+            {
+                Dispatch(() => CreateNew());
             }
         }
-
-        #region GUI
-
-        public override string Title
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
         {
-            get { return "Connect App"; }
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(
+                string.Format(
+                    "Connect your PatchKit application for {0}.",
+                    _platform.ToDisplayString()),
+                EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        ShouldFilterByPlatform = EditorGUILayout.Toggle(
+            "Filter apps by platform",
+            ShouldFilterByPlatform);
+        EditorGUILayout.Space();
+
+        _scrollViewVector = EditorGUILayout.BeginScrollView(
+            _scrollViewVector,
+            EditorStyles.helpBox);
+
+
+        int appIndex = 0;
+        foreach (App app in Apps)
+        {
+            DrawApp(app, appIndex % 2 == 0);
+            appIndex++;
         }
 
-        public override Vector2? Size
-        {
-            get { return new Vector2(400f, 600f); }
-        }
+        EditorGUILayout.EndScrollView();
+    }
 
-        public override void UpdateIfActive()
+    private void DrawApp(App app, bool useAltColor)
+    {
+        Assert.IsNotNull(app.Name);
+        Assert.IsNotNull(app.Platform);
+
+        bool isConnected = app.Secret == _connectedAppSecret;
+
+        Color backgroundColor = useAltColor
+            ? new Color(1f, 1f, 1f)
+            : new Color(0.9f, 0.9f, 0.9f);
+
+
+        using (Style.ColorizeBackground(
+            isConnected ? new Color(0.502f, 0.839f, 0.031f) : backgroundColor))
         {
-            if (!Config.GetLinkedAccountApiKey().HasValue)
+            EditorGUILayout.BeginHorizontal(EditorStyles.textArea);
+
+            EditorGUILayout.BeginVertical();
             {
-                Push<NotLinkedAccountScreen>().Initialize();
-            }
-        }
-
-        public override void Draw()
-        {
-            EditorGUILayout.BeginHorizontal();
-            {
-                if (GUILayout.Button(
-                    new GUIContent((Texture) EditorGUIUtility.Load("arrowIcon.png"),
-                                   "Return"),
-                    GUILayout.Width(35),
-                    GUILayout.Height(20)))
+                var style = new GUIStyle(EditorStyles.largeLabel)
                 {
-                    Dispatch(() => Cancel());
+                    fontStyle = FontStyle.Bold
+                };
+
+                if (app.Name.Length > 30)
+                {
+                    string shortName = app.Name.Substring(0, 30);
+                    shortName += "...";
+                    GUILayout.Label(new GUIContent(shortName, app.Name), style);
+                }
+                else
+                {
+                    GUILayout.Label(app.Name, style);
                 }
 
-                GUILayout.Space(220);
-                if (GUILayout.Button(
-                    "Create new app",
-                    GUILayout.Width(130),
-                    GUILayout.Height(20)))
+                GUILayout.Label("Platform: " + app.Platform);
+
+                EditorGUILayout.BeginHorizontal();
                 {
-                    Dispatch(() => CreateNew());
-                }
-            }
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.BeginHorizontal();
-            {
-                GUILayout.FlexibleSpace();
-                GUILayout.Label(
-                    string.Format(
-                        "Connect your PatchKit application for {0}.",
-                        _platform.ToDisplayString()),
-                    EditorStyles.boldLabel);
-                GUILayout.FlexibleSpace();
-            }
-            EditorGUILayout.EndHorizontal();
+                    GUILayout.Label(
+                        "Secret: " + app.Secret,
+                        EditorStyles.miniBoldLabel);
 
-            ShouldFilterByPlatform = EditorGUILayout.Toggle(
-                "Filter apps by platform",
-                ShouldFilterByPlatform);
-            EditorGUILayout.Space();
-
-            _scrollViewVector = EditorGUILayout.BeginScrollView(
-                _scrollViewVector,
-                EditorStyles.helpBox);
-
-
-            int appIndex = 0;
-            foreach (App app in Apps)
-            {
-                DrawApp(app, appIndex % 2);
-                appIndex++;
-            }
-
-            EditorGUILayout.EndScrollView();
-        }
-
-        private void DrawApp(App app, int useAltColor)
-        {
-            Assert.IsNotNull(app.Name);
-            Assert.IsNotNull(app.Platform);
-
-            bool isConnected = app.Secret == _connectedAppSecret;
-
-            Color backgroundColor = (useAltColor == 0)
-                ? new Color(1f, 1f, 1f)
-                : new Color(0.9f, 0.9f, 0.9f);
-
-
-            using (Style.ColorizeBackground(
-                isConnected ? new Color(0.502f, 0.839f, 0.031f) : backgroundColor))
-            {
-                EditorGUILayout.BeginHorizontal(EditorStyles.textArea);
-
-                EditorGUILayout.BeginVertical();
-                {
-                    GUIStyle style = new GUIStyle();
-                    style = EditorStyles.largeLabel;
-                    style.fontStyle = FontStyle.Bold;
-
-                    if (app.Name.Length > 30)
+                    if (isConnected)
                     {
-                        string shortName = app.Name.Substring(0, 30);
-                        shortName += "...";
                         GUILayout.Label(
-                            new GUIContent(shortName, app.Name),
-                            style);
+                            "Currently\nselected",
+                            EditorStyles.miniLabel);
                     }
                     else
                     {
-                        GUILayout.Label(app.Name, style);
-                    }
-
-                    GUILayout.Label("Platform: " + app.Platform);
-
-                    EditorGUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label(
-                            "Secret: " + app.Secret,
-                            EditorStyles.miniBoldLabel);
-
-                        if (isConnected)
+                        if (app.Platform == _platform.ToApiString())
                         {
-                            GUILayout.Label(
-                                "Currently\nselected",
-                                EditorStyles.miniLabel);
+                            using (Style.ColorizeBackground(Style.GreenPastel))
+                            {
+                                if (GUILayout.Button(
+                                    "Select",
+                                    GUILayout.Width(80)))
+                                {
+                                    Dispatch(() => Connect(app));
+                                }
+                            }
                         }
                         else
                         {
-                            if (app.Platform == _platform.ToApiString())
+                            using (Style.ColorizeBackground(Style.RedPastel))
                             {
-                                using (Style.ColorizeBackground(
-                                    Style.GreenPastel))
+                                if (GUILayout.Button(
+                                    "Select",
+                                    GUILayout.Width(80)))
                                 {
-                                    if (GUILayout.Button(
-                                        "Select",
-                                        GUILayout.Width(80)))
-                                    {
-                                        Dispatch(() => Connect(app));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                using (Style.ColorizeBackground(
-                                    Style.RedPastel))
-                                {
-                                    if (GUILayout.Button(
-                                        "Select",
-                                        GUILayout.Width(80)))
-                                    {
-                                        EditorUtility.DisplayDialog(
-                                            "Warning",
-                                            "You tried to connect an application with wrong platform.\n\n" +
-                                            " Connect your PatchKit application for " +
-                                            _platform.ToString() +
-                                            " platform",
-                                            "Ok");
-                                    }
+                                    EditorUtility.DisplayDialog(
+                                        "Warning",
+                                        "You tried to connect an application with wrong platform.\n\n" +
+                                        " Connect your PatchKit application for " +
+                                        _platform.ToString() +
+                                        " platform",
+                                        "Ok");
                                 }
                             }
                         }
                     }
-                    EditorGUILayout.EndHorizontal();
-
-                    EditorGUILayout.Space();
                 }
-
-                EditorGUILayout.EndVertical();
-
                 EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space();
             }
 
+            EditorGUILayout.EndVertical();
 
-            Assert.IsNotNull(GUI.skin);
+            EditorGUILayout.EndHorizontal();
         }
 
-        #endregion
 
-        #region Data
+        Assert.IsNotNull(GUI.skin);
+    }
 
-        [SerializeField] private AppPlatform _platform;
+    #endregion
 
-        [SerializeField] private Vector2 _scrollViewVector;
+    #region Data
 
-        [SerializeField] private string _connectedAppSecret;
+    [SerializeField]
+    private AppPlatform _platform;
 
-        #endregion
+    [SerializeField]
+    private Vector2 _scrollViewVector;
 
-        #region Logic
+    [SerializeField]
+    private string _connectedAppSecret;
 
-        public void Initialize(AppPlatform platform)
+    #endregion
+
+    #region Logic
+
+    public void Initialize(AppPlatform platform)
+    {
+        _platform = platform;
+
+        AppSecret? appSecret = Config.GetConnectedAppSecret(platform);
+
+        if (appSecret.HasValue)
         {
-            _platform = platform;
-
-            AppSecret? appSecret = Config.GetConnectedAppSecret(platform);
-
-            if (appSecret.HasValue)
-            {
-                _connectedAppSecret = appSecret.Value.Value;
-            }
-            else
-            {
-                _connectedAppSecret = null;
-            }
+            _connectedAppSecret = appSecret.Value.Value;
         }
-
-        public override void OnActivatedFromTop(object result)
+        else
         {
-            if (result is CreateAppScreen.CreatedResult)
-            {
-                App app = ((CreateAppScreen.CreatedResult) result).App;
-
-                Config.ConnectApp(new AppSecret(app.Secret), _platform);
-
-                Pop(new ConnectedResult(app));
-            }
+            _connectedAppSecret = null;
         }
+    }
 
-        private bool _shouldFilterByPlatform = true;
-
-        public bool ShouldFilterByPlatform
+    public override void OnActivatedFromTop(object result)
+    {
+        var createdResult = result as CreateAppScreen.CreatedResult;
+        if (createdResult != null)
         {
-            get { return _shouldFilterByPlatform; }
-
-            private set
-            {
-                if (value != _shouldFilterByPlatform)
-                {
-                    _shouldFilterByPlatform = value;
-                }
-            }
-        }
-
-        private App[] _apps;
-
-        [NotNull]
-        private IEnumerable<App> Apps
-        {
-            get
-            {
-                if (_apps == null)
-                {
-                    _apps = Core.Api.GetApps();
-                }
-              
-                return _apps.Where(
-                    x => (!_shouldFilterByPlatform &&  x.Platform != "other")||
-                        x.Platform == _platform.ToApiString());
-            }
-        }
-
-        private void Connect(App app)
-        {
-            Assert.AreEqual(_platform.ToApiString(), app.Platform);
-            Assert.IsTrue(Apps.Contains(app));
+            App app = createdResult.App;
 
             Config.ConnectApp(new AppSecret(app.Secret), _platform);
 
             Pop(new ConnectedResult(app));
         }
-
-        private void CreateNew()
-        {
-            Push<CreateAppScreen>().Initialize(_platform);
-        }
-
-        private void Cancel()
-        {
-            Pop(null);
-        }
-
-        #endregion
     }
+
+    private bool _shouldFilterByPlatform = true;
+
+    private bool ShouldFilterByPlatform
+    {
+        get { return _shouldFilterByPlatform; }
+
+        set { _shouldFilterByPlatform = value; }
+    }
+
+    private App[] _apps;
+
+    [NotNull]
+    private IEnumerable<App> Apps
+    {
+        get
+        {
+            if (_apps == null)
+            {
+                _apps = Core.Api.GetApps();
+            }
+
+            return _apps.Where(
+                x => !_shouldFilterByPlatform && x.Platform != "other" ||
+                    x.Platform == _platform.ToApiString());
+        }
+    }
+
+    private void Connect(App app)
+    {
+        Assert.AreEqual(_platform.ToApiString(), app.Platform);
+        Assert.IsTrue(Apps.Contains(app));
+
+        Config.ConnectApp(new AppSecret(app.Secret), _platform);
+
+        Pop(new ConnectedResult(app));
+    }
+
+    private void CreateNew()
+    {
+        Push<CreateAppScreen>().Initialize(_platform);
+    }
+
+    private void Cancel()
+    {
+        Pop(null);
+    }
+
+    #endregion
+}
 }
