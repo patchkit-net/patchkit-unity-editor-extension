@@ -123,18 +123,13 @@ public class Window : EditorWindow
                 titleContent = new GUIContent(titleValue);
             }
 
-            currentScreen.UpdateIfActive();
+            if (Event.current != null &&
+                Event.current.type == EventType.Repaint)
+            {
+                currentScreen.UpdateIfActive();
+            }
 
-            try
-            {
-                currentScreen.Draw();
-            }
-            catch (ArgumentException e)
-            {
-#if PATCHKIT_UNITY_EDITOR_EXTENSION_DEV
-                Debug.LogException(e);
-#endif
-            }
+            currentScreen.Draw();
         }
     }
 }

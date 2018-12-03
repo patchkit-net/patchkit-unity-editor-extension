@@ -29,6 +29,11 @@ public class LinkedAccountScreen : Screen
 
     public override void Draw()
     {
+        if (!IsAccountLinked)
+        {
+            return;
+        }
+        
         GUILayout.Label(
             "You have successfully linked your PatchKit account.",
             EditorStyles.boldLabel);
