@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -98,16 +99,23 @@ public static class PluginAssert
             message = userMessage + "\n" + message;
         }
 
-        string dialogMessage =
-            "PatchKit Unity Editor Extensions has encountered an fatal error.\n\n" +
-            message +
-            "\n\n" +
-            "Please try to reimport the plugin." +
-            "If issue would remain, please contact us at contact@patchkit.net";
+        try
+        {
+            throw new PluginAssertionException(message);
+        }
+        catch (Exception e)
+        {
+            string dialogMessage =
+                "PatchKit Unity Editor Extensions has encountered an fatal error.\n\n" +
+                message +
+                "\n\n" +
+                e.StackTrace +
+                "\n\n" +
+                "Please try to reimport the plugin.\n" +
+                "If issue would remain, please contact us at contact@patchkit.net";
 
-        EditorUtility.DisplayDialog("Error!", dialogMessage, "OK");
-
-        throw new PluginAssertionException(message);
+            EditorUtility.DisplayDialog("Error!", dialogMessage, "OK");
+        }
     }
 }
 }
