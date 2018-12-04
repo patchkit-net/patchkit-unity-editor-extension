@@ -443,35 +443,32 @@ public class SafeBuildAndUploadScreen : Screen
 
             EditorUtility.DisplayProgressBar("Preparing upload...", "", 0.0f);
 
-            EditorApplication.delayCall += () =>
+            try
             {
-                try
+                using (var tools = new Tools.PatchKitToolsClient())
                 {
-                    using (var tools = new Tools.PatchKitToolsClient())
-                    {
-                        tools.MakeVersion(
-                            apiKey.Value.Value,
-                            _appSecret,
-                            _versionLabel,
-                            _versionChangelog,
-                            Path.GetDirectoryName(BuildLocation),
-                            _publishOnUpload,
-                            _overwriteDraftVersion);
-                    }
+                    tools.MakeVersion(
+                        apiKey.Value.Value,
+                        _appSecret,
+                        _versionLabel,
+                        _versionChangelog,
+                        Path.GetDirectoryName(BuildLocation),
+                        _publishOnUpload,
+                        _overwriteDraftVersion);
                 }
-                finally
-                {
-                    EditorUtility.ClearProgressBar();
-                }
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
 
-                EditorUtility.DisplayDialog(
-                    "Uploading",
-                    "Your game has been successfully built and is being uploaded right now.\n\n" +
-                    "You can track the progress in console window.",
-                    "OK");
+            EditorUtility.DisplayDialog(
+                "Uploading",
+                "Your game has been successfully built and is being uploaded right now.\n\n" +
+                "You can track the progress in console window.",
+                "OK");
 
-                Close();
-            };
+            Close();
         }
     }
 
