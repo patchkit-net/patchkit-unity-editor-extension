@@ -98,9 +98,9 @@ public class Config : ScriptableObject
     {
         get
         {
-            Config instance = FindOrCreateInstance();
-
 #if PATCHKIT_UNITY_EDITOR_EXTENSION_DEV
+            Config instance = FindOrCreateInstance();
+            
             if (instance._useOverrideApiConnectionSettings)
             {
                 return instance._overrideApiConnectionSettings;
