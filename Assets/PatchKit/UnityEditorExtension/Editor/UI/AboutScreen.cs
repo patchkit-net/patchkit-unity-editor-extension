@@ -1,3 +1,4 @@
+using PatchKit.UnityEditorExtension.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -37,12 +38,12 @@ public class AboutScreen : Screen
         EditorGUILayout.EndHorizontal();
         GUILayout.Label("About", EditorStyles.boldLabel);
         GUILayout.Label(
-            "The PatchKit Unity Editor Extension is a Unity tool to automatic\n" +
-            "application distribution directly from the Unity Editor.\n\n" +
-            "Provide fast, comfortable and safe connection with API PatchKit.\n" +
-            "The Extension allows uploading without leaving the editor, all you\n" +
-            "have to do is log in and make the build. After that, version is\n" +
-            "being sent to PatchKit.",
+            "Publish your Unity game to the world in seconds, directly from your\n" +
+            "Unity editor.\n\n" +
+            "PatchKit Unity Editor Extension integrates your development\n" +
+            "environment with your PatchKit account, makes it possible to\n" +
+            "share your latest build with your players without leaving\n" +
+            "the Unity editor.",
             GUILayout.Width(380));
 
         EditorGUILayout.Separator();
@@ -66,7 +67,7 @@ public class AboutScreen : Screen
             GUILayout.FlexibleSpace();
         }
         EditorGUILayout.EndHorizontal();
-        GUILayout.Label("\nVersion 1.0.0", EditorStyles.centeredGreyMiniLabel);
+        GUILayout.Label("\nVersion " + ExtensionVersion.Name, EditorStyles.centeredGreyMiniLabel);
     }
 
     #endregion
