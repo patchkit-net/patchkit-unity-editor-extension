@@ -15,7 +15,7 @@ public static class Environment
                     return EnvironmentPlatform.Windows;
                 case RuntimePlatform.OSXEditor:
                     return EnvironmentPlatform.Mac;
-#if UNITY_5_5_OR_NEWER
+#if UNITY_5_5_OR_NEWER || UNITY_EDITOR_LINUX
                 case RuntimePlatform.LinuxEditor:
                     return EnvironmentPlatform.Linux;
 #endif
