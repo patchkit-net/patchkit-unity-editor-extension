@@ -18,6 +18,9 @@ public class PatchKitToolsClient : IDisposable
         UnpackTools();
     }
 
+    private const string MakeVersionChangelogFilePath =
+        "Temp/make_version_changelog.txt";
+
     public void MakeVersion(
         string apiKey,
         string appSecret,
@@ -27,6 +30,8 @@ public class PatchKitToolsClient : IDisposable
         bool autoPublishAfterUpload,
         bool forceOverrideDraftVersion)
     {
+        File.WriteAllText(MakeVersionChangelogFilePath, changelog);
+
         var arguments = new List<string>
         {
             "--secret",
@@ -35,10 +40,8 @@ public class PatchKitToolsClient : IDisposable
             apiKey,
             "--label",
             label,
-            "--changelog",
-            string.IsNullOrEmpty(changelog)
-                ? "\"\""
-                : changelog.Replace("\n", "\\n"),
+            "--changelogfile",
+            MakeVersionChangelogFilePath,
             "--files",
             buildDir
         };
