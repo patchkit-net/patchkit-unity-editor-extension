@@ -51,7 +51,7 @@ public class LinkAccountScreen : Screen
 
             if (GUILayout.Button(
                 new GUIContent(
-                    (Texture) EditorGUIUtility.Load("searchIcon.png"),
+                    PluginResources.Search,
                     "Find your API key"),
                 GUILayout.Width(20),
                 GUILayout.Height(20)))
