@@ -38,7 +38,7 @@ public class Terminal
     private static ProcessStartInfo GetWindowsInfo(string command)
     {
         // /K - Carries out the command specified by String and continues.
-        return new ProcessStartInfo("cmd.exe", "/K " + command);
+        return new ProcessStartInfo("cmd.exe", "/K \"" + command + "\"");
     }
 
     [NotNull]

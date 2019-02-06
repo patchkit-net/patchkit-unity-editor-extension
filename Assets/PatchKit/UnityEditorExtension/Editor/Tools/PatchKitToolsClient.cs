@@ -150,7 +150,7 @@ public class PatchKitToolsClient : IDisposable
 
         PluginAssert.IsTrue(File.Exists(path));
 
-        string executable = path + " " + command;
+        string executable = "\"" + path + "\" " + command;
 
         Terminal.Start(executable);
     }
