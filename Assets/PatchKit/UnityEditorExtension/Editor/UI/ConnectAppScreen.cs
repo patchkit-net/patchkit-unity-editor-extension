@@ -47,7 +47,7 @@ public class ConnectAppScreen : Screen
         {
             if (GUILayout.Button(
                 new GUIContent(
-                    (Texture) EditorGUIUtility.Load("arrowIcon.png"),
+                    PluginResources.Arrow,
                     "Return"),
                 GUILayout.Width(35),
                 GUILayout.Height(20)))

@@ -29,8 +29,7 @@ public class AboutScreen : Screen
         {
             GUILayout.FlexibleSpace();
             GUILayout.Label(
-                (Texture) EditorGUIUtility.Load(
-                    "PatchKit Unity Editor Extension Logo.png"),
+                PluginResources.Logo,
                 GUILayout.Height(150),
                 GUILayout.Width(307));
             GUILayout.FlexibleSpace();

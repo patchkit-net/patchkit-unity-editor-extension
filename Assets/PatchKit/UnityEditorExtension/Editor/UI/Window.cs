@@ -58,8 +58,11 @@ public class Window : EditorWindow
 
         _screens.Add(screen);
 
-        AdjustToCurrentScreen();
-        Repaint();
+        EditorApplication.delayCall += () =>
+        {
+            AdjustToCurrentScreen();
+            Repaint();
+        };
 
         return screen;
     }
@@ -81,8 +84,11 @@ public class Window : EditorWindow
             CurrentScreen.OnActivatedFromTop(result);
         }
 
-        AdjustToCurrentScreen();
-        Repaint();
+        EditorApplication.delayCall += () =>
+        {
+            AdjustToCurrentScreen();
+            Repaint();
+        };
     }
 
     [NotNull]
@@ -104,8 +110,16 @@ public class Window : EditorWindow
 
         if (size.HasValue)
         {
-            minSize = size.Value;
-            maxSize = size.Value;
+            Rect rect = position;
+
+            Vector2 rectCenter = rect.center;
+
+            rect.width = size.Value.x;
+            rect.height = size.Value.y;
+
+            rect.center = rectCenter;
+
+            position = rect;
         }
 
         EditorGUIUtility.editingTextField = false;
