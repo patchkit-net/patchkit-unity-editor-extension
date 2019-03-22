@@ -172,6 +172,7 @@ public static class AppBuild
                     winBuildFileName,
                     winBuildDirName,
                     "MonoBleedingEdge",
+                    "Mono",
                     "UnityCrashHandler32.exe",
                     "UnityCrashHandler64.exe",
                     "UnityPlayer.dll",
