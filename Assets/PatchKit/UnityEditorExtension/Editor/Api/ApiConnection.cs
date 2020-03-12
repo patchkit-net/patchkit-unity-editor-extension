@@ -203,6 +203,7 @@ namespace PatchKit.Api
                     {
                         Address = uri,
                         Timeout = RequestTimeoutCalculator.Timeout,
+                        FormData = request.Body
                     };
 
                     Logger.LogTrace(

@@ -94,5 +94,10 @@ namespace PatchKit.Api.Models.Main
         [JsonProperty("patcher_secret")]
         public string PatcherSecret;
         
+        /// <summary>
+        /// If set to true, no Application should be downloaded.
+        /// </summary>
+        [JsonProperty("removed")]
+        public bool Removed;
     }
 }

@@ -11,6 +11,7 @@ namespace PatchKit.Api
             string path = "/1/apps";
             List<string> queryList = new List<string>();
             queryList.Add("api_key="+apiKey);
+            queryList.Add("removed=false");
             string query = string.Join("&", queryList.ToArray());
             var response = Get(path, query);
             return ParseResponse<App[]>(response);
