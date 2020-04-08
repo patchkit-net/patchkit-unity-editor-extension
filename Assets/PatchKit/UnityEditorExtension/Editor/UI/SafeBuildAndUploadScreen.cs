@@ -330,9 +330,6 @@ public class SafeBuildAndUploadScreen : Screen
     private AppPlatform _platform;
 
     [SerializeField]
-    private App _app;
-
-    [SerializeField]
     private string _appName;
 
     [SerializeField]
@@ -356,7 +353,6 @@ public class SafeBuildAndUploadScreen : Screen
 
     public void Initialize(AppPlatform platform, AppSecret appSecret)
     {
-        _app = Core.Api.GetAppInfo(appSecret);
         _platform = platform;
         _appName = string.Empty;
         _appSecret = appSecret.Value;
@@ -365,14 +361,15 @@ public class SafeBuildAndUploadScreen : Screen
         _publishOnUpload = true;
         _overwriteDraftVersion = true;
 
-        if (_app.Removed)
-        {
-            Config.UnlinkApp(platform);
-        }
-
         try
         {
-            _appName = _app.Name;
+            App appInfo = Core.Api.GetAppInfo(appSecret);
+            _appName = appInfo.Name;
+            
+            if (appInfo.Removed)
+            {
+                Config.UnlinkApp(platform);
+            }
         }
         catch (ApiConnectionException e)
         {
@@ -448,8 +445,8 @@ public class SafeBuildAndUploadScreen : Screen
         if (Core.Api.GetAppInfo(new AppSecret(_appSecret)).Removed)
         {
             EditorUtility.DisplayDialog(
-                "Removed game",
-                "Your game has been removed and you must connect again with Patchkit.\n\n",
+                "Game Not Found",
+                "This game does no longer exist on your PatchKit account.\n\n",
                 "OK");
             Config.UnlinkApp(_platform);
             return;
