@@ -253,6 +253,7 @@ public class Config : ScriptableObject
         }
 
         EditorUtility.SetDirty(instance);
+        AssetDatabase.SaveAssets();
     }
 
     private const string ApiKeyPlayerPrefsKey =

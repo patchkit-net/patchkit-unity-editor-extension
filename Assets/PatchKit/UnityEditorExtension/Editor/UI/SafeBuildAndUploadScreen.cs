@@ -363,12 +363,20 @@ public class SafeBuildAndUploadScreen : Screen
 
         try
         {
-            App appInfo = Core.Api.GetAppInfo(appSecret);
+            var appInfo = Core.Api.GetAppInfo(appSecret);
             _appName = appInfo.Name;
             
             if (appInfo.Removed)
             {
-                Config.UnlinkApp(platform);
+                Dispatch(
+                    () =>
+                    {
+                        EditorUtility.DisplayDialog(
+                            "Game Not Found",
+                            "This game does no longer exist on your PatchKit account.\n\n",
+                            "OK");
+                        Config.UnlinkApp(_platform);
+                    });
             }
         }
         catch (ApiConnectionException e)
@@ -381,7 +389,7 @@ public class SafeBuildAndUploadScreen : Screen
         {
             Debug.LogWarning(e);
 
-            Config.UnlinkApp(_platform);
+            Dispatch(() => Config.UnlinkApp(_platform));
         }
     }
 
@@ -441,16 +449,6 @@ public class SafeBuildAndUploadScreen : Screen
         Assert.IsTrue(IsBuildLocationSelected);
         Assert.IsNull(VersionLabelValidationError);
         Assert.IsNull(VersionChangelogValidationError);
-
-        if (Core.Api.GetAppInfo(new AppSecret(_appSecret)).Removed)
-        {
-            EditorUtility.DisplayDialog(
-                "Game Not Found",
-                "This game does no longer exist on your PatchKit account.\n\n",
-                "OK");
-            Config.UnlinkApp(_platform);
-            return;
-        }
 
         if (AppBuild.TryCreate())
         {
