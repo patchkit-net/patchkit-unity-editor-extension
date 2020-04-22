@@ -5,8 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.3]
-### Added
-- Checking for game existence on the platform PatchKit
+### Fixed
+- Handling situation when app has been removed from PatchKit
 
 ## [1.0.2]
 ### Fixed
