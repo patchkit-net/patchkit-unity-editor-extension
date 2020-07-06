@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using PatchKit.Network;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace PatchKit.UnityEditorExtension.Connection
 {
@@ -23,6 +24,26 @@ public class UnityHttpClient : IHttpClient
 
     private IEnumerator GetWWW(HttpGetRequest getRequest, WWWResult result)
     {
+#if UNITY_2018_3_OR_NEWER
+        using (var www = UnityWebRequest.Get(getRequest.Address.ToString()))
+        {
+            yield return www.SendWebRequest();
+            while (!www.isDone)
+            {
+                // Wait
+            }
+
+            result.IsDone = www.isDone;
+            result.ResponseHeaders = www.GetResponseHeaders();
+            result.ResponseHeaders.Add(
+                "STATUS",
+                www.responseCode.ToString());
+            if (www.downloadHandler != null)
+            {
+                result.Text = www.downloadHandler.text;
+            }
+        }
+#else
         var www = new WWW(getRequest.Address.ToString());
 
         yield return www;
@@ -37,6 +58,7 @@ public class UnityHttpClient : IHttpClient
                 result.Text = www.text;
             }
         }
+#endif
     }
 
     public IHttpResponse Get(HttpGetRequest getRequest)
@@ -50,17 +72,37 @@ public class UnityHttpClient : IHttpClient
 
             var result = new WWWResult();
 
-            using (var www = new WWW(getRequest.Address.ToString()))
+#if UNITY_2018_3_OR_NEWER
+            using (var www = UnityWebRequest.Get(getRequest.Address.ToString()))
             {
+                www.SendWebRequest();
                 while (!www.isDone)
                 {
                     // Wait
                 }
 
                 result.IsDone = www.isDone;
-                result.ResponseHeaders = www.responseHeaders;
-                result.Text = www.text;
+                result.ResponseHeaders = www.GetResponseHeaders();
+                result.ResponseHeaders.Add(
+                    "STATUS",
+                    www.responseCode.ToString());
+                if (www.downloadHandler != null)
+                {
+                    result.Text = www.downloadHandler.text;
+                }
             }
+#else
+        using (var www = new WWW(getRequest.Address.ToString()))
+        {
+            while (!www.isDone)
+            {
+                // Wait
+            }
+            result.IsDone = www.isDone;
+            result.ResponseHeaders = www.responseHeaders;
+            result.Text = www.text;
+        }
+#endif
 
             lock (result)
             {
@@ -72,7 +114,6 @@ public class UnityHttpClient : IHttpClient
                 }
 
                 var statusCode = ReadStatusCode(result);
-
                 return new UnityHttpResponse(
                     result.Text,
                     statusCode,
@@ -95,16 +136,19 @@ public class UnityHttpClient : IHttpClient
         }
 
         var status = result.ResponseHeaders["STATUS"];
-
         var s = status.Split(' ');
 
-        int statusCode;
-
-        if (s.Length < 3 || !int.TryParse(s[1], out statusCode))
+#if UNITY_2018_3_OR_NEWER
+        if (s.Length < 1 || !int.TryParse(s[0], out int statusCode))
         {
             throw new WebException("Timeout.", WebExceptionStatus.Timeout);
         }
-
+#else
+        if (s.Length < 3 || !int.TryParse(s[1], out int statusCode))
+        {
+            throw new WebException("Timeout.", WebExceptionStatus.Timeout);
+        }
+#endif
         return (HttpStatusCode) statusCode;
     }
 
@@ -114,6 +158,28 @@ public class UnityHttpClient : IHttpClient
         {
             var result = new WWWResult();
 
+#if UNITY_2018_3_OR_NEWER
+            using (var www = UnityWebRequest.Post(
+                postRequest.Address.ToString(),
+                postRequest.FormData))
+            {
+                www.SendWebRequest();
+                while (!www.isDone)
+                {
+                    // Wait
+                }
+
+                result.IsDone = www.isDone;
+                result.ResponseHeaders = www.GetResponseHeaders();
+                result.ResponseHeaders.Add(
+                    "STATUS",
+                    www.responseCode.ToString());
+                if (www.downloadHandler != null)
+                {
+                    result.Text = www.downloadHandler.text;
+                }
+            }
+#else
             using (var www = new WWW(
                 postRequest.Address.ToString(),
                 Encoding.UTF8.GetBytes(postRequest.FormData)))
@@ -127,7 +193,7 @@ public class UnityHttpClient : IHttpClient
                 result.ResponseHeaders = www.responseHeaders;
                 result.Text = www.text;
             }
-
+#endif
             lock (result)
             {
                 if (!result.IsDone)

@@ -2,6 +2,8 @@
 /Temp/
 /obj/
 /Assets/AssetStoreTools*
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
 /*.csproj
 /*.sln
 

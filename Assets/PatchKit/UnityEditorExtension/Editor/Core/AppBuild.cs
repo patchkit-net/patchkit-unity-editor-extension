@@ -24,10 +24,12 @@ public static class AppBuild
 
                 case BuildTarget.StandaloneWindows64:
                     return AppPlatform.Windows64;
-
+                
+#if !UNITY_2019_2_OR_NEWER
                 case BuildTarget.StandaloneLinux:
-                    return AppPlatform.Linux32;
-
+                    return AppPlatform.Linux32;           
+#endif
+                
                 case BuildTarget.StandaloneLinux64:
                     return AppPlatform.Linux64;
 
