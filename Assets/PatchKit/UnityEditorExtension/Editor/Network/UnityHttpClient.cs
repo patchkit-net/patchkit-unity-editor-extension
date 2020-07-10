@@ -159,9 +159,14 @@ public class UnityHttpClient : IHttpClient
             var result = new WWWResult();
 
 #if UNITY_2018_3_OR_NEWER
+            WWWForm form = new WWWForm();
+            var firstSplit = postRequest.FormData.Split('=');
+            var secondSplit = firstSplit[1].Split('&');
+            form.AddField(firstSplit[0], secondSplit[0]);
+            form.AddField(secondSplit[1], firstSplit[2]);
+            
             using (var www = UnityWebRequest.Post(
-                postRequest.Address.ToString(),
-                postRequest.FormData))
+                postRequest.Address.ToString(), form))
             {
                 www.SendWebRequest();
                 while (!www.isDone)
