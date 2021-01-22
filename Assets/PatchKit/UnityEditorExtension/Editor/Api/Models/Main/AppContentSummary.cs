@@ -1,50 +1,42 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct AppContentSummary
-    {
-        /// <summary>
-        /// Version string. Format: MAJOR.MINOR. Present in >= 2.4
-        /// </summary>
-        [JsonProperty("version")]
-        public string Version;
-        
-        /// <summary>
-        /// Content size.
-        /// </summary>
-        [JsonProperty("size")]
-        public long Size;
-        
-        /// <summary>
-        /// Uncompressed archive size. Present in >= 2.4.
-        /// </summary>
-        [JsonProperty("uncompressed_size")]
-        public long UncompressedSize;
-        
-        /// <summary>
-        /// Encryption method.
-        /// </summary>
-        [JsonProperty("encryption_method")]
-        public string EncryptionMethod;
-        
-        /// <summary>
-        /// Compression method.
-        /// </summary>
-        [JsonProperty("compression_method")]
-        public string CompressionMethod;
-        
-        /// <summary>
-        /// List of content files.
-        /// </summary>
-        [JsonProperty("files")]
-        public AppContentSummaryFile[] Files;
-        
-        [JsonProperty("hash_code")]
-        public string HashCode;
-        
-        [JsonProperty("chunks")]
-        public Chunks Chunks;
-        
-    }
+[Serializable]
+public struct AppContentSummary
+{
+    /// <summary>
+    /// Version string. Format: MAJOR.MINOR. Present in >= 2.4
+    /// </summary>
+    public string version;
+
+    /// <summary>
+    /// Content size.
+    /// </summary>
+    public long size;
+
+    /// <summary>
+    /// Uncompressed archive size. Present in >= 2.4.
+    /// </summary>
+    public long uncompressed_size;
+
+    /// <summary>
+    /// Encryption method.
+    /// </summary>
+    public string encryption_method;
+
+    /// <summary>
+    /// Compression method.
+    /// </summary>
+    public string compression_method;
+
+    /// <summary>
+    /// List of content files.
+    /// </summary>
+    public AppContentSummaryFile[] files;
+
+    public string hash_code;
+
+    public Chunks chunks;
+}
 }

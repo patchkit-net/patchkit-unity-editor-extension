@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using Newtonsoft.Json;
+using PatchKit.Api.Models.Main;
 using PatchKit.Logging;
 using PatchKit.Network;
+using UnityEngine;
+using ILogger = PatchKit.Logging.ILogger;
 
 namespace PatchKit.Api
 {
@@ -36,8 +38,6 @@ namespace PatchKit.Api
 
         private readonly ApiConnectionSettings _connectionSettings;
 
-        private readonly JsonSerializerSettings _jsonSerializerSettings;
-
         public IRequestTimeoutCalculator RequestTimeoutCalculator = new SimpleRequestTimeoutCalculator();
 
         public IRequestRetryStrategy RequestRetryStrategy = new NoneRequestRetryStrategy();
@@ -67,11 +67,6 @@ namespace PatchKit.Api
             }
 
             _connectionSettings = connectionSettings;
-            _jsonSerializerSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore
-            };
         }
 
         // ReSharper disable once UnusedParameter.Local
@@ -97,7 +92,15 @@ namespace PatchKit.Api
         /// </summary>
         protected T ParseResponse<T>(IApiResponse response)
         {
-            return JsonConvert.DeserializeObject<T>(response.Body, _jsonSerializerSettings);
+            return JsonUtility.FromJson<T>(response.Body);
+        }
+        
+        /// <summary>
+        /// Parses the response data array to structure.
+        /// </summary>
+        protected T[] ParseResponseArray<T>(IApiResponse response)
+        {
+            return JsonUtility.FromJson<Wrapper<T>>("{ \"array\": " + response.Body + "}").array;
         }
 
         private bool TrySendRequest(ApiConnectionServer server, Request request, ServerType serverType,

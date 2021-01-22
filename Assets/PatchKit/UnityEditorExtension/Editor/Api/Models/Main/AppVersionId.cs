@@ -1,14 +1,13 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct AppVersionId
-    {
-        /// <summary>
-        /// Version id.
-        /// </summary>
-        [JsonProperty("id")]
-        public int Id;
-        
-    }
+[Serializable]
+public struct AppVersionId
+{
+    /// <summary>
+    /// Version id.
+    /// </summary>
+    public int id;
+}
 }

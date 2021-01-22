@@ -1,62 +1,52 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct AppDiffSummary
-    {
-        /// <summary>
-        /// Version string. Format: MAJOR.MINOR. Present in >= 2.4
-        /// </summary>
-        [JsonProperty("version")]
-        public string Version;
-        
-        /// <summary>
-        /// Diff size.
-        /// </summary>
-        [JsonProperty("size")]
-        public long Size;
-        
-        /// <summary>
-        /// Uncompressed archive size. Present in >= 2.4.
-        /// </summary>
-        [JsonProperty("uncompressed_size")]
-        public long UncompressedSize;
-        
-        /// <summary>
-        /// Encryption method.
-        /// </summary>
-        [JsonProperty("encryption_method")]
-        public string EncryptionMethod;
-        
-        /// <summary>
-        /// Compression method.
-        /// </summary>
-        [JsonProperty("compression_method")]
-        public string CompressionMethod;
-        
-        /// <summary>
-        /// List of added files.
-        /// </summary>
-        [JsonProperty("added_files")]
-        public string[] AddedFiles;
-        
-        /// <summary>
-        /// List of modified files.
-        /// </summary>
-        [JsonProperty("modified_files")]
-        public string[] ModifiedFiles;
-        
-        /// <summary>
-        /// List of removed files.
-        /// </summary>
-        [JsonProperty("removed_files")]
-        public string[] RemovedFiles;
-        
-        [JsonProperty("hash_code")]
-        public string HashCode;
-        
-        [JsonProperty("chunks")]
-        public Chunks Chunks;
-        
-    }
+[Serializable]
+public struct AppDiffSummary
+{
+    /// <summary>
+    /// Version string. Format: MAJOR.MINOR. Present in >= 2.4
+    /// </summary>
+    public string version;
+
+    /// <summary>
+    /// Diff size.
+    /// </summary>
+    public long size;
+
+    /// <summary>
+    /// Uncompressed archive size. Present in >= 2.4.
+    /// </summary>
+    public long uncompressed_size;
+
+    /// <summary>
+    /// Encryption method.
+    /// </summary>
+    public string encryption_method;
+
+    /// <summary>
+    /// Compression method.
+    /// </summary>
+    public string compression_method;
+
+    /// <summary>
+    /// List of added files.
+    /// </summary>
+    public string[] added_files;
+
+    /// <summary>
+    /// List of modified files.
+    /// </summary>
+    public string[] modified_files;
+
+    /// <summary>
+    /// List of removed files.
+    /// </summary>
+    public string[] removed_files;
+
+    public string hash_code;
+
+    public Chunks chunks;
+}
 }

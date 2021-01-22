@@ -90,7 +90,7 @@ public class ConnectAppScreen : Screen
         int appIndex = 0;
         foreach (App app in Apps)
         {
-            if (!app.Removed)
+            if (!app.removed)
             {
                 DrawApp(app, appIndex % 2 == 0);
                 appIndex++;
@@ -102,10 +102,10 @@ public class ConnectAppScreen : Screen
 
     private void DrawApp(App app, bool useAltColor)
     {
-        Assert.IsNotNull(app.Name);
-        Assert.IsNotNull(app.Platform);
+        Assert.IsNotNull(app.name);
+        Assert.IsNotNull(app.platform);
 
-        bool isConnected = app.Secret == _connectedAppSecret;
+        bool isConnected = app.secret == _connectedAppSecret;
 
         Color backgroundColor = useAltColor
             ? new Color(1f, 1f, 1f)
@@ -124,23 +124,23 @@ public class ConnectAppScreen : Screen
                     fontStyle = FontStyle.Bold
                 };
 
-                if (app.Name.Length > 30)
+                if (app.name.Length > 30)
                 {
-                    string shortName = app.Name.Substring(0, 30);
+                    string shortName = app.name.Substring(0, 30);
                     shortName += "...";
-                    GUILayout.Label(new GUIContent(shortName, app.Name), style);
+                    GUILayout.Label(new GUIContent(shortName, app.name), style);
                 }
                 else
                 {
-                    GUILayout.Label(app.Name, style);
+                    GUILayout.Label(app.name, style);
                 }
 
-                GUILayout.Label("Platform: " + app.Platform);
+                GUILayout.Label("Platform: " + app.platform);
 
                 EditorGUILayout.BeginHorizontal();
                 {
                     GUILayout.Label(
-                        "Secret: " + app.Secret,
+                        "Secret: " + app.secret,
                         EditorStyles.miniBoldLabel);
 
                     if (isConnected)
@@ -151,7 +151,7 @@ public class ConnectAppScreen : Screen
                     }
                     else
                     {
-                        if (app.Platform == _platform.ToApiString())
+                        if (app.platform == _platform.ToApiString())
                         {
                             using (Style.ColorizeBackground(Style.GreenPastel))
                             {
@@ -237,7 +237,7 @@ public class ConnectAppScreen : Screen
         {
             App app = createdResult.App;
 
-            Config.ConnectApp(new AppSecret(app.Secret), _platform);
+            Config.ConnectApp(new AppSecret(app.secret), _platform);
 
             Pop(new ConnectedResult(app));
         }
@@ -265,17 +265,17 @@ public class ConnectAppScreen : Screen
             }
 
             return _apps.Where(
-                x => !_shouldFilterByPlatform && x.Platform != "other" ||
-                    x.Platform == _platform.ToApiString());
+                x => !_shouldFilterByPlatform && x.platform != "other" ||
+                    x.platform == _platform.ToApiString());
         }
     }
 
     private void Connect(App app)
     {
-        Assert.AreEqual(_platform.ToApiString(), app.Platform);
+        Assert.AreEqual(_platform.ToApiString(), app.platform);
         Assert.IsTrue(Apps.Contains(app));
 
-        Config.ConnectApp(new AppSecret(app.Secret), _platform);
+        Config.ConnectApp(new AppSecret(app.secret), _platform);
 
         Pop(new ConnectedResult(app));
     }

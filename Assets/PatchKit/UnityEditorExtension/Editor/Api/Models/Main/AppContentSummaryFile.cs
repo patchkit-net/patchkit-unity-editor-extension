@@ -1,32 +1,28 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct AppContentSummaryFile
-    {
-        /// <summary>
-        /// File path.
-        /// </summary>
-        [JsonProperty("path")]
-        public string Path;
-        
-        /// <summary>
-        /// File hash.
-        /// </summary>
-        [JsonProperty("hash")]
-        public string Hash;
-        
-        /// <summary>
-        /// Uncompressed file size in bytes. Present in >= 2.3
-        /// </summary>
-        [JsonProperty("size")]
-        public long Size;
-        
-        /// <summary>
-        /// File flags, present in >= 2.3
-        /// </summary>
-        [JsonProperty("flags")]
-        public string Flags;
-        
-    }
+[Serializable]
+public struct AppContentSummaryFile
+{
+    /// <summary>
+    /// File path.
+    /// </summary>
+    public string path;
+
+    /// <summary>
+    /// File hash.
+    /// </summary>
+    public string hash;
+
+    /// <summary>
+    /// Uncompressed file size in bytes. Present in >= 2.3
+    /// </summary>
+    public long size;
+
+    /// <summary>
+    /// File flags, present in >= 2.3
+    /// </summary>
+    public string flags;
+}
 }

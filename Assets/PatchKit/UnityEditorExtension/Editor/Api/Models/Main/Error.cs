@@ -1,20 +1,18 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct Error
-    {
-        /// <summary>
-        /// Human-readable error message
-        /// </summary>
-        [JsonProperty("message")]
-        public string Message;
-        
-        /// <summary>
-        /// Error symbol
-        /// </summary>
-        [JsonProperty("symbol")]
-        public string Symbol;
-        
-    }
+[Serializable]
+public struct Error
+{
+    /// <summary>
+    /// Human-readable error message
+    /// </summary>
+    public string message;
+
+    /// <summary>
+    /// Error symbol
+    /// </summary>
+    public string symbol;
+}
 }

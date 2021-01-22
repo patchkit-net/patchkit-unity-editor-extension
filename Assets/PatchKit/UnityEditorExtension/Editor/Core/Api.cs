@@ -116,7 +116,7 @@ public static class Api
             _cachedApps = new CachedApps(apiKey);
         }
 
-        _cachedApps.List.RemoveAll(x => x.Secret == app.Secret);
+        _cachedApps.List.RemoveAll(x => x.secret == app.secret);
         _cachedApps.List.Add(app);
 
         return app;
@@ -133,7 +133,7 @@ public static class Api
 
         if (_cachedApps != null && _cachedApps.ApiKey.Equals(apiKey))
         {
-            int i = _cachedApps.List.FindIndex(a => a.Secret == secret.Value);
+            int i = _cachedApps.List.FindIndex(a => a.secret == secret.Value);
 
             if (i != -1)
             {
@@ -163,7 +163,7 @@ public static class Api
             _cachedApps = new CachedApps(apiKey);
         }
 
-        _cachedApps.List.RemoveAll(x => x.Secret == app.Secret);
+        _cachedApps.List.RemoveAll(x => x.secret == app.secret);
         _cachedApps.List.Add(app);
 
         return app;

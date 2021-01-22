@@ -1,11 +1,10 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct Upload
-    {
-        [JsonProperty("id")]
-        public int Id;
-        
-    }
+[Serializable]
+public struct Upload
+{
+    public int id;
+}
 }

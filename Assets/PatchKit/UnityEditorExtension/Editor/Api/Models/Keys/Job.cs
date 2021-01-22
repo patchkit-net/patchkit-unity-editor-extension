@@ -1,17 +1,14 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Keys
 {
-    public struct Job
-    {
-        [JsonProperty("guid")]
-        public string Guid;
-        
-        [JsonProperty("pending")]
-        public bool Pending;
-        
-        [JsonProperty("finished")]
-        public bool Finished;
-        
-    }
+[Serializable]
+public struct Job
+{
+    public string guid;
+
+    public bool pending;
+
+    public bool finished;
+}
 }

@@ -1,14 +1,13 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
-    public struct AppDiffTorrentUrl
-    {
-        /// <summary>
-        /// Url to diff torrent file.
-        /// </summary>
-        [JsonProperty("url")]
-        public string Url;
-        
-    }
+[Serializable]
+public struct AppDiffTorrentUrl
+{
+    /// <summary>
+    /// Url to diff torrent file.
+    /// </summary>
+    public string url;
+}
 }

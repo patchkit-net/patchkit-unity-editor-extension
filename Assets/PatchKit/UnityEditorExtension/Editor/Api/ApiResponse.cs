@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using Newtonsoft.Json.Linq;
 using PatchKit.Network;
+using UnityEngine;
 
 namespace PatchKit.Api
 {
@@ -32,9 +32,9 @@ namespace PatchKit.Api
 
         public string Body { get; private set; }
 
-        public JToken GetJson()
+        public T GetJson<T>()
         {
-            return JToken.Parse(Body);
+            return JsonUtility.FromJson<T>(Body);
         }
 
         void IDisposable.Dispose()
