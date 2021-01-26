@@ -3,8 +3,8 @@ using System;
 namespace PatchKit.Api.Models.Main
 {
     [Serializable]
-    public struct Plan
+    public struct ApiArrayWrapper<T>
     {
-        public string[] capabilities;
+        public T[] array;
     }
 }

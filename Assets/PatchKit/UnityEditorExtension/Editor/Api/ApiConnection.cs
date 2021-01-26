@@ -100,7 +100,7 @@ namespace PatchKit.Api
         /// </summary>
         protected T[] ParseResponseArray<T>(IApiResponse response)
         {
-            return JsonUtility.FromJson<Wrapper<T>>("{ \"array\": " + response.Body + "}").array;
+            return JsonUtility.FromJson<ApiArrayWrapper<T>>("{ \"array\": " + response.Body + "}").array;
         }
 
         private bool TrySendRequest(ApiConnectionServer server, Request request, ServerType serverType,
