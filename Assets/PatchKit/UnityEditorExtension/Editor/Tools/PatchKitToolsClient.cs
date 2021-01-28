@@ -40,7 +40,7 @@ public class PatchKitToolsClient : IDisposable
             apiKey,
             "--label",
             label,
-            "--changelogfile",
+            "--changelog-file",
             MakeVersionChangelogFilePath,
             "--files",
             buildDir
