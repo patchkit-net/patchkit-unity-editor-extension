@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.4]
 ### Fixed
-- Changing Newtonsoft.Json to JsonUtility
+- New Unity versions compatibility (by changing Newtonsoft.Json to JsonUtility)
+
+### Changed
+- Updating patchkit-tools to version 3.1.3
 
 ## [1.0.3]
 ### Fixed
