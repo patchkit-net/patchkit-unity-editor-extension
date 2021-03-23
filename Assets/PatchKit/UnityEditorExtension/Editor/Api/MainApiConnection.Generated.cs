@@ -14,7 +14,7 @@ namespace PatchKit.Api
             queryList.Add("removed=false");
             string query = string.Join("&", queryList.ToArray());
             var response = Get(path, query);
-            return ParseResponse<App[]>(response);
+            return ParseResponseArray<App>(response);
         }
         
         /// <summary>
@@ -40,7 +40,7 @@ namespace PatchKit.Api
             path = path.Replace("{app_secret}", appSecret.ToString());
             string query = string.Empty;
             var response = Get(path, query);
-            return ParseResponse<Changelog[]>(response);
+            return ParseResponseArray<Changelog>(response);
         }
         
         /// <summary>
@@ -59,7 +59,7 @@ namespace PatchKit.Api
             }
             string query = string.Join("&", queryList.ToArray());
             var response = Get(path, query);
-            return ParseResponse<AppVersion[]>(response);
+            return ParseResponseArray<AppVersion>(response);
         }
         
         /// <summary>
@@ -200,7 +200,7 @@ namespace PatchKit.Api
             }
             string query = string.Join("&", queryList.ToArray());
             var response = Get(path, query);
-            return ParseResponse<ResourceUrl[]>(response);
+            return ParseResponseArray<ResourceUrl>(response);
         }
         
         /// <summary>
@@ -221,7 +221,7 @@ namespace PatchKit.Api
             }
             string query = string.Join("&", queryList.ToArray());
             var response = Get(path, query);
-            return ParseResponse<ResourceUrl[]>(response);
+            return ParseResponseArray<ResourceUrl>(response);
         }
         
         

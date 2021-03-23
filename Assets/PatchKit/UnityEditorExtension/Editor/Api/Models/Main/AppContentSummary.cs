@@ -1,50 +1,42 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct AppContentSummary
     {
         /// <summary>
         /// Version string. Format: MAJOR.MINOR. Present in >= 2.4
         /// </summary>
-        [JsonProperty("version")]
-        public string Version;
-        
+        public string version;
+
         /// <summary>
         /// Content size.
         /// </summary>
-        [JsonProperty("size")]
-        public long Size;
-        
+        public long size;
+
         /// <summary>
         /// Uncompressed archive size. Present in >= 2.4.
         /// </summary>
-        [JsonProperty("uncompressed_size")]
-        public long UncompressedSize;
-        
+        public long uncompressed_size;
+
         /// <summary>
         /// Encryption method.
         /// </summary>
-        [JsonProperty("encryption_method")]
-        public string EncryptionMethod;
-        
+        public string encryption_method;
+
         /// <summary>
         /// Compression method.
         /// </summary>
-        [JsonProperty("compression_method")]
-        public string CompressionMethod;
-        
+        public string compression_method;
+
         /// <summary>
         /// List of content files.
         /// </summary>
-        [JsonProperty("files")]
-        public AppContentSummaryFile[] Files;
-        
-        [JsonProperty("hash_code")]
-        public string HashCode;
-        
-        [JsonProperty("chunks")]
-        public Chunks Chunks;
-        
+        public AppContentSummaryFile[] files;
+
+        public string hash_code;
+
+        public Chunks chunks;
     }
 }

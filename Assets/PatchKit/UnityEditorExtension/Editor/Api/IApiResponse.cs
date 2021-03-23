@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
 using PatchKit.Network;
 
 namespace PatchKit.Api
@@ -23,6 +22,6 @@ namespace PatchKit.Api
         /// <summary>
         /// Returns body parsed to JSON.
         /// </summary>
-        JToken GetJson();
+        T GetJson<T>();
     }
 }

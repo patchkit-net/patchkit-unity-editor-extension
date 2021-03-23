@@ -1,11 +1,10 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct Plan
     {
-        [JsonProperty("capabilities")]
-        public string[] Capabilities;
-        
+        public string[] capabilities;
     }
 }

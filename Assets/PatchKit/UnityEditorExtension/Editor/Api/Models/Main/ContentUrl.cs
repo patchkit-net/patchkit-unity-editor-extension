@@ -1,32 +1,28 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct ContentUrl
     {
         /// <summary>
         /// Url to content file.
         /// </summary>
-        [JsonProperty("url")]
-        public string Url;
-        
+        public string url;
+
         /// <summary>
         /// Url to meta file if available.
         /// </summary>
-        [JsonProperty("meta_url")]
-        public string MetaUrl;
-        
+        public string meta_url;
+
         /// <summary>
         /// Region name of this mirror server.
         /// </summary>
-        [JsonProperty("region")]
-        public string Region;
-        
+        public string region;
+
         /// <summary>
         /// Value of recent server load (usage). Servers with lower load should be prioritorized.
         /// </summary>
-        [JsonProperty("load")]
-        public double Load;
-        
+        public double load;
     }
 }

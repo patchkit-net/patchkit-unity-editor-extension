@@ -1,26 +1,23 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct Changelog
     {
         /// <summary>
         /// Version id.
         /// </summary>
-        [JsonProperty("version_id")]
-        public int VersionId;
-        
+        public int version_id;
+
         /// <summary>
         /// Human readable label.
         /// </summary>
-        [JsonProperty("version_label")]
-        public string VersionLabel;
-        
+        public string version_label;
+
         /// <summary>
         /// Changes description.
         /// </summary>
-        [JsonProperty("changes")]
-        public string Changes;
-        
+        public string changes;
     }
 }

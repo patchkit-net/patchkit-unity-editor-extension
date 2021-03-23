@@ -1,14 +1,13 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct Job
     {
         /// <summary>
         /// Job GUID to be used with Jobs API.
         /// </summary>
-        [JsonProperty("job_guid")]
-        public string JobGuid;
-        
+        public string job_guid;
     }
 }

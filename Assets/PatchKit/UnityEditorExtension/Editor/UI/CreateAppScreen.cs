@@ -183,7 +183,7 @@ public class CreateAppScreen : Screen
     {
         get
         {
-            if (Apps.Any(x => x.Name == _name))
+            if (Apps.Any(x => x.name == _name))
             {
                 return "This name is already taken.";
             }

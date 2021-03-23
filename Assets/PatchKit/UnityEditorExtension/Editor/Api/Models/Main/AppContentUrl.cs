@@ -1,26 +1,23 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct AppContentUrl
     {
         /// <summary>
         /// Url to content file.
         /// </summary>
-        [JsonProperty("url")]
-        public string Url;
-        
+        public string url;
+
         /// <summary>
         /// Url to meta file if available.
         /// </summary>
-        [JsonProperty("meta_url")]
-        public string MetaUrl;
-        
+        public string meta_url;
+
         /// <summary>
         /// ISO code of origin country.
         /// </summary>
-        [JsonProperty("country")]
-        public string Country;
-        
+        public string country;
     }
 }

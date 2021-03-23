@@ -1,14 +1,12 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct PatcherBannerImageDimensions
     {
-        [JsonProperty("x")]
-        public int X;
-        
-        [JsonProperty("y")]
-        public int Y;
-        
+        public int x;
+
+        public int y;
     }
 }

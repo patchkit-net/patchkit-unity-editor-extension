@@ -364,9 +364,9 @@ public class SafeBuildAndUploadScreen : Screen
         try
         {
             var appInfo = Core.Api.GetAppInfo(appSecret);
-            _appName = appInfo.Name;
+            _appName = appInfo.name;
             
-            if (appInfo.Removed)
+            if (appInfo.removed)
             {
                 Dispatch(
                     () =>
@@ -400,8 +400,8 @@ public class SafeBuildAndUploadScreen : Screen
         {
             App app = connectedResult.App;
 
-            _appSecret = app.Secret;
-            _appName = app.Name;
+            _appSecret = app.secret;
+            _appName = app.name;
         }
     }
 

@@ -1,110 +1,91 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct AppVersion
     {
         /// <summary>
         /// Initial version id.
         /// </summary>
-        [JsonProperty("id")]
-        public int Id;
-        
+        public int id;
+
         /// <summary>
         /// Version label.
         /// </summary>
-        [JsonProperty("label")]
-        public string Label;
-        
+        public string label;
+
         /// <summary>
         /// Description of changes.
         /// </summary>
-        [JsonProperty("changelog")]
-        public string Changelog;
-        
+        public string changelog;
+
         /// <summary>
         /// Unix timestamp of publish date.
         /// </summary>
-        [JsonProperty("publish_date")]
-        public long PublishDate;
-        
+        public long publish_date;
+
         /// <summary>
         /// Guid of content file.
         /// </summary>
-        [JsonProperty("content_guid")]
-        public string ContentGuid;
-        
+        public string content_guid;
+
         /// <summary>
         /// Guid of content meta file if available.
         /// </summary>
-        [JsonProperty("content_meta_guid")]
-        public string ContentMetaGuid;
-        
+        public string content_meta_guid;
+
         /// <summary>
         /// Guid of diff file or null if there's no diff.
         /// </summary>
-        [JsonProperty("diff_guid")]
-        public string DiffGuid;
-        
+        public string diff_guid;
+
         /// <summary>
         /// Guid of diff meta file if available.
         /// </summary>
-        [JsonProperty("diff_meta_guid")]
-        public string DiffMetaGuid;
-        
+        public string diff_meta_guid;
+
         /// <summary>
         /// Set to true if this version is a draft version.
         /// </summary>
-        [JsonProperty("draft")]
-        public bool Draft;
-        
-        [JsonProperty("pending_publish")]
-        public bool PendingPublish;
-        
-        [JsonProperty("published")]
-        public bool Published;
-        
+        public bool draft;
+
+        public bool pending_publish;
+
+        public bool published;
+
         /// <summary>
         /// If pending_publish is true, this number will indicate the publishing progress.
         /// </summary>
-        [JsonProperty("publish_progress")]
-        public float PublishProgress;
-        
+        public float publish_progress;
+
         /// <summary>
         /// Main executable relative path without slash at the beginning.
         /// </summary>
-        [JsonProperty("main_executable")]
-        public string MainExecutable;
-        
+        public string main_executable;
+
         /// <summary>
         /// Main executable arguments
         /// </summary>
-        [JsonProperty("main_executable_args")]
-        public string[] MainExecutableArgs;
-        
+        public string[] main_executable_args;
+
         /// <summary>
         /// Relative list of paths that should be ignored for local data consistency.
         /// </summary>
-        [JsonProperty("ignored_files")]
-        public string[] IgnoredFiles;
-        
+        public string[] ignored_files;
+
         /// <summary>
         /// Set to true if version will be published after successfull processing.
         /// </summary>
-        [JsonProperty("publish_when_processed")]
-        public bool PublishWhenProcessed;
-        
-        [JsonProperty("processing_started_at")]
-        public string ProcessingStartedAt;
-        
-        [JsonProperty("processing_finished_at")]
-        public string ProcessingFinishedAt;
-        
+        public bool publish_when_processed;
+
+        public string processing_started_at;
+
+        public string processing_finished_at;
+
         /// <summary>
         /// If true then this version can be imported to other application. Visible only for owners.
         /// </summary>
-        [JsonProperty("can_be_imported")]
-        public bool CanBeImported;
-        
+        public bool can_be_imported;
     }
 }

@@ -1,14 +1,12 @@
-using Newtonsoft.Json;
+using System;
 
 namespace PatchKit.Api.Models.Main
 {
+    [Serializable]
     public struct Chunks
     {
-        [JsonProperty("size")]
-        public int Size;
-        
-        [JsonProperty("hashes")]
-        public string[] Hashes;
-        
+        public int size;
+
+        public string[] hashes;
     }
 }
