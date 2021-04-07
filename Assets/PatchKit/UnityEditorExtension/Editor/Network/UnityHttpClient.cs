@@ -19,7 +19,7 @@ public class UnityHttpClient : IHttpClient
         public Dictionary<string, string> ResponseHeaders { get; set; }
     }
 
-    private const string ResponseEncoding = "iso-8859-2";
+    private readonly string ResponseEncoding = Encoding.UTF8.WebName;
 
     private IEnumerator GetWWW(HttpGetRequest getRequest, WWWResult result)
     {
