@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.5]
 ### Fixed
-- Changing response encoding ISO to UTF8
+- Reading API response body with invalid encoding
 
 ## [1.0.4]
 ### Fixed
