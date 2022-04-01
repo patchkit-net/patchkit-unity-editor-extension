@@ -56,16 +56,7 @@ public static class AppBuild
             return scenes.Where(x => x != null).Select(s => s.path);
         }
     }
-
-    [NotNull]
-    private static readonly string[] WindowsPdbFiles =
-    {
-        "player_win_x86.pdb",
-        "player_win_x86_s.pdb",
-        "player_win_x64.pdb",
-        "player_win_x64_s.pdb"
-    };
-
+    
     public static string Location
     {
         get
@@ -132,7 +123,7 @@ public static class AppBuild
                     return true;
                 }
 
-                if (Platform.IsWindows() && WindowsPdbFiles.Contains(fileName))
+                if (Platform.IsWindows() && fileName.EndsWith(".pdb"))
                 {
                     return true;
                 }
@@ -209,7 +200,7 @@ public static class AppBuild
         return null;
     }
 
-    public static bool TryCreate()
+    public static bool TryCreate(bool removeFilesPdb)
     {
         bool success;
 #if UNITY_2018_1_OR_NEWER
@@ -231,7 +222,7 @@ public static class AppBuild
                 BuildOptions.None));
 #endif
 
-        if (success)
+        if (success && removeFilesPdb)
         {
             RemovePdbFiles();
         }
@@ -247,14 +238,13 @@ public static class AppBuild
             case AppPlatform.Windows64:
                 string parentDirPath = Path.GetDirectoryName(Location);
                 Assert.IsNotNull(parentDirPath);
-
-                foreach (string pdbFile in WindowsPdbFiles)
+                string[] entries = Directory.GetFileSystemEntries(parentDirPath, "*");
+                
+                foreach (string pdbFile in entries.Where(e => e.EndsWith(".pdb")))
                 {
-                    string pdbFilePath = Path.Combine(parentDirPath, pdbFile);
-
-                    if (File.Exists(pdbFilePath))
+                    if (File.Exists(pdbFile))
                     {
-                        File.Delete(pdbFilePath);
+                        File.Delete(pdbFile);
                     }
                 }
 
