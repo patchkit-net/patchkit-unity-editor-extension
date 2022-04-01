@@ -123,7 +123,7 @@ public static class AppBuild
                     return true;
                 }
 
-                if (Platform.IsWindows() && fileName.EndsWith(".pdb"))
+                if (Platform.IsWindows() && fileName.ToLower().EndsWith(".pdb"))
                 {
                     return true;
                 }
@@ -200,7 +200,7 @@ public static class AppBuild
         return null;
     }
 
-    public static bool TryCreate(bool removeFilesPdb)
+    public static bool TryCreate(bool removePdbFiles)
     {
         bool success;
 #if UNITY_2018_1_OR_NEWER
@@ -222,7 +222,7 @@ public static class AppBuild
                 BuildOptions.None));
 #endif
 
-        if (success && removeFilesPdb)
+        if (success && removePdbFiles)
         {
             RemovePdbFiles();
         }
@@ -240,7 +240,7 @@ public static class AppBuild
                 Assert.IsNotNull(parentDirPath);
                 string[] entries = Directory.GetFileSystemEntries(parentDirPath, "*");
                 
-                foreach (string pdbFile in entries.Where(e => e.EndsWith(".pdb")))
+                foreach (string pdbFile in entries.Where(e => e.ToLower().EndsWith(".pdb")))
                 {
                     if (File.Exists(pdbFile))
                     {

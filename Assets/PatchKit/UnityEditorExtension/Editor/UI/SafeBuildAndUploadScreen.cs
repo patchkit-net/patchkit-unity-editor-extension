@@ -249,9 +249,9 @@ public class SafeBuildAndUploadScreen : Screen
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         {
-            EditorGUILayout.LabelField("Remove files .pdb after build");
-            _removeFilePDB =
-                EditorGUILayout.Toggle(_removeFilePDB);
+            EditorGUILayout.LabelField("Include *.pdb files");
+            _removePdbFiles =
+                !EditorGUILayout.Toggle(!_removePdbFiles);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -355,7 +355,7 @@ public class SafeBuildAndUploadScreen : Screen
     private bool _overwriteDraftVersion;
 
     [SerializeField]
-    private bool _removeFilePDB;
+    private bool _removePdbFiles;
 
     #endregion
 
@@ -370,7 +370,7 @@ public class SafeBuildAndUploadScreen : Screen
         _versionChangelog = string.Empty;
         _publishOnUpload = true;
         _overwriteDraftVersion = true;
-        _removeFilePDB = true;
+        _removePdbFiles = true;
 
         try
         {
@@ -461,7 +461,7 @@ public class SafeBuildAndUploadScreen : Screen
         Assert.IsNull(VersionLabelValidationError);
         Assert.IsNull(VersionChangelogValidationError);
 
-        if (AppBuild.TryCreate(_removeFilePDB))
+        if (AppBuild.TryCreate(_removePdbFiles))
         {
             ApiKey? apiKey = Config.GetLinkedAccountApiKey();
             Assert.IsTrue(apiKey.HasValue);

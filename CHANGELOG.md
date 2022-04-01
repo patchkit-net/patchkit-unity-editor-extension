@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Building when copy PDB files is selected in Build Settings
 
+### Added
+- New building option "Include .pdb files"
+
 ## [1.0.5]
 ### Fixed
 - Reading API response body with invalid encoding
