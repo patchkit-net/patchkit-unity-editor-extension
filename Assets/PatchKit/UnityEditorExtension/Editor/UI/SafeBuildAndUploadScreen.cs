@@ -24,6 +24,8 @@ public class SafeBuildAndUploadScreen : Screen
         get { return new Vector2(400f, 800f); }
     }
 
+    public Vector2 _scrollWarningFilesVector;
+
     public override void UpdateIfActive()
     {
         if (_platform != AppBuild.Platform)
@@ -184,6 +186,15 @@ public class SafeBuildAndUploadScreen : Screen
                     EditorStyles.miniLabel);
             }
             EditorGUILayout.EndHorizontal();
+            if (AppBuild.WarningFiles.Any())
+            {
+                _scrollWarningFilesVector = EditorGUILayout.BeginScrollView(_scrollWarningFilesVector);
+                EditorGUILayout.HelpBox(
+                    "Unknown files in build location:\n" + String.Join("\n", AppBuild.WarningFiles),
+                    MessageType.Warning);
+                EditorGUILayout.EndScrollView();
+            }
+            
             EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
             {

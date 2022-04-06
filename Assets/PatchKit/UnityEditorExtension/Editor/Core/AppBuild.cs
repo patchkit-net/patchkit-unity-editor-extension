@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEditor;
+using UnityEngine;
 #if UNITY_2018_1_OR_NEWER
 using UnityEditor.Build.Reporting;
 #endif
@@ -56,6 +57,9 @@ public static class AppBuild
             return scenes.Where(x => x != null).Select(s => s.path);
         }
     }
+
+    [NotNull]
+    public static IEnumerable<string> WarningFiles = Array.Empty<string>();
     
     public static string Location
     {
@@ -66,12 +70,12 @@ public static class AppBuild
 
             string validationError = GetLocationValidationError(value);
 
-            if (validationError == null)
+            if (validationError != null)
             {
-                return value;
+                Debug.LogError(validationError);
             }
 
-            return null;
+            return value;
         }
         set
         {
@@ -88,18 +92,19 @@ public static class AppBuild
         }
     }
 
-    private static bool AreThereOnlyBuildEntries(
+    [NotNull]
+    private static IEnumerable<string> FilesOutsideOfBuildEntries(
         [NotNull] string location,
         params string[] buildFiles)
     {
         if (location == null)
         {
-            throw new ArgumentNullException("location");
+            throw new ArgumentNullException(nameof(location));
         }
 
         if (buildFiles == null)
         {
-            throw new ArgumentNullException("buildFiles");
+            throw new ArgumentNullException(nameof(buildFiles));
         }
 
         string parentDirPath = Path.GetDirectoryName(location);
@@ -108,28 +113,64 @@ public static class AppBuild
 
         string[] entries = Directory.GetFileSystemEntries(parentDirPath, "*");
 
-        return entries.All(
+        return entries.Where(
             x =>
             {
                 string fileName = Path.GetFileName(x);
 
                 if (Path.GetDirectoryName(x) != parentDirPath)
                 {
-                    return true;
+                    return false;
                 }
 
                 if (buildFiles.Contains(fileName))
                 {
-                    return true;
+                    return false;
                 }
 
                 if (Platform.IsWindows() && fileName.ToLower().EndsWith(".pdb"))
                 {
-                    return true;
+                    return false;
                 }
 
-                return false;
+                return true;
             });
+    }
+
+    
+    [NotNull]
+    private static IEnumerable<string> GetLocationValidationWarningFiles(string location)
+    {
+        switch (Platform)
+        {
+            case AppPlatform.Windows32:
+            case AppPlatform.Windows64:
+                string winBuildFileName = Path.GetFileName(location);
+                string winBuildDirName =
+                    winBuildFileName.Replace(".exe", "_Data");
+
+                return FilesOutsideOfBuildEntries(
+                    location,
+                    winBuildFileName,
+                    winBuildDirName,
+                    "MonoBleedingEdge",
+                    "Mono",
+                    "UnityCrashHandler32.exe",
+                    "UnityCrashHandler64.exe",
+                    "UnityPlayer.dll",
+                    "WinPixEventRuntime.dll");
+            case AppPlatform.Linux32:
+            case AppPlatform.Linux64:
+                break;
+            case AppPlatform.Mac64:
+                break;
+            case null:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        return Array.Empty<string>();
     }
 
     private static string GetLocationValidationError(string location)
@@ -154,24 +195,6 @@ public static class AppBuild
                         "Invalid build location file extension. Should be .exe.";
                 }
 
-                string winBuildFileName = Path.GetFileName(location);
-                string winBuildDirName =
-                    winBuildFileName.Replace(".exe", "_Data");
-
-                if (!AreThereOnlyBuildEntries(
-                    location,
-                    winBuildFileName,
-                    winBuildDirName,
-                    "MonoBleedingEdge",
-                    "Mono",
-                    "UnityCrashHandler32.exe",
-                    "UnityCrashHandler64.exe",
-                    "UnityPlayer.dll",
-                    "WinPixEventRuntime.dll"))
-                {
-                    return "Build location must be an empty directory.";
-                }
-
                 break;
             case AppPlatform.Linux32:
             case AppPlatform.Linux64:
@@ -185,7 +208,7 @@ public static class AppBuild
 
                 string macBuildFileName = Path.GetFileName(location);
 
-                if (!AreThereOnlyBuildEntries(location, macBuildFileName))
+                if (FilesOutsideOfBuildEntries(location, macBuildFileName).Any())
                 {
                     return "Build location must be an empty directory.";
                 }
@@ -222,12 +245,23 @@ public static class AppBuild
                 BuildOptions.None));
 #endif
 
-        if (success && removePdbFiles)
+        if (!success)
+        {
+            return false;
+        }
+
+        WarningFiles = GetLocationValidationWarningFiles(Location);
+        foreach (string warningFile in WarningFiles)
+        {
+            Debug.LogWarning("Unknown file in build location: " + warningFile);
+        }
+            
+        if (removePdbFiles)
         {
             RemovePdbFiles();
         }
 
-        return success;
+        return true;
     }
 
     private static void RemovePdbFiles()
@@ -303,6 +337,7 @@ public static class AppBuild
                 if (validationError == null)
                 {
                     Location = location;
+                    WarningFiles = GetLocationValidationWarningFiles(location);
                 }
                 else
                 {
