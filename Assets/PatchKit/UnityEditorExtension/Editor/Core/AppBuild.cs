@@ -93,7 +93,7 @@ public static class AppBuild
     }
 
     [NotNull]
-    private static IEnumerable<string> FilesOutsideOfBuildEntries(
+    private static IEnumerable<string> GetFilesOutsideOfBuildEntries(
         [NotNull] string location,
         params string[] buildFiles)
     {
@@ -149,7 +149,7 @@ public static class AppBuild
                 string winBuildDirName =
                     winBuildFileName.Replace(".exe", "_Data");
 
-                return FilesOutsideOfBuildEntries(
+                return GetFilesOutsideOfBuildEntries(
                     location,
                     winBuildFileName,
                     winBuildDirName,
@@ -208,7 +208,7 @@ public static class AppBuild
 
                 string macBuildFileName = Path.GetFileName(location);
 
-                if (FilesOutsideOfBuildEntries(location, macBuildFileName).Any())
+                if (GetFilesOutsideOfBuildEntries(location, macBuildFileName).Any())
                 {
                     return "Build location must be an empty directory.";
                 }
