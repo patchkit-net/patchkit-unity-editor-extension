@@ -24,6 +24,8 @@ public class SafeBuildAndUploadScreen : Screen
         get { return new Vector2(400f, 800f); }
     }
 
+    public Vector2 _scrollWarningFilesVector;
+
     public override void UpdateIfActive()
     {
         if (_platform != AppBuild.Platform)
@@ -184,6 +186,15 @@ public class SafeBuildAndUploadScreen : Screen
                     EditorStyles.miniLabel);
             }
             EditorGUILayout.EndHorizontal();
+            if (AppBuild.WarningFiles.Any())
+            {
+                _scrollWarningFilesVector = EditorGUILayout.BeginScrollView(_scrollWarningFilesVector);
+                EditorGUILayout.HelpBox(
+                    "Unknown files in build location:\n" + String.Join("\n", AppBuild.WarningFiles),
+                    MessageType.Warning);
+                EditorGUILayout.EndScrollView();
+            }
+            
             EditorGUILayout.Separator();
             EditorGUILayout.BeginHorizontal();
             {
@@ -245,6 +256,13 @@ public class SafeBuildAndUploadScreen : Screen
             EditorGUILayout.LabelField("Overwrite draft version if it exists");
             _overwriteDraftVersion =
                 EditorGUILayout.Toggle(_overwriteDraftVersion);
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField("Include *.pdb files");
+            _removePdbFiles =
+                !EditorGUILayout.Toggle(!_removePdbFiles);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -347,6 +365,9 @@ public class SafeBuildAndUploadScreen : Screen
     [SerializeField]
     private bool _overwriteDraftVersion;
 
+    [SerializeField]
+    private bool _removePdbFiles;
+
     #endregion
 
     #region Logic
@@ -360,6 +381,7 @@ public class SafeBuildAndUploadScreen : Screen
         _versionChangelog = string.Empty;
         _publishOnUpload = true;
         _overwriteDraftVersion = true;
+        _removePdbFiles = true;
 
         try
         {
@@ -450,7 +472,7 @@ public class SafeBuildAndUploadScreen : Screen
         Assert.IsNull(VersionLabelValidationError);
         Assert.IsNull(VersionChangelogValidationError);
 
-        if (AppBuild.TryCreate())
+        if (AppBuild.TryCreate(_removePdbFiles))
         {
             ApiKey? apiKey = Config.GetLinkedAccountApiKey();
             Assert.IsTrue(apiKey.HasValue);
