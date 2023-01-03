@@ -54,7 +54,9 @@ public static class AppBuild
 
             Assert.IsNotNull(scenes);
 
-            return scenes.Where(x => x != null).Select(s => s.path);
+            return scenes
+                .Where(s => s != null && File.Exists(s.path) && s.enabled)
+                .Select(s => s.path);
         }
     }
 
