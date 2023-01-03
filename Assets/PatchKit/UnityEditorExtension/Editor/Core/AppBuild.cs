@@ -70,12 +70,12 @@ public static class AppBuild
 
             string validationError = GetLocationValidationError(value);
 
-            if (validationError != null)
+            if (validationError == null)
             {
-                Debug.LogError(validationError);
+                return value;
             }
 
-            return value;
+            return null;
         }
         set
         {
