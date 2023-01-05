@@ -283,7 +283,7 @@ public class SafeBuildAndUploadScreen : Screen
         else if (!IsScenesSelected)
         {
             EditorGUILayout.HelpBox(
-                "You haven't selected Scenes.",
+                "You haven't selected any scenes.",
                 MessageType.Error);
         }
         else if (VersionLabelValidationError != null)
