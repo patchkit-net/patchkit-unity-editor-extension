@@ -54,7 +54,9 @@ public static class AppBuild
 
             Assert.IsNotNull(scenes);
 
-            return scenes.Where(x => x != null).Select(s => s.path);
+            return scenes
+                .Where(s => s != null && File.Exists(s.path) && s.enabled)
+                .Select(s => s.path);
         }
     }
 
@@ -70,12 +72,12 @@ public static class AppBuild
 
             string validationError = GetLocationValidationError(value);
 
-            if (validationError != null)
+            if (validationError == null)
             {
-                Debug.LogError(validationError);
+                return value;
             }
 
-            return value;
+            return null;
         }
         set
         {

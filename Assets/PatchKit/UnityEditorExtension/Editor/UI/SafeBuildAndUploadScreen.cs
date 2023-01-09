@@ -280,6 +280,12 @@ public class SafeBuildAndUploadScreen : Screen
                 "You haven't selected build location.",
                 MessageType.Error);
         }
+        else if (!IsScenesSelected)
+        {
+            EditorGUILayout.HelpBox(
+                "You haven't selected any scenes.",
+                MessageType.Error);
+        }
         else if (VersionLabelValidationError != null)
         {
             EditorGUILayout.HelpBox(
@@ -435,6 +441,11 @@ public class SafeBuildAndUploadScreen : Screen
     private bool IsBuildLocationSelected
     {
         get { return !string.IsNullOrEmpty(BuildLocation); }
+    }
+    
+    private bool IsScenesSelected
+    {
+        get { return AppBuild.Scenes.Any(); }
     }
 
     private string VersionLabelValidationError

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.7]
+### Added
+- Scenes selection control
+
+### Fixed
+- Displaying "Build location must be an empty directory." error all the time.
+
+### Changed
+- Updating patchkit-tools to version 3.1.7
+
 ## [1.0.6]
 ### Added
 - New building option "Include .pdb files"

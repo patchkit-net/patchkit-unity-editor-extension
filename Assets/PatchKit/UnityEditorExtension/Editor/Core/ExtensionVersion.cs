@@ -8,7 +8,7 @@ public static class ExtensionVersion
 
     public static int Minor = 0;
 
-    public static int Patch = 6;
+    public static int Patch = 7;
 
     [NotNull]
     public static string Name
