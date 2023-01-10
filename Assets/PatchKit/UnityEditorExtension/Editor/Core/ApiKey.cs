@@ -29,23 +29,23 @@ public struct ApiKey
     {
         if (value == null)
         {
-            return "API key cannot be null.";
+            return "The API key cannot be null.";
         }
 
         if (string.IsNullOrEmpty(value))
         {
-            return "API key cannot be empty.";
+            return "The API key cannot be empty.";
         }
 
         if (!value.All(char.IsLetterOrDigit))
         {
             return
-                "API key cannot have other characters than letters and digits.";
+                "The API key cannot have other characters than letters and digits.";
         }
 
         if (value.Length != 32)
         {
-            return "API key must be 32 characters length.";
+            return "The API key must be 32 characters length.";
         }
 
         return null;

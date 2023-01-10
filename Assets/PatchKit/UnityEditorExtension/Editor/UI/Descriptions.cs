@@ -3,10 +3,10 @@
 public static class Descriptions
 {
     public static readonly string PlatformChangeInfo =
-        "While uploading application from Unity, PatchKit target platform is determined by current active project build platform.";
+        "While uploading applications from Unity, the PatchKit target platform is determined by the currently active project build platform.";
 
     public static readonly string NeedToPlatformChange = PlatformChangeInfo +
         "\n\n" +
-        "To change it, you have to switch project platform in Build Settings window.";
+        "To change it, you have to switch the project platform in the Build Settings window.";
 }
 }

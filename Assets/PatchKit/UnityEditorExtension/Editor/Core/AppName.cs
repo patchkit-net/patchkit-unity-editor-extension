@@ -30,12 +30,12 @@ public struct AppName
     {
         if (value == null)
         {
-            return "Application name cannot be null.";
+            return "The application name cannot be null.";
         }
 
         if (string.IsNullOrEmpty(value))
         {
-            return "Application name cannot be empty.";
+            return "The application name cannot be empty.";
         }
 
         if (!value.All(
@@ -45,7 +45,7 @@ public struct AppName
                 char.IsPunctuation(c) ||
                 char.IsDigit(c)))
         {
-            return "Application name only allows English characters and ':', '_' or '-'.";
+            return "The application name only allows English characters and ':', '_' or '-'.";
         }
 
         return null;

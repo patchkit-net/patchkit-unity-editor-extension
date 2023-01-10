@@ -106,13 +106,13 @@ public static class PluginAssert
         catch (Exception e)
         {
             string dialogMessage =
-                "PatchKit Unity Editor Extensions has encountered an fatal error.\n\n" +
+                "PatchKit Unity Editor Extensions has encountered a fatal error.\n\n" +
                 message +
                 "\n\n" +
                 e.StackTrace +
                 "\n\n" +
                 "Please try to reimport the plugin.\n" +
-                "If issue would remain, please contact us at contact@patchkit.net";
+                "If the issue remains, please contact us at contact@patchkit.net";
 
             EditorUtility.DisplayDialog("Error!", dialogMessage, "OK");
         }

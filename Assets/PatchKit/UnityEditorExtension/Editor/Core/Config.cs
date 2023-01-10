@@ -37,7 +37,7 @@ public class Config : ScriptableObject
 
             string warning =
                 "There are multiple instances of PatchKit Unity Editor Extension config.\n\n" +
-                "Please pick one and delete rest:\n" +
+                "Please pick one and delete the rest:\n" +
                 string.Join("\n", paths.Select(x => "- " + x).ToArray()) +
                 "\n\n" +
                 "Currently using " +

@@ -108,7 +108,7 @@ namespace PatchKit.Api
         {
             Logger.LogDebug(
                 string.Format(
-                    "Trying to get response from server ({0}): '{1}:{2}' (uses HTTPS: {3})...",
+                    "Trying to get a response from server ({0}): '{1}:{2}' (uses HTTPS: {3})...",
                     serverType,
                     server.Host,
                     server.RealPort,
@@ -146,17 +146,17 @@ namespace PatchKit.Api
                 Logger.LogDebug("Received response. Checking whether it is valid...");
                 Logger.LogTrace(
                     string.Format(
-                        "Response status code: {0}",
+                        "The response status code: {0}",
                         httpResponse.StatusCode));
 
                 if (IsResponseValid(httpResponse, serverType))
                 {
-                    Logger.LogDebug("Response is valid.");
+                    Logger.LogDebug("The response is valid.");
                     response = new ApiResponse(httpResponse);
                     return true;
                 }
 
-                Logger.LogWarning("Response is not valid.");
+                Logger.LogWarning("The response is not valid.");
 
                 if (IsResponseUnexpectedError(httpResponse, serverType))
                 {
@@ -266,7 +266,7 @@ namespace PatchKit.Api
             return SendRequest(() => {
                 Logger.LogDebug(
                     string.Format(
-                        "Getting response for GET request with path: '{0}' and query: '{1}'...",
+                        "Getting response for a GET request with path: '{0}' and query: '{1}'...",
                         path,
                         query));
 
@@ -285,7 +285,7 @@ namespace PatchKit.Api
             return SendRequest(() => {
                 Logger.LogDebug(
                     string.Format(
-                        "Getting response for POST request with path: '{0}', query: '{1}' and data '{2}'...",
+                        "Getting response for a POST request with path: '{0}', query: '{1}' and data '{2}'...",
                         path,
                         query,
                         body));
@@ -333,7 +333,7 @@ namespace PatchKit.Api
                     if (apiResponse == null)
                     {
                         Logger.LogWarning(
-                            "Connection attempt to every server has failed. Checking whether retry is possible...");
+                            "Connection attempt to every server has failed. Checking whether a retry is possible...");
                         RequestTimeoutCalculator.OnRequestFailure();
                         RequestRetryStrategy.OnRequestFailure();
 
@@ -348,7 +348,7 @@ namespace PatchKit.Api
 
                         Logger.LogDebug(
                             string.Format(
-                                "Retry is possible. Waiting {0}ms before next attempt...",
+                                "Retry is possible. Waiting {0}ms before the next attempt...",
                                 RequestRetryStrategy.DelayBeforeNextTry));
 
                         Thread.Sleep(RequestRetryStrategy.DelayBeforeNextTry);
@@ -361,7 +361,7 @@ namespace PatchKit.Api
                     }
                 } while (retry);
 
-                Logger.LogDebug("Successfully got response.");
+                Logger.LogDebug("Successfully got a response.");
                 Logger.LogTrace(
                     string.Format("Response body: {0}", apiResponse.Body));
 

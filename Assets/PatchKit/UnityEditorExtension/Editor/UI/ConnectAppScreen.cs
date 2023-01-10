@@ -173,7 +173,7 @@ public class ConnectAppScreen : Screen
                                 {
                                     EditorUtility.DisplayDialog(
                                         "Warning",
-                                        "You tried to connect an application with wrong platform.\n\n" +
+                                        "You tried to connect an application with the wrong platform.\n\n" +
                                         " Connect your PatchKit application for " +
                                         _platform.ToString() +
                                         " platform",

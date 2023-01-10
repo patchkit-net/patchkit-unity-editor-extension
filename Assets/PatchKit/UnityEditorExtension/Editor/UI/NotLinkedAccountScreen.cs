@@ -32,7 +32,7 @@ public class NotLinkedAccountScreen : Screen
         {
             GUILayout.FlexibleSpace();
             GUILayout.Label(
-                "You haven't linked your PatchKit account yet.",
+                "You still need to link your PatchKit account.",
                 EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
         }

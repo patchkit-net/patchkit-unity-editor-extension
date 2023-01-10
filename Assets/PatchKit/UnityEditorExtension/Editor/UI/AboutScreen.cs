@@ -37,10 +37,10 @@ public class AboutScreen : Screen
         EditorGUILayout.EndHorizontal();
         GUILayout.Label("About", EditorStyles.boldLabel);
         GUILayout.Label(
-            "Publish your Unity game to the world in seconds, directly from your\n" +
+            "Publish your Unity game to the world in seconds directly from your\n" +
             "Unity editor.\n\n" +
             "PatchKit Unity Editor Extension integrates your development\n" +
-            "environment with your PatchKit account, makes it possible to\n" +
+            "environment with your PatchKit account, making it possible to\n" +
             "share your latest build with your players without leaving\n" +
             "the Unity editor.",
             GUILayout.Width(380));

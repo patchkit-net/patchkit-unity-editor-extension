@@ -89,7 +89,7 @@ public class LinkAccountScreen : Screen
         else
         {
             EditorGUILayout.HelpBox(
-                "Please enter your API key to link your PatchKit account with extension.",
+                "Please enter your API key to link your PatchKit account with the extension.",
                 MessageType.Info);
         }
 

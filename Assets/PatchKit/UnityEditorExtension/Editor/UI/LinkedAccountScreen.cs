@@ -91,7 +91,7 @@ public class LinkedAccountScreen : Screen
     {
         if (EditorUtility.DisplayDialog(
             "Are you sure?",
-            "Are you sure that you want to unlink your PatchKit account from this project?\n\nThis operation cannot be undone.",
+            "Are you sure you want to unlink your PatchKit account from this project?\n\nThis operation cannot be undone.",
             "Yes",
             "No"))
         {

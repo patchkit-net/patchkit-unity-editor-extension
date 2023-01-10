@@ -57,7 +57,7 @@ public class CreateAppScreen : Screen
             GUILayout.FlexibleSpace();
             GUILayout.Label(
                 string.Format(
-                    "Create new PatchKit app for {0}",
+                    "Create a new PatchKit app for {0}",
                     _platform.ToDisplayString()),
                 EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
