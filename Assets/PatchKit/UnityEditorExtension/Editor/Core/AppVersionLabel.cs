@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -39,14 +38,13 @@ public struct AppVersionLabel
         }
 
         if (!value.All(
-            c => c >= 'a' && c <= 'z' ||
-                c >= 'A' && c <= 'Z' ||
+            c => char.IsLetterOrDigit(c) ||
                 char.IsWhiteSpace(c) ||
-                char.IsPunctuation(c) ||
-                char.IsDigit(c)))
+                c == ':' ||
+                c == '_' ||
+                c == '-'))
         {
-            return
-                "The label text can include only letters,\n" +
+            return "The label text can include only letters,\n" +
                 "numbers, and ':', '_', or '-' characters.";
         }
 
