@@ -144,7 +144,7 @@ public class PatchKitToolsClient : IDisposable
 
         PluginAssert.IsTrue(File.Exists(path));
 
-        string executable = string.Format("{0} {1}", path, command);
+        string executable = string.Format("\"{0}\" {1}", path, command);
 
         Terminal.Start(executable);
     }
