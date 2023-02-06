@@ -165,7 +165,9 @@ public static class AppBuild
             case AppPlatform.Linux64:
                 break;
             case AppPlatform.Mac64:
-                break;
+                string macBuildFileName = Path.GetFileName(location);
+
+                return GetFilesOutsideOfBuildEntries(location, macBuildFileName);
             case null:
                 break;
             default:
@@ -207,14 +209,6 @@ public static class AppBuild
                     return
                         "Invalid build location file extension. It should be .app.";
                 }
-
-                string macBuildFileName = Path.GetFileName(location);
-
-                if (GetFilesOutsideOfBuildEntries(location, macBuildFileName).Any())
-                {
-                    return "The build location must be an empty directory.";
-                }
-
                 break;
             case null:
                 break;
