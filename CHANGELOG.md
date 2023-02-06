@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.8]
+### Fixed
+- Building a mac app with files other than .app
+- Path building with space
+- Validation for label and changelog
+
 ## [1.0.7]
 ### Added
 - Scenes selection control
