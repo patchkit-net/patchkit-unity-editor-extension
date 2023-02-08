@@ -31,7 +31,14 @@ public class PatchKitToolsClient : IDisposable
         bool forceOverrideDraftVersion)
     {
         File.WriteAllText(MakeVersionChangelogFilePath, changelog);
-
+        
+        Assert.IsNotNull(apiKey);
+        Assert.IsNotNull(appSecret);
+        Assert.IsNotNull(label);
+        Assert.IsNotNull(changelog);
+        Assert.IsNotNull(buildDir);
+        Assert.IsNotNull(MakeVersionChangelogFilePath);
+        
         var arguments = new List<string>
         {
             "--secret",
@@ -79,7 +86,6 @@ public class PatchKitToolsClient : IDisposable
                 command += " ";
                 foreach (string arg in args)
                 {
-                    Assert.IsNotNull(arg);
                     if (arg.Contains(' '))
                     {
                         command += "\"" + arg + "\" ";
@@ -138,7 +144,7 @@ public class PatchKitToolsClient : IDisposable
 
         PluginAssert.IsTrue(File.Exists(path));
 
-        string executable = string.Format("{0} {1}", path, command);
+        string executable = string.Format("\"{0}\" {1}", path, command);
 
         Terminal.Start(executable);
     }
