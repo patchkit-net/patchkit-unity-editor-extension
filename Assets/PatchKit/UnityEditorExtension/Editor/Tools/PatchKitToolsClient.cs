@@ -139,12 +139,11 @@ public class PatchKitToolsClient : IDisposable
 
     private void ExecuteMac(string command)
     {
-        string path =
-            Path.GetFullPath(Path.Combine(TempLocation, "patchkit-tools"));
+        string path = Path.Combine(TempLocation, "patchkit-tools");
 
         PluginAssert.IsTrue(File.Exists(path));
 
-        string executable = string.Format("\"{0}\" {1}", path, command);
+        string executable = string.Format("{0} {1}", path, command);
 
         Terminal.Start(executable);
     }
