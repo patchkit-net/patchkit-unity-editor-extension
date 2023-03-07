@@ -102,7 +102,7 @@ public class Terminal
         "cmd=\"$1\";\n" +
         "dir=\"$2\";\n" +
         "osascript <<EOF\n" +
-        "    tell application \"Terminal\" to do script \"cd \"$dir\"; $cmd\"\n" +
+        "    tell application \"Terminal\" to do script \"cd \'$dir\'; $cmd\"\n" +
         "EOF\n" +
         "exit 0\n";
 }
