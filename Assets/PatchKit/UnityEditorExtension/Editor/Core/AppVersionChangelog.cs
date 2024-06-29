@@ -32,18 +32,6 @@ public struct AppVersionChangelog
             return "Application version changelog cannot be null.";
         }
 
-        if (!value.All(
-            c => char.IsLetterOrDigit(c) ||
-                char.IsWhiteSpace(c) ||
-                c == ':' ||
-                c == '_' ||
-                c == '-'))
-        {
-            return
-                "The label text can include only letters,\n" +
-                "numbers, and ':', '_', or '-' characters.";
-        }
-
         return null;
     }
 }
